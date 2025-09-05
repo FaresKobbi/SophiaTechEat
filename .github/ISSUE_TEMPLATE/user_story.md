@@ -6,11 +6,9 @@ labels: bug, US
 assignees: ''
 
 ---
-
->Choisissez entre Français et Anglais pour décrire l'issue et tenez-vous à une seule langue. 
 >Adaptez le patron des "US" en fonction de vos choix (il se trouve dans votre dépôt sous _.github/ISSUE_TEMPLATE_
 
-:star: **Titre/Title :** En quelques mots, résumez l'objectif de l'US par exemple _Ajout d'un produit dans le panier_.
+:star: **Title :** En quelques mots, résumez l'objectif de l'US par exemple _Ajout d'un produit dans le panier_.
 
 :star: **Description :**
 
