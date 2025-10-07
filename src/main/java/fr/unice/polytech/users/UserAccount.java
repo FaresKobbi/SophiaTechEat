@@ -2,7 +2,6 @@ package fr.unice.polytech.users; // Assuming this package
 
 public class UserAccount {
     
-    // Attributes from Class Diagram:
     private String name;
     private String surname;
     private String email;

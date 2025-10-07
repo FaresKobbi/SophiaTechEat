@@ -2,17 +2,18 @@ package fr.unice.polytech.users; // Assuming this package
 
 // Note: Requires UserAccount class from above.
 public class StudentAccount extends UserAccount {
-    
-    // Attributes from Class Diagram:
+
     private String studentID;
-    private double balance; // Represents the student credit balance
+    private double balance = 30 ;
+    private BankInfo bankInfo;
 
     /**
      * Constructor for StudentAccount.
      */
-    public StudentAccount(String name, String surname, String email, double initialBalance) {
-        super(name, surname, email); // Initialize attributes from UserAccount
-        this.balance = initialBalance;
+    public StudentAccount(Builder builder) {
+        super(builder.name, builder.surname, builder.email); // Initialize attributes from UserAccount
+        this.studentID = builder.studentID;
+        this.bankInfo = builder.bankInfo;
     }
     
     public String getStudentID() {
@@ -23,7 +24,41 @@ public class StudentAccount extends UserAccount {
         return balance;
     }
 
+    public BankInfo getBankInfo() {
+        return bankInfo;
+    }
 
-    
+    public static class Builder{
+        private String name;
+        private String surname;
+        private String email;
+        private String studentID;
+        private BankInfo bankInfo;
+
+        public Builder(String name, String surname){
+            this.name = name;
+            this.surname = surname;
+        }
+
+        public Builder email(String email){
+            this.email = email;
+            return this;
+        }
+
+        public Builder studentId(String studentID){
+            this.studentID = studentID;
+            return this;
+        }
+
+        public Builder bankInfo(String cardNumber, int CVV, int month, int year){
+            this.bankInfo = new BankInfo(cardNumber, CVV, month, year);
+            return this;
+        }
+
+        public StudentAccount build(){
+            return new StudentAccount(this);
+        }
+
+    }
    
 }

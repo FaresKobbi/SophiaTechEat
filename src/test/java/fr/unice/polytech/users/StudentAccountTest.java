@@ -1,6 +1,8 @@
 package fr.unice.polytech.users;
 
+import io.cucumber.java.an.E;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class StudentAccountTest {
@@ -8,24 +10,24 @@ class StudentAccountTest {
     private final String NAME = "Alice";
     private final String SURNAME = "Smith";
     private final String EMAIL = "alice.smith@etu.unice.fr";
-    private final double INITIAL_BALANCE = 50.00;
+    private final String ID = "22400632";
 
-    // Test 1: Verify constructor initialization and inherited attributes
+    // Test 1: Verify that Builder Creational Pattern has been well implented
     @Test
     void testStudentAccountCreation() {
-        StudentAccount student = new StudentAccount(NAME, SURNAME, EMAIL, INITIAL_BALANCE);
-        
-        // Inherited from UserAccount
+        StudentAccount student = new StudentAccount.Builder(NAME, SURNAME)
+                .email(EMAIL)
+                .studentId(ID)
+                .bankInfo("3151 2136 8946 4151", 401, 5,28)
+                .build();
+
+        BankInfo bankInfo = new BankInfo("3151 2136 8946 4151", 401, 5,28);
+
         assertEquals(NAME, student.getName(), "Name should be inherited correctly.");
         assertEquals(SURNAME, student.getSurname(), "Surname should be inherited correctly.");
         assertEquals(EMAIL, student.getEmail(), "Email should be inherited correctly.");
-        
-        // StudentAccount specific attributes
-        assertEquals(INITIAL_BALANCE, student.getBalance(), 0.001, "Initial balance should be set correctly.");
-        assertNull(student.getStudentID(), "StudentID should be null initially (not set in constructor).");
+        assertEquals(bankInfo, student.getBankInfo());
+        assertEquals(ID, student.getStudentID());
     }
-    
-    // NOTE: Since the provided StudentAccount class is missing debit/credit methods, 
-    // the only testable functionality beyond constructor/getters is inherited logic.
-    // If you add debit/credit, you must add tests for them here.
+
 }
