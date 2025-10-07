@@ -8,7 +8,11 @@ _Template for classroom SI4-COO_
 
 ## TEAM
 
-Présentez-vous! 
+* Tchani Rajaa– PO
+* Amraoui Imane – QA
+* Hammoud Younes _ OPS
+* Youssef Ben Mzoughia _ SA
+* Fares Kobbi _SA
 
 ## doc
 Contient vos rapports et les documents qui présentent votre projet.
