@@ -1,6 +1,6 @@
 package fr.unice.polytech.paymentProcessing;
 
-import fr.unice.polytech.Order;
+import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.users.StudentAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class PaymentProcessorTest {
                 .bankInfo("3151 2136 8946 4151", 401, 5,28)
                 .build();
 
-        order = new Order(student, 20);
+        //order = new Order(student, 20,null);
     }
 
 
