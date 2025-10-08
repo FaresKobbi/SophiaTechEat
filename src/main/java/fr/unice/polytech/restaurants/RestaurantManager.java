@@ -18,6 +18,12 @@ public class RestaurantManager {
     private Map<String, List<TimeSlot>> blockedTimeSlots;
 
 
+
+
+
+
+
+
     public RestaurantManager() {
         this.restaurants = new HashMap<>();
         this.blockedTimeSlots = new HashMap<>();

@@ -8,6 +8,8 @@ public class TimeSlot {
     private LocalTime startTime;
     private LocalTime endTime;
 
+
+
     /**
      * Constructor for a TimeSlot.
      * @param startTime The start time of the slot.
