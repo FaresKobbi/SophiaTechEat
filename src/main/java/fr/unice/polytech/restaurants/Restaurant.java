@@ -1,10 +1,9 @@
 package fr.unice.polytech.restaurants;
 
-import fr.unice.polytech.dish.Dish;
+import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.TimeSlot;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class Restaurant {
@@ -164,7 +163,7 @@ public class Restaurant {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
-                ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
+                // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
                 '}';
     }
     

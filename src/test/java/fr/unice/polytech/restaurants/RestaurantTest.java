@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.ArrayList;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,14 +16,14 @@ class RestaurantTest {
     private Dish dish1;
     private Dish dish2;
     private TimeSlot slot1;
-    private TimeSlot slot2;
 
     @BeforeEach
     void setUp() {
         dish1 = new Dish("Pizza", 10.5);
         dish2 = new Dish("Pasta", 9.0);
-        slot1 = new TimeSlot("12:00", "14:00");
-        slot2 = new TimeSlot("19:00", "22:00");
+        LocalTime startTime1 = LocalTime.of(12, 0); 
+        LocalTime endTime1 = LocalTime.of(14, 0); 
+        slot1 = new TimeSlot(startTime1, endTime1);
         restaurant = new Restaurant("La Bella Vita");
     }
 
