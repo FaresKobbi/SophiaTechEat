@@ -10,6 +10,13 @@ public class Dish {
     private List<Topping> toppings;
 
 
+    
+    public Dish(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+
     public Dish(String name, String description, double price) {
         this.name = name;
         this.description = description;
