@@ -2,12 +2,14 @@ package fr.unice.polytech.orderManagement;
 
 import fr.unice.polytech.DeliveryLocation;
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.users.StudentAccount;
 
 import java.util.List;
 
 public class Order {
     private StudentAccount studentAccount;
+    private Restaurant restaurant;
     private double amount;
     private OrderStatus orderStatus;
     private List<Dish> dishes;
@@ -20,8 +22,12 @@ public class Order {
         this.dishes = builder.dishes;
         this.deliveryLocation = builder.deliveryLocation;
         this.orderStatus = builder.orderStatus != null ? builder.orderStatus : OrderStatus.PENDING;
+        this.restaurant = builder.restaurant;
     }
 
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
 
     public StudentAccount getStudentAccount() {
         return studentAccount;
@@ -58,6 +64,7 @@ public class Order {
     public static class Builder {
         private StudentAccount studentAccount;
         private double amount;
+        private Restaurant restaurant;
         private List<Dish> dishes;
         private DeliveryLocation deliveryLocation;
         private OrderStatus orderStatus;
@@ -82,6 +89,10 @@ public class Order {
         }
         public Builder dishes(List<Dish> dishes) {
             this.dishes = dishes;
+            return this;
+        }
+        public Builder restaurant(Restaurant restaurant) {
+            this.restaurant = restaurant;
             return this;
         }
 

@@ -11,7 +11,7 @@ public class PaymentProcessor {
         this.order = order;
     }
 
-    public OrderStatus processPayment(Order order){
+    public OrderStatus processPayment(){
         return new PaymentService().processExternalPayment(order) ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
     }
 

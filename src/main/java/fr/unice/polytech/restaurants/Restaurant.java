@@ -2,6 +2,8 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.TimeSlot;
+import fr.unice.polytech.orderManagement.Order;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class Restaurant {
     private String restaurantName;
     private List<Dish> dishes;
     private List<TimeSlot> availableTimeSlots;
-    
+    private List<Order> orders;
    //Simple initialisation 
     public Restaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
@@ -19,6 +21,7 @@ public class Restaurant {
         this.restaurantName = restaurantName;
         this.dishes = new ArrayList<>();
         this.availableTimeSlots = new ArrayList<>();
+        orders = new ArrayList<>();
     }
     
     
@@ -28,6 +31,7 @@ public class Restaurant {
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
+        orders = new ArrayList<>();
     }
     
     // ========== BUILDER PATTERN ==========
@@ -155,7 +159,10 @@ public class Restaurant {
         }
         dishes.set(index, newDish);
     }
-    
+
+    public void addOrder(Order order) {
+        orders.add(order);
+    }
     
     
     @Override
