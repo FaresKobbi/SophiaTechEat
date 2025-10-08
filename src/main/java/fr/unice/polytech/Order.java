@@ -7,10 +7,10 @@ public class Order {
     double amount;
     OrderStatus orderStatus;
 
-    public Order(StudentAccount studentAccount, double amount, OrderStatus orderStatus) {
+    public Order(StudentAccount studentAccount, double amount) {
         this.studentAccount = studentAccount;
         this.amount = amount;
-        this.orderStatus = orderStatus;
+        this.orderStatus = OrderStatus.PENDING;
     }
 
     public StudentAccount getStudentAccount() {

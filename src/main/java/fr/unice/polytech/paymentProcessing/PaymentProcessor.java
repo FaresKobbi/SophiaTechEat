@@ -12,7 +12,7 @@ public class PaymentProcessor {
     }
 
     public OrderStatus processPayment(Order order){
-        return OrderStatus.CANCELED;
+        return new PaymentService().processExternalPayment(order) ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
     }
 
 }

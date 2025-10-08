@@ -1,4 +1,10 @@
 package fr.unice.polytech.paymentProcessing;
 
-public class PaymentService {
+import fr.unice.polytech.Order;
+
+public class PaymentService implements IPaymentService{
+    @Override
+    public boolean processExternalPayment(Order order) {
+        return new MockedExternalPaymentSystem(order).mockedCheckingInformation();
+    }
 }
