@@ -8,6 +8,8 @@ public class TimeSlot {
     private LocalTime startTime;
     private LocalTime endTime;
 
+
+
     /**
      * Constructor for a TimeSlot.
      * @param startTime The start time of the slot.
@@ -31,5 +33,19 @@ public class TimeSlot {
     @Override
     public String toString() {
         return startTime + " - " + endTime;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeSlot timeSlot = (TimeSlot) o;
+        return startTime.equals(timeSlot.startTime) && endTime.equals(timeSlot.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return startTime.hashCode() + endTime.hashCode();
     }
 }
