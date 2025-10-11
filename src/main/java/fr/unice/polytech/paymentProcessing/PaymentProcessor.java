@@ -5,14 +5,29 @@ import fr.unice.polytech.OrderStatus;
 
 public class PaymentProcessor {
 
-    Order order;
+    private final Order order;
+    private final IPaymentService paymentService;
 
     public PaymentProcessor(Order order) {
+        this(order, new PaymentService());
+    }
+
+    public PaymentProcessor(Order order, IPaymentService paymentService) {
         this.order = order;
+        this.paymentService = paymentService;
+    }
+
+
+
+    public OrderStatus processPayment() {
+        return processPayment(order);
     }
 
     public OrderStatus processPayment(Order order){
-        return new PaymentService().processExternalPayment(order) ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
+        boolean paymentSuccessful = paymentService.processExternalPayment(order);
+        OrderStatus status = paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
+        order.setOrderStatus(status);
+        return status;
     }
 
 }
