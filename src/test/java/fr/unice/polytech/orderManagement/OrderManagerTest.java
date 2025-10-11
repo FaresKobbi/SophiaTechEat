@@ -93,7 +93,7 @@ class OrderManagerTest {
         List<Order> pendingOrders = (List<Order>) pendingOrdersField.get(orderManager);
         Order order = pendingOrders.get(0);
 
-        orderManager.intiatePayment(order, PaymentMethod.EXTERNAL);
+        orderManager.initiatePayment(order, PaymentMethod.EXTERNAL);
 
 
         assertEquals(1, pendingOrders.size());
@@ -115,7 +115,7 @@ class OrderManagerTest {
         Map<Order, Long> orderCreationTimes = (Map<Order, Long>) orderCreationTimesField.get(orderManager);
         orderCreationTimes.put(order, System.currentTimeMillis() - (4 * 60 * 1000));
 
-        orderManager.intiatePayment(order, PaymentMethod.EXTERNAL);
+        orderManager.initiatePayment(order, PaymentMethod.EXTERNAL);
 
         assertEquals(OrderStatus.CANCELED, order.getOrderStatus());
         assertEquals(0, pendingOrders.size());

@@ -13,9 +13,9 @@ import java.util.Map;
 
 public class OrderManager {
 
-    List<Order> registeredOrders;
-    List<Order> pendingOrders;
-    Map<Order, Long> orderCreationTimes;
+    private List<Order> registeredOrders;
+    private List<Order> pendingOrders;
+    private Map<Order, Long> orderCreationTimes;
     private static final long TIMEOUT_MILLIS = 3 * 60 * 1000; // 3 minutes
 
     public OrderManager(){
@@ -40,7 +40,7 @@ public class OrderManager {
     }
 
 
-    public void intiatePayment(Order order, PaymentMethod paymentMethod) {
+    public void initiatePayment(Order order, PaymentMethod paymentMethod) {
         if (isOrderTimedOut(order)) {
             dropOrder(order);
             return;
@@ -83,5 +83,15 @@ public class OrderManager {
     private double calculateTotalAmount(List<Dish> dishes) {
         return dishes.stream().mapToDouble(Dish::getPrice).sum();
     }
+
+    public List<Order> getRegisteredOrders() {
+        return registeredOrders;
+    }
+    public List<Order> getPendingOrders() {
+        return pendingOrders;
+    }
+
+
+
 
 }
