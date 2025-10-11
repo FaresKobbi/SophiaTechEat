@@ -25,9 +25,7 @@ public class PaymentProcessor {
 
     public OrderStatus processPayment(Order order){
         boolean paymentSuccessful = paymentService.processExternalPayment(order);
-        OrderStatus status = paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
-        order.setOrderStatus(status);
-        return status;
+        return paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
     }
 
 }
