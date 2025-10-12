@@ -1,7 +1,7 @@
 package fr.unice.polytech.paymentProcessing;
 
-import fr.unice.polytech.Order;
-import fr.unice.polytech.OrderStatus;
+import fr.unice.polytech.orderManagement.Order;
+import fr.unice.polytech.orderManagement.OrderStatus;
 
 public class PaymentProcessor {
 
@@ -11,7 +11,7 @@ public class PaymentProcessor {
         this.order = order;
     }
 
-    public OrderStatus processPayment(Order order){
+    public OrderStatus processPayment(){
         return new PaymentService().processExternalPayment(order) ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
     }
 

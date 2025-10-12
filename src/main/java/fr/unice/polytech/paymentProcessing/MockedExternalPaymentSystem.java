@@ -1,6 +1,6 @@
 package fr.unice.polytech.paymentProcessing;
 
-import fr.unice.polytech.Order;
+import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.users.BankInfo;
 
 import java.time.YearMonth;
