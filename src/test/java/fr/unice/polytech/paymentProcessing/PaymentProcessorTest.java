@@ -66,7 +66,7 @@ class PaymentProcessorTest {
                 .studentId(ID + "1")
                 .bankInfo("4321 6789 4321 6789", 402, 6, 29)
                 .build();
-        Order otherOrder = new Order(otherStudent, 15);
+        Order otherOrder = new Order.Builder(otherStudent).build();
 
         when(paymentService.processExternalPayment(otherOrder)).thenReturn(false);
 
