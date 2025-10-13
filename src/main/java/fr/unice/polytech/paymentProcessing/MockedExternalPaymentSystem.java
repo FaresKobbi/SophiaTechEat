@@ -1,7 +1,7 @@
 package fr.unice.polytech.paymentProcessing;
 
-import fr.unice.polytech.Order;
-import fr.unice.polytech.users.BankInfo;
+import fr.unice.polytech.orders.*;
+import fr.unice.polytech.users.StudentAccount;
 
 import java.time.YearMonth;
 import java.util.Random;
@@ -17,7 +17,7 @@ public class MockedExternalPaymentSystem {
     }
 
     public boolean mockedCheckingInformation() {
-        BankInfo bankInfo = order.getStudentAccount().getBankInfo();
+        BankInfo bankInfo = ((StudentAccount)order.getClient()).getBankInfo();
 
         if (bankInfo.getExpirationDate().isBefore(YearMonth.now())) {
             return false;

@@ -1,6 +1,6 @@
 package fr.unice.polytech.restaurants;
 
-public enum RestaurantType {
+public enum EstablishmentType {
     CROUS,
     RESTAURANT,
     FOOD_TRUCK,

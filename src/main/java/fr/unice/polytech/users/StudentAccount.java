@@ -1,5 +1,7 @@
 package fr.unice.polytech.users; // Assuming this package
 
+import fr.unice.polytech.paymentProcessing.BankInfo;
+
 // Note: Requires UserAccount class from above.
 public class StudentAccount extends UserAccount {
 

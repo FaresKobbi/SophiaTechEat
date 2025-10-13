@@ -1,14 +1,21 @@
-package fr.unice.polytech; // Assuming this package
+package fr.unice.polytech.restaurants; // Assuming this package
 
+import java.time.DayOfWeek;
 import java.time.LocalTime; // Best for time-only data
 
 public class TimeSlot {
     
     // Attributes from Class Diagram: (Implied to be start/end times)
+    private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
-
-
+    
+    public TimeSlot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+        //if (capacity <= 0) throw new IllegalArgumentException("Order capacity must be positive");
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
     /**
      * Constructor for a TimeSlot.
@@ -18,6 +25,7 @@ public class TimeSlot {
     public TimeSlot(LocalTime startTime, LocalTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
+        // remainingOrders = capacity
     }
 
     // Getters
@@ -29,9 +37,13 @@ public class TimeSlot {
         return endTime;
     }
 
-    // A utility method for display/debugging
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
     @Override
     public String toString() {
-        return startTime + " - " + endTime;
+        return "TimeSlot [dayOfWeek=" + dayOfWeek + ", startTime=" + startTime + ", endTime=" + endTime
+                +"]";
     }
 }

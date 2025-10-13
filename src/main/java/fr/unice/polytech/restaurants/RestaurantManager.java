@@ -1,7 +1,6 @@
 package fr.unice.polytech.restaurants;
 
 
-import fr.unice.polytech.TimeSlot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +15,6 @@ public class RestaurantManager {
 
     // Storage for blocked time slots per restaurant
     private Map<String, List<TimeSlot>> blockedTimeSlots;
-
-
-
-
-
 
 
 

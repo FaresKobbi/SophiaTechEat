@@ -4,7 +4,6 @@ package fr.unice.polytech.restaurants;
 import fr.unice.polytech.restaurants.Restaurant;
 
 
-import fr.unice.polytech.TimeSlot;
 import fr.unice.polytech.dishes.Dish;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

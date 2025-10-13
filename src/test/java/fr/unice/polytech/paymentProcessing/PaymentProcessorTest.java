@@ -1,6 +1,6 @@
 package fr.unice.polytech.paymentProcessing;
 
-import fr.unice.polytech.Order;
+import fr.unice.polytech.orders.*;
 import fr.unice.polytech.users.StudentAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

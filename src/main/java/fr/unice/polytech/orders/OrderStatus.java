@@ -1,4 +1,4 @@
-package fr.unice.polytech;
+package fr.unice.polytech.orders;
 
 public enum OrderStatus {
     PENDING,
