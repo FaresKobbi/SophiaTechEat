@@ -1,6 +1,7 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.TimeSlot;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ public class Restaurant {
     private List<Dish> dishes;
     private List<TimeSlot> availableTimeSlots;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
+    private List<Order> orders;
 
 
     //Simple initialisation
@@ -25,8 +27,8 @@ public class Restaurant {
         this.restaurantName = restaurantName;
         this.dishes = new ArrayList<>();
         this.availableTimeSlots = new ArrayList<>();
+        orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
-        this.blockedTimeSlots = new ArrayList<>();
     }
 
 
@@ -37,6 +39,7 @@ public class Restaurant {
         this.dishes = new ArrayList<>(builder.dishes);
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
         this.capacityByTimeSlot = new HashMap<>();
+        orders = new ArrayList<>();
     }
 
     // ========== BUILDER PATTERN ==========
@@ -230,6 +233,11 @@ public class Restaurant {
                 .findFirst()
                 .orElse(null);
     }
+
+
+       public void addOrder(Order order) {
+             orders.add(order);
+      }
 
 
 

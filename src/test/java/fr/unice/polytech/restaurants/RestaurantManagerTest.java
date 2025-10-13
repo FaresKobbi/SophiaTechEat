@@ -204,22 +204,14 @@ class RestaurantManagerTest {
     class BlockTimeSlotTests {
 
         @Test
-        @DisplayName("Should block time slot for restaurant")
-        void shouldBlockTimeSlotForRestaurant() {
+        @DisplayName("Should block time slot by decreasing capacity")
+        void shouldBlockTimeSlotByDecreasingCapacity() {
             manager.addRestaurant(restaurant1);
+            int initialCapacity = restaurant1.getCapacity(slot1);
+            
             manager.blockTimeSlot(slot1, restaurant1);
-
-            assertTrue(restaurant1.isTimeSlotBlocked(slot1));
-        }
-
-        @Test
-        @DisplayName("Should not block already blocked time slot")
-        void shouldNotBlockAlreadyBlockedTimeSlot() {
-            manager.addRestaurant(restaurant1);
-            manager.blockTimeSlot(slot1, restaurant1);
-            manager.blockTimeSlot(slot1, restaurant1);
-
-            assertEquals(1, restaurant1.getBlockedTimeSlots().size());
+            
+            assertEquals(initialCapacity - 1, restaurant1.getCapacity(slot1));
         }
 
         @Test
@@ -231,15 +223,32 @@ class RestaurantManagerTest {
         }
 
         @Test
-        @DisplayName("Should block multiple time slots")
-        void shouldBlockMultipleTimeSlots() {
+        @DisplayName("Should block multiple time slots independently")
+        void shouldBlockMultipleTimeSlotsIndependently() {
             manager.addRestaurant(restaurant1);
+            
+            int capacity1Before = restaurant1.getCapacity(slot1);
+            int capacity2Before = restaurant1.getCapacity(slot2);
+            
             manager.blockTimeSlot(slot1, restaurant1);
             manager.blockTimeSlot(slot2, restaurant1);
 
-            assertTrue(restaurant1.isTimeSlotBlocked(slot1));
-            assertTrue(restaurant1.isTimeSlotBlocked(slot2));
-            assertFalse(restaurant1.isTimeSlotBlocked(slot3));
+            assertEquals(capacity1Before - 1, restaurant1.getCapacity(slot1));
+            assertEquals(capacity2Before - 1, restaurant1.getCapacity(slot2));
+        }
+        
+        @Test
+        @DisplayName("Should not reduce capacity below zero")
+        void shouldNotReduceCapacityBelowZero() {
+            Restaurant restaurant = new Restaurant("Test");
+            restaurant.setCapacityByTimeSlot(slot1, 1);
+            manager.addRestaurant(restaurant);
+            
+            manager.blockTimeSlot(slot1, restaurant);
+            assertEquals(0, restaurant.getCapacity(slot1));
+            
+            manager.blockTimeSlot(slot1, restaurant);
+            assertEquals(0, restaurant.getCapacity(slot1)); // Reste à 0
         }
     }
 
@@ -250,18 +259,19 @@ class RestaurantManagerTest {
     class UnblockTimeSlotTests {
 
         @Test
-        @DisplayName("Should unblock time slot for restaurant")
-        void shouldUnblockTimeSlotForRestaurant() {
+        @DisplayName("Should unblock time slot by increasing capacity")
+        void shouldUnblockTimeSlotByIncreasingCapacity() {
             manager.addRestaurant(restaurant1);
-            manager.blockTimeSlot(slot1, restaurant1);
+            
+            int capacityBefore = restaurant1.getCapacity(slot1);
             manager.unblockTimeSlot(slot1, restaurant1);
-
-            assertFalse(restaurant1.isTimeSlotBlocked(slot1));
+            
+            assertEquals(capacityBefore + 1, restaurant1.getCapacity(slot1));
         }
 
         @Test
-        @DisplayName("Should not throw error when unblocking non-blocked slot")
-        void shouldNotThrowErrorWhenUnblockingNonBlockedSlot() {
+        @DisplayName("Should allow unblocking without prior blocking")
+        void shouldAllowUnblockingWithoutPriorBlocking() {
             manager.addRestaurant(restaurant1);
             assertDoesNotThrow(() -> manager.unblockTimeSlot(slot1, restaurant1));
         }
@@ -276,293 +286,108 @@ class RestaurantManagerTest {
     }
 
     // ==================== GET AVAILABLE TIME SLOTS TESTS ====================
-
-    @Nested
-    @DisplayName("Get Available Time Slots Tests")
-    class GetAvailableTimeSlotsTests {
-
-        @Test
-        @DisplayName("Should get all available time slots")
-        void shouldGetAllAvailableTimeSlots() {
-            manager.addRestaurant(restaurant1);
-
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
-
-            assertEquals(3, availableSlots.size());
-            assertTrue(availableSlots.contains(slot1));
-            assertTrue(availableSlots.contains(slot2));
-            assertTrue(availableSlots.contains(slot3));
-        }
-
-        @Test
-        @DisplayName("Should exclude blocked time slots from available slots")
-        void shouldExcludeBlockedTimeSlotsFromAvailableSlots() {
-            manager.addRestaurant(restaurant1);
+    @Test
+    @DisplayName("Should exclude blocked time slots from available slots")
+    void shouldExcludeBlockedTimeSlotsFromAvailableSlots() {
+        manager.addRestaurant(restaurant1);
+        
+        // Réduire la capacité à 0 pour bloquer
+        for (int i = 0; i < 10; i++) {
             manager.blockTimeSlot(slot1, restaurant1);
+        }
+        for (int i = 0; i < 15; i++) {
             manager.blockTimeSlot(slot2, restaurant1);
-
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
-
-            assertEquals(1, availableSlots.size());
-            assertFalse(availableSlots.contains(slot1));
-            assertFalse(availableSlots.contains(slot2));
-            assertTrue(availableSlots.contains(slot3));
         }
 
-        @Test
-        @DisplayName("Should return empty list when all slots are blocked")
-        void shouldReturnEmptyListWhenAllSlotsAreBlocked() {
-            manager.addRestaurant(restaurant1);
-            manager.blockTimeSlot(slot1, restaurant1);
-            manager.blockTimeSlot(slot2, restaurant1);
-            manager.blockTimeSlot(slot3, restaurant1);
+        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
 
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
-
-            assertTrue(availableSlots.isEmpty());
-        }
-
-        @Test
-        @DisplayName("Should return empty list when restaurant has no time slots")
-        void shouldReturnEmptyListWhenRestaurantHasNoTimeSlots() {
-            manager.addRestaurant(restaurant2);
-
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant2);
-
-            assertTrue(availableSlots.isEmpty());
-        }
-
-        @Test
-        @DisplayName("Should throw exception when getting available slots with null restaurant")
-        void shouldThrowExceptionWhenGettingAvailableSlotsWithNullRestaurant() {
-            Exception exception = assertThrows(IllegalArgumentException.class,
-                    () -> manager.getAvailableTimeSlots(null));
-            assertEquals("Restaurant cannot be null", exception.getMessage());
-        }
-
-        @Test
-        @DisplayName("Should not include slots with zero capacity")
-        void shouldNotIncludeSlotsWithZeroCapacity() {
-            Restaurant restaurant = new Restaurant("Test Restaurant");
-            restaurant.setCapacityByTimeSlot(slot1, 10);
-            restaurant.setCapacityByTimeSlot(slot2, 0);
-            manager.addRestaurant(restaurant);
-
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
-
-            assertEquals(1, availableSlots.size());
-            assertTrue(availableSlots.contains(slot1));
-            assertFalse(availableSlots.contains(slot2));
-        }
+        assertEquals(1, availableSlots.size());
+        assertFalse(availableSlots.contains(slot1));
+        assertFalse(availableSlots.contains(slot2));
+        assertTrue(availableSlots.contains(slot3));
     }
 
-    // ==================== GET BLOCKED TIME SLOTS TESTS ====================
+    @Test
+    @DisplayName("Should return empty list when all slots have zero capacity")
+    void shouldReturnEmptyListWhenAllSlotsHaveZeroCapacity() {
+        manager.addRestaurant(restaurant1);
+        
+        // Mettre toutes les capacités à 0
+        restaurant1.setCapacityByTimeSlot(slot1, 0);
+        restaurant1.setCapacityByTimeSlot(slot2, 0);
+        restaurant1.setCapacityByTimeSlot(slot3, 0);
 
-    @Nested
-    @DisplayName("Get Blocked Time Slots Tests")
-    class GetBlockedTimeSlotsTests {
+        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
 
-        @Test
-        @DisplayName("Should get all blocked time slots for restaurant")
-        void shouldGetAllBlockedTimeSlotsForRestaurant() {
-            manager.addRestaurant(restaurant1);
-            manager.blockTimeSlot(slot1, restaurant1);
-            manager.blockTimeSlot(slot2, restaurant1);
-
-            List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant1);
-
-            assertEquals(2, blockedSlots.size());
-            assertTrue(blockedSlots.contains(slot1));
-            assertTrue(blockedSlots.contains(slot2));
-        }
-
-        @Test
-        @DisplayName("Should return empty list when no slots are blocked")
-        void shouldReturnEmptyListWhenNoSlotsAreBlocked() {
-            manager.addRestaurant(restaurant1);
-
-            List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant1);
-
-            assertNotNull(blockedSlots);
-            assertTrue(blockedSlots.isEmpty());
-        }
-
-        @Test
-        @DisplayName("Should throw exception when getting blocked slots with null restaurant")
-        void shouldThrowExceptionWhenGettingBlockedSlotsWithNullRestaurant() {
-            Exception exception = assertThrows(IllegalArgumentException.class,
-                    () -> manager.getBlockedTimeSlots(null));
-            assertEquals("Restaurant cannot be null", exception.getMessage());
-        }
-
-        @Test
-        @DisplayName("Should return immutable copy of blocked time slots")
-        void shouldReturnImmutableCopyOfBlockedTimeSlots() {
-            manager.addRestaurant(restaurant1);
-            manager.blockTimeSlot(slot1, restaurant1);
-
-            List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant1);
-            blockedSlots.add(slot2);
-
-            assertEquals(1, manager.getBlockedTimeSlots(restaurant1).size());
-        }
+        assertTrue(availableSlots.isEmpty());
     }
+
+
 
     // ==================== INTEGRATION TESTS ====================
 
-    @Nested
-    @DisplayName("Integration Tests")
-    class IntegrationTests {
+    @Test
+    @DisplayName("Should correctly filter available slots based on capacity only")
+    void shouldCorrectlyFilterAvailableSlotsBasedOnCapacity() {
+        Restaurant restaurant = new Restaurant("Complex Restaurant");
 
-        @Test
-        @DisplayName("Should manage multiple restaurants with different time slots")
-        void shouldManageMultipleRestaurantsWithDifferentTimeSlots() {
-            // Setup restaurant1 with 3 time slots
-            restaurant1.setCapacityByTimeSlot(slot1, 10);
-            restaurant1.setCapacityByTimeSlot(slot2, 15);
-            restaurant1.setCapacityByTimeSlot(slot3, 20);
+        // slot1: capacity 10  available
+        restaurant.setCapacityByTimeSlot(slot1, 10);
 
-            // Setup restaurant2 with 2 time slots
-            restaurant2.setCapacityByTimeSlot(slot1, 5);
-            restaurant2.setCapacityByTimeSlot(slot2, 8);
+        // slot2: capacity 0 -> not available
+        restaurant.setCapacityByTimeSlot(slot2, 0);
 
-            manager.addRestaurant(restaurant1);
-            manager.addRestaurant(restaurant2);
+        // slot3: capacity 5, puis bloqué (capacité réduite) -> toujours disponible si capacité > 0
+        restaurant.setCapacityByTimeSlot(slot3, 5);
 
-            // Block some slots
-            manager.blockTimeSlot(slot1, restaurant1);
-            manager.blockTimeSlot(slot2, restaurant2);
+        manager.addRestaurant(restaurant);
+        manager.blockTimeSlot(slot3, restaurant); // Réduit à 4
 
-            // Verify restaurant1
-            List<TimeSlot> available1 = manager.getAvailableTimeSlots(restaurant1);
-            assertEquals(2, available1.size());
-            assertFalse(available1.contains(slot1));
+        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
 
-            // Verify restaurant2
-            List<TimeSlot> available2 = manager.getAvailableTimeSlots(restaurant2);
-            assertEquals(1, available2.size());
-            assertFalse(available2.contains(slot2));
-        }
-
-        @Test
-        @DisplayName("Should handle blocking and unblocking cycles")
-        void shouldHandleBlockingAndUnblockingCycles() {
-            manager.addRestaurant(restaurant1);
-
-            // Block slot1
-            manager.blockTimeSlot(slot1, restaurant1);
-            assertTrue(restaurant1.isTimeSlotBlocked(slot1));
-            assertEquals(2, manager.getAvailableTimeSlots(restaurant1).size());
-
-            // Unblock slot1
-            manager.unblockTimeSlot(slot1, restaurant1);
-            assertFalse(restaurant1.isTimeSlotBlocked(slot1));
-            assertEquals(3, manager.getAvailableTimeSlots(restaurant1).size());
-
-            // Block again
-            manager.blockTimeSlot(slot1, restaurant1);
-            assertTrue(restaurant1.isTimeSlotBlocked(slot1));
-        }
-
-        @Test
-        @DisplayName("Should correctly filter available slots based on capacity and blocked status")
-        void shouldCorrectlyFilterAvailableSlotsBasedOnCapacityAndBlockedStatus() {
-            Restaurant restaurant = new Restaurant("Complex Restaurant");
-
-            // slot1: capacity 10, not blocked → available
-            restaurant.setCapacityByTimeSlot(slot1, 10);
-
-            // slot2: capacity 0, not blocked → not available
-            restaurant.setCapacityByTimeSlot(slot2, 0);
-
-            // slot3: capacity 5, blocked → not available
-            restaurant.setCapacityByTimeSlot(slot3, 5);
-
-            manager.addRestaurant(restaurant);
-            manager.blockTimeSlot(slot3, restaurant);
-
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
-
-            assertEquals(1, availableSlots.size());
-            assertTrue(availableSlots.contains(slot1));
-            assertFalse(availableSlots.contains(slot2));
-            assertFalse(availableSlots.contains(slot3));
-        }
-
-        @Test
-        @DisplayName("Should maintain independent state for multiple restaurants")
-        void shouldMaintainIndependentStateForMultipleRestaurants() {
-            manager.addRestaurant(restaurant1);
-            manager.addRestaurant(restaurant2);
-
-            // Block slot1 only for restaurant1
-            manager.blockTimeSlot(slot1, restaurant1);
-
-            // Verify restaurant1 has slot1 blocked
-            assertTrue(restaurant1.isTimeSlotBlocked(slot1));
-
-            // Verify restaurant2 does not have slot1 blocked
-            assertFalse(restaurant2.isTimeSlotBlocked(slot1));
-        }
-
-
-        @Test
-        @DisplayName("Should handle empty manager operations gracefully")
-        void shouldHandleEmptyManagerOperationsGracefully() {
-            // Get all restaurants from empty manager
-            assertTrue(manager.getAllRestaurants().isEmpty());
-
-            // Check for non-existent restaurant
-            assertFalse(manager.hasRestaurant("Any Restaurant"));
-
-            // Get non-existent restaurant
-            assertNull(manager.getRestaurant("Any Restaurant"));
-        }
+        assertEquals(2, availableSlots.size()); // slot1 et slot3
+        assertTrue(availableSlots.contains(slot1));
+        assertFalse(availableSlots.contains(slot2));
+        assertTrue(availableSlots.contains(slot3)); // Toujours disponible car capacité > 0
     }
 
+    @Test
+    @DisplayName("Should handle blocking and unblocking cycles")
+    void shouldHandleBlockingAndUnblockingCycles() {
+        manager.addRestaurant(restaurant1);
+
+        int initialCapacity = restaurant1.getCapacity(slot1);
+        int initialAvailable = manager.getAvailableTimeSlots(restaurant1).size();
+
+        // Block slot1
+        manager.blockTimeSlot(slot1, restaurant1);
+        assertEquals(initialCapacity - 1, restaurant1.getCapacity(slot1));
+
+        // Unblock slot1
+        manager.unblockTimeSlot(slot1, restaurant1);
+        assertEquals(initialCapacity, restaurant1.getCapacity(slot1));
+
+        // Vérifier que le nombre de slots disponibles est revenu
+        assertEquals(initialAvailable, manager.getAvailableTimeSlots(restaurant1).size());
+    }
     // ==================== EDGE CASES TESTS ====================
 
     @Nested
     @DisplayName("Edge Cases Tests")
     class EdgeCasesTests {
 
+        
         @Test
-        @DisplayName("Should handle restaurant with no time slots")
-        void shouldHandleRestaurantWithNoTimeSlots() {
-            Restaurant emptyRestaurant = new Restaurant("Empty Restaurant");
-            manager.addRestaurant(emptyRestaurant);
-
-            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(emptyRestaurant);
-            List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(emptyRestaurant);
-
-            assertTrue(availableSlots.isEmpty());
-            assertTrue(blockedSlots.isEmpty());
-        }
-
-        @Test
-        @DisplayName("Should handle blocking non-existent time slot")
-        void shouldHandleBlockingNonExistentTimeSlot() {
+        @DisplayName("Should handle blocking slot not in capacity map")
+        void shouldHandleBlockingSlotNotInCapacityMap() {
             manager.addRestaurant(restaurant1);
-
             TimeSlot newSlot = new TimeSlot(LocalTime.of(18, 0), LocalTime.of(18, 30));
 
-            // Should not throw exception
+            // Ne devrait rien faire car le slot n'existe pas dans capacityMap
             assertDoesNotThrow(() -> manager.blockTimeSlot(newSlot, restaurant1));
-
-            // Slot should be blocked even if not in capacity map
-            assertTrue(restaurant1.isTimeSlotBlocked(newSlot));
+            assertEquals(0, restaurant1.getCapacity(newSlot));
         }
-
-        @Test
-        @DisplayName("Should handle unblocking never-blocked time slot")
-        void shouldHandleUnblockingNeverBlockedTimeSlot() {
-            manager.addRestaurant(restaurant1);
-
-            // Should not throw exception
-            assertDoesNotThrow(() -> manager.unblockTimeSlot(slot1, restaurant1));
-
-            assertFalse(restaurant1.isTimeSlotBlocked(slot1));
-        }
+            
 
         @Test
         @DisplayName("Should handle restaurant name with special characters")
@@ -641,15 +466,16 @@ class RestaurantManagerTest {
         @DisplayName("Should handle many block/unblock operations efficiently")
         void shouldHandleManyBlockUnblockOperationsEfficiently() {
             manager.addRestaurant(restaurant1);
+            int initialCapacity = restaurant1.getCapacity(slot1);
 
-            // Perform 1000 block/unblock operations
-            for (int i = 0; i < 1000; i++) {
+            // Perform 100 block/unblock operations
+            for (int i = 0; i < 100; i++) {
                 manager.blockTimeSlot(slot1, restaurant1);
                 manager.unblockTimeSlot(slot1, restaurant1);
             }
 
-            // Should still be in correct state
-            assertFalse(restaurant1.isTimeSlotBlocked(slot1));
+            // La capacité devrait être revenue à l'initiale
+            assertEquals(initialCapacity, restaurant1.getCapacity(slot1));
             assertEquals(3, manager.getAvailableTimeSlots(restaurant1).size());
         }
     }

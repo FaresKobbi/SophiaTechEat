@@ -1,4 +1,4 @@
-package fr.unice.polytech.restaurants;
+package  fr.unice.polytech.restaurants;
 
 
 import fr.unice.polytech.TimeSlot;

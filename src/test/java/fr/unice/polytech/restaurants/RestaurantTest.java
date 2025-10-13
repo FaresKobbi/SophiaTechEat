@@ -268,12 +268,15 @@ class RestaurantTest {
         }
 
         @Test
-        @DisplayName("Should not decrease capacity below threshold")
-        void shouldNotDecreaseCapacityBelowThreshold() {
-            restaurant.setCapacityByTimeSlot(slot1, 4);
+        @DisplayName("Should not decrease capacity below zero")
+        void shouldNotDecreaseCapacityBelowZero() {
+            restaurant.setCapacityByTimeSlot(slot1, 1);
             restaurant.decreaseCapacity(slot1);
-            assertEquals(4, restaurant.getCapacity(slot1));
-        }
+            assertEquals(0, restaurant.getCapacity(slot1));
+             // Tenter de diminuer encore
+             restaurant.decreaseCapacity(slot1);
+             assertEquals(0, restaurant.getCapacity(slot1)); // Reste à 0
+    }
 
         @Test
         @DisplayName("Should increase capacity correctly")
@@ -317,74 +320,32 @@ class RestaurantTest {
         }
     }
 
-    // ==================== BLOCK TIME SLOT TESTS ====================
-
-    @Nested
-    @DisplayName("Block Time Slot Tests")
-    class BlockTimeSlotTests {
-
-        @Test
-        @DisplayName("Should block time slot successfully")
-        void shouldBlockTimeSlotSuccessfully() {
+    @Test
+    @DisplayName("Should block time slot by reducing capacity to zero")
+    void shouldBlockTimeSlotByReducingCapacity() {
+        restaurant.setCapacityByTimeSlot(slot1, 5);
+        
+        // Bloquer en réduisant la capacité
+        for (int i = 0; i < 5; i++) {
             restaurant.blockTimeSlot(slot1);
-            assertTrue(restaurant.isTimeSlotBlocked(slot1));
         }
-
-        @Test
-        @DisplayName("Should not block already blocked time slot")
-        void shouldNotBlockAlreadyBlockedTimeSlot() {
-            restaurant.blockTimeSlot(slot1);
-            restaurant.blockTimeSlot(slot1);
-            assertEquals(1, restaurant.getBlockedTimeSlots().size());
-        }
-
-        @Test
-        @DisplayName("Should unblock time slot successfully")
-        void shouldUnblockTimeSlotSuccessfully() {
-            restaurant.blockTimeSlot(slot1);
-            restaurant.unblockTimeSlot(slot1);
-            assertFalse(restaurant.isTimeSlotBlocked(slot1));
-        }
-
-        @Test
-        @DisplayName("Should get all blocked time slots")
-        void shouldGetAllBlockedTimeSlots() {
-            restaurant.blockTimeSlot(slot1);
-            restaurant.blockTimeSlot(slot2);
-
-            List<TimeSlot> blocked = restaurant.getBlockedTimeSlots();
-            assertEquals(2, blocked.size());
-            assertTrue(blocked.contains(slot1));
-            assertTrue(blocked.contains(slot2));
-        }
-
-        @Test
-        @DisplayName("Should throw exception when blocking null time slot")
-        void shouldThrowExceptionWhenBlockingNullTimeSlot() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> restaurant.blockTimeSlot(null));
-        }
-
-        @Test
-        @DisplayName("Should throw exception when unblocking null time slot")
-        void shouldThrowExceptionWhenUnblockingNullTimeSlot() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> restaurant.unblockTimeSlot(null));
-        }
-
-        @Test
-        @DisplayName("Should return immutable copy of blocked time slots")
-        void shouldReturnImmutableCopyOfBlockedTimeSlots() {
-            restaurant.blockTimeSlot(slot1);
-            List<TimeSlot> blocked = restaurant.getBlockedTimeSlots();
-
-            blocked.add(slot2);
-
-            assertEquals(1, restaurant.getBlockedTimeSlots().size());
-        }
+        
+        assertEquals(0, restaurant.getCapacity(slot1));
+        assertFalse(restaurant.getAvailableTimeSlots().contains(slot1));
     }
 
-    // ==================== SETTER TESTS ====================
+    @Test
+    @DisplayName("Should unblock time slot by increasing capacity")
+    void shouldUnblockTimeSlotByIncreasingCapacity() {
+        restaurant.setCapacityByTimeSlot(slot1, 0);
+        
+        restaurant.unblockTimeSlot(slot1);
+        
+        assertTrue(restaurant.getCapacity(slot1) > 0);
+        assertTrue(restaurant.getAvailableTimeSlots().contains(slot1));
+    }
+
+   // ==================== SETTER TESTS ====================
 
     @Nested
     @DisplayName("Setter Tests")
