@@ -1,6 +1,6 @@
 package fr.unice.polytech.paymentProcessing;
 
-import fr.unice.polytech.orders.*;
+import fr.unice.polytech.orderManagement.Order;
 
 public class PaymentService implements IPaymentService{
     @Override

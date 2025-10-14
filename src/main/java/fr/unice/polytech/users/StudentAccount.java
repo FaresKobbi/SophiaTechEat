@@ -12,7 +12,7 @@ public class StudentAccount extends UserAccount {
     /**
      * Constructor for StudentAccount.
      */
-    public StudentAccount(Builder builder) {
+    private StudentAccount(Builder builder) {
         super(builder.name, builder.surname, builder.email); // Initialize attributes from UserAccount
         this.studentID = builder.studentID;
         this.bankInfo = builder.bankInfo;

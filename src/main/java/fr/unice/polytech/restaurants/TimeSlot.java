@@ -43,7 +43,6 @@ public class TimeSlot {
 
     @Override
     public String toString() {
-        return "TimeSlot [dayOfWeek=" + dayOfWeek + ", startTime=" + startTime + ", endTime=" + endTime
-                +"]";
+        return startTime + " - " + endTime;
     }
 }

@@ -1,6 +1,8 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.orderManagement.Order;
+
 import fr.unice.polytech.dishes.DishType;
 
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ public class Restaurant {
     private String restaurantName;
     private List<Dish> dishes;
     private List<TimeSlot> availableTimeSlots;
+    private List<Order> orders;
+   //Simple initialisation 
     private List<OpeningHours> openingHours;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
@@ -27,22 +31,24 @@ public class Restaurant {
         this.restaurantName = restaurantName;
         this.dishes = new ArrayList<>();
         this.availableTimeSlots = new ArrayList<>();
+        orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
     }
-
-
+    
+    
     //Private constructor for Builder pattern.
     //Avoid public Restaurant(String restaurantName, List<Dish> dishes, List<TimeSlot> availableTimeSlots) {..}
     private Restaurant(Builder builder) {
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
+        orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
     }
-
+    
     // ========== BUILDER PATTERN ==========
-
+    
     /**
      * Builder class for constructing Restaurant objects with many optional parameters.
      * We use this class when we  need to create a Restaurant with initial dishes and time slots.
@@ -62,59 +68,59 @@ public class Restaurant {
             }
             this.restaurantName = restaurantName;
         }
-
+        
         public Builder withDish(Dish dish) {
             if (dish != null) {
                 this.dishes.add(dish);
             }
             return this;
         }
-
+        
         public Builder withDishes(List<Dish> dishes) {
             if (dishes != null) {
                 this.dishes.addAll(dishes);
             }
             return this;
         }
-
+        
         public Builder withTimeSlot(TimeSlot timeSlot) {
             if (timeSlot != null) {
                 this.availableTimeSlots.add(timeSlot);
             }
             return this;
         }
-
+        
         public Builder withTimeSlots(List<TimeSlot> timeSlots) {
             if (timeSlots != null) {
                 this.availableTimeSlots.addAll(timeSlots);
             }
             return this;
         }
-
+        
         public Restaurant build() {
             return new Restaurant(this);
         }
     }
+    
 
-
-
+    
     public String getRestaurantName() {
         return restaurantName;
     }
-
-
+    
+    
     //return a copy of the dishes/TimeSlot list to prevent external modification.
     public List<Dish> getDishes() {
         return new ArrayList<>(dishes);
     }
-
-
+    
+   
     public List<TimeSlot> getAvailableTimeSlots() {
         return new ArrayList<>(availableTimeSlots);
     }
-
-
-
+    
+   
+    
     public void setRestaurantName(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -205,6 +211,12 @@ public class Restaurant {
         dishes.set(index, newDish);
     }
 
+    public void addOrder(Order order) {
+        orders.add(order);
+    }
+    
+    
+
 
 
     @Override
@@ -212,10 +224,10 @@ public class Restaurant {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
-                ", timeSlots=" + capacityByTimeSlot.size() +
+                // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
                 '}';
     }
-
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -223,7 +235,7 @@ public class Restaurant {
         Restaurant that = (Restaurant) o;
         return restaurantName.equals(that.restaurantName);
     }
-
+    
     @Override
     public int hashCode() {
         return restaurantName.hashCode();
