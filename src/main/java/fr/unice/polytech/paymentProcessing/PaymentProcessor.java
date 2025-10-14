@@ -28,4 +28,17 @@ public class PaymentProcessor {
         return paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
     }
 
+    public OrderStatus updatePaymentStatus(Order order) {
+        OrderStatus status = processPayment(order);
+        if (status == OrderStatus.VALIDATED) {
+            return  status;
+        }
+        int i = 0;
+        while (i<2 && status == OrderStatus.CANCELED) {
+            status = processPayment(order);
+            i++;
+        }
+        return status;
+    }
+
 }
