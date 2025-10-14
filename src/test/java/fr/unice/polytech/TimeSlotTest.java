@@ -1,6 +1,9 @@
 package fr.unice.polytech;
 
 import org.junit.jupiter.api.Test;
+
+import fr.unice.polytech.restaurants.TimeSlot;
+
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalTime;
 

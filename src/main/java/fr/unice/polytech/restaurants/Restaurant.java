@@ -1,11 +1,14 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
-import fr.unice.polytech.TimeSlot;
 import fr.unice.polytech.orderManagement.Order;
 
+import fr.unice.polytech.dishes.DishType;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Restaurant {
@@ -14,6 +17,13 @@ public class Restaurant {
     private List<TimeSlot> availableTimeSlots;
     private List<Order> orders;
    //Simple initialisation 
+    private List<OpeningHours> openingHours;
+    private Map<TimeSlot, Integer> capacityByTimeSlot;
+    private EstablishmentType establishmentType;
+    private DishType cuisineType;
+
+
+    //Simple initialisation
     public Restaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -22,6 +32,7 @@ public class Restaurant {
         this.dishes = new ArrayList<>();
         this.availableTimeSlots = new ArrayList<>();
         orders = new ArrayList<>();
+        this.capacityByTimeSlot = new HashMap<>();
     }
     
     
@@ -32,6 +43,8 @@ public class Restaurant {
         this.dishes = new ArrayList<>(builder.dishes);
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
         orders = new ArrayList<>();
+        this.capacityByTimeSlot = new HashMap<>();
+        this.cuisineType = builder.cuisineType;
     }
     
     // ========== BUILDER PATTERN ==========
@@ -41,10 +54,14 @@ public class Restaurant {
      * We use this class when we  need to create a Restaurant with initial dishes and time slots.
      */
     public static class Builder {
-        private final String restaurantName; 
+        private final String restaurantName;
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-        
+        private DishType cuisineType;
+        public Builder withCuisineType(DishType cuisineType) {
+            this.cuisineType = cuisineType;
+            return this;
+        }
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
@@ -110,9 +127,43 @@ public class Restaurant {
         }
         this.restaurantName = restaurantName;
     }
-    
+
+
+    //======= Capacity by slot =====
+    public void setCapacity(TimeSlot slot, int capacity) {
+        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
+        capacityByTimeSlot.put(slot, capacity);
+        if (!availableTimeSlots.contains(slot)) availableTimeSlots.add(slot);
+    }
+
+    public int getCapacity(TimeSlot slot) {
+        return capacityByTimeSlot.getOrDefault(slot, 0);
+    }
+
+    public Map<TimeSlot, Integer> getAllCapacities() {
+        return new HashMap<>(capacityByTimeSlot);
+    }
+
+    public void decreaseCapacity(TimeSlot slot) {
+        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        if (!availableTimeSlots.contains(slot)) return;
+        int capacity= capacityByTimeSlot.get(slot);
+        if (capacity > 0) { // Prevent negative capacity
+            capacityByTimeSlot.put(slot, capacity - 1);
+        } else {
+            System.out.println(" No capacity left for slot " + slot);
+        }
+    }
+
+    public void increaseCapacity(TimeSlot slot) {
+        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 0) + 1);
+    }
+
+
     // ========== DISH MANAGEMENT METHODS ==========
-        /**
+    /**
      * Adds a dish to the restaurant's menu.
      * Use this AFTER construction instead of passing dishes to constructor.
      * @param dish The dish to add
@@ -123,7 +174,7 @@ public class Restaurant {
             throw new IllegalArgumentException("Dish cannot be null");
         }
         if (dishes.contains(dish)) {
-             throw new IllegalArgumentException("Dish already exists in the menu");
+            throw new IllegalArgumentException("Dish already exists in the menu");
         }
         dishes.add(dish);
     }
@@ -140,9 +191,9 @@ public class Restaurant {
             addDish(dish);
         }
     }
-    
-   
-    
+
+
+
     /**
      * Updates an existing dish in the restaurant's menu.
      * @param oldDish The dish to replace
@@ -165,6 +216,9 @@ public class Restaurant {
     }
     
     
+
+
+
     @Override
     public String toString() {
         return "Restaurant{" +
@@ -185,6 +239,15 @@ public class Restaurant {
     @Override
     public int hashCode() {
         return restaurantName.hashCode();
+    }
+
+
+    public DishType getCuisineType() {
+        return cuisineType;
+    }
+
+    public List<OpeningHours> getOpeningHours() {
+        return openingHours;
     }
 }
 
