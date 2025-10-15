@@ -1,8 +1,7 @@
-package fr.unice.polytech.users;
+package fr.unice.polytech.paymentProcessing;
 
 import java.time.YearMonth;
 import java.util.Objects;
-
 
 public class BankInfo {
     private String cardNumber;

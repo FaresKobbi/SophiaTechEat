@@ -4,6 +4,8 @@ import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.TimeSlot;
 
+import fr.unice.polytech.dishes.DishType;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,11 @@ public class Restaurant {
     private List<TimeSlot> availableTimeSlots;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private List<Order> orders;
+   //Simple initialisation
+    private List<OpeningHours> openingHours;
+    private Map<TimeSlot, Integer> capacityByTimeSlot;
+    private EstablishmentType establishmentType;
+    private DishType cuisineType;
 
 
     //Simple initialisation
@@ -38,8 +45,9 @@ public class Restaurant {
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
-        this.capacityByTimeSlot = new HashMap<>();
         orders = new ArrayList<>();
+        this.capacityByTimeSlot = new HashMap<>();
+        this.cuisineType = builder.cuisineType;
     }
 
     // ========== BUILDER PATTERN ==========
@@ -52,7 +60,11 @@ public class Restaurant {
         private final String restaurantName;
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-
+        private DishType cuisineType;
+        public Builder withCuisineType(DishType cuisineType) {
+            this.cuisineType = cuisineType;
+            return this;
+        }
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
@@ -125,6 +137,41 @@ public class Restaurant {
         }
         this.restaurantName = restaurantName;
     }
+
+
+    //======= Capacity by slot =====
+    public void setCapacity(TimeSlot slot, int capacity) {
+        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
+        capacityByTimeSlot.put(slot, capacity);
+        if (!availableTimeSlots.contains(slot)) availableTimeSlots.add(slot);
+    }
+
+    public int getCapacity(TimeSlot slot) {
+        return capacityByTimeSlot.getOrDefault(slot, 0);
+    }
+
+    public Map<TimeSlot, Integer> getAllCapacities() {
+        return new HashMap<>(capacityByTimeSlot);
+    }
+
+    public void decreaseCapacity(TimeSlot slot) {
+        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        if (!availableTimeSlots.contains(slot)) return;
+        int capacity= capacityByTimeSlot.get(slot);
+        if (capacity > 0) { // Prevent negative capacity
+            capacityByTimeSlot.put(slot, capacity - 1);
+        } else {
+            System.out.println(" No capacity left for slot " + slot);
+        }
+    }
+
+    public void increaseCapacity(TimeSlot slot) {
+        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 0) + 1);
+    }
+
+
 
 
     //======= Capacity by slot =====
@@ -246,7 +293,7 @@ public class Restaurant {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
-                ", timeSlots=" + capacityByTimeSlot.size() +
+                // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
                 '}';
     }
 
@@ -261,6 +308,15 @@ public class Restaurant {
     @Override
     public int hashCode() {
         return restaurantName.hashCode();
+    }
+
+
+    public DishType getCuisineType() {
+        return cuisineType;
+    }
+
+    public List<OpeningHours> getOpeningHours() {
+        return openingHours;
     }
 }
 

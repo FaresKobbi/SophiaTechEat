@@ -1,14 +1,16 @@
 package fr.unice.polytech.orderManagement;
 
-import fr.unice.polytech.DeliveryLocation;
+
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.restaurants.Restaurant;
+import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
+import fr.unice.polytech.users.UserAccount;
 
 import java.util.List;
 
 public class Order {
-    private StudentAccount studentAccount;
+    private UserAccount studentAccount;
     private Restaurant restaurant;
     private double amount;
     private OrderStatus orderStatus;
@@ -29,7 +31,7 @@ public class Order {
         return restaurant;
     }
 
-    public StudentAccount getStudentAccount() {
+    public UserAccount getStudentAccount() {
         return studentAccount;
     }
 

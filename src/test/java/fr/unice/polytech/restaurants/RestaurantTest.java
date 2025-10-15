@@ -3,6 +3,7 @@ package fr.unice.polytech.restaurants;
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.TimeSlot;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -324,12 +325,12 @@ class RestaurantTest {
     @DisplayName("Should block time slot by reducing capacity to zero")
     void shouldBlockTimeSlotByReducingCapacity() {
         restaurant.setCapacityByTimeSlot(slot1, 5);
-        
+
         // Bloquer en réduisant la capacité
         for (int i = 0; i < 5; i++) {
             restaurant.blockTimeSlot(slot1);
         }
-        
+
         assertEquals(0, restaurant.getCapacity(slot1));
         assertFalse(restaurant.getAvailableTimeSlots().contains(slot1));
     }
@@ -338,9 +339,9 @@ class RestaurantTest {
     @DisplayName("Should unblock time slot by increasing capacity")
     void shouldUnblockTimeSlotByIncreasingCapacity() {
         restaurant.setCapacityByTimeSlot(slot1, 0);
-        
+
         restaurant.unblockTimeSlot(slot1);
-        
+
         assertTrue(restaurant.getCapacity(slot1) > 0);
         assertTrue(restaurant.getAvailableTimeSlots().contains(slot1));
     }
