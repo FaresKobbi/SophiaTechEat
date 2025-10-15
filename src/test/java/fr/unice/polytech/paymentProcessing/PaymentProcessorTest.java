@@ -81,7 +81,7 @@ class PaymentProcessorTest {
     @Test
     void updatePaymentStatus_ShouldValidate_OnSuccessAfterFirstFailure() {
         IPaymentService paymentService = mock(IPaymentService.class);
-        when(paymentService.processExternalPayment(order))
+        when(paymentService.processPayment(order))
                 .thenReturn(false)
                 .thenReturn(true);
 
@@ -90,13 +90,13 @@ class PaymentProcessorTest {
         OrderStatus status = processor.updatePaymentStatus(order);
 
         assertEquals(OrderStatus.VALIDATED, status);
-        verify(paymentService, times(2)).processExternalPayment(order);
+        verify(paymentService, times(2)).processPayment(order);
     }
 
     @Test
     void updatePaymentStatus_ShouldCancel_AfterThreeConsecutiveFailures() {
         IPaymentService paymentService = mock(IPaymentService.class);
-        when(paymentService.processExternalPayment(order))
+        when(paymentService.processPayment(order))
                 .thenReturn(false) // 1ère tentative
                 .thenReturn(false) // 2ème tentative (Relance 1)
                 .thenReturn(false); // 3ème tentative (Relance 2)
@@ -106,13 +106,13 @@ class PaymentProcessorTest {
         OrderStatus status = processor.updatePaymentStatus(order);
 
         assertEquals(OrderStatus.CANCELED, status);
-        verify(paymentService, times(3)).processExternalPayment(order);
+        verify(paymentService, times(3)).processPayment(order);
     }
 
     @Test
     void updatePaymentStatus_ShouldValidate_OnImmediateSuccess() {
         IPaymentService paymentService = mock(IPaymentService.class);
-        when(paymentService.processExternalPayment(order))
+        when(paymentService.processPayment(order))
                 .thenReturn(true);
 
         PaymentProcessor processor = new PaymentProcessor(order, paymentService);
@@ -120,12 +120,12 @@ class PaymentProcessorTest {
         OrderStatus status = processor.updatePaymentStatus(order);
 
         assertEquals(OrderStatus.VALIDATED, status);
-        verify(paymentService, times(1)).processExternalPayment(order);
+        verify(paymentService, times(1)).processPayment(order);
     }
     @Test
     void updatePaymentStatus_ShouldValidate_OnSuccessAtLastRetry() {
         IPaymentService paymentService = mock(IPaymentService.class);
-        when(paymentService.processExternalPayment(order))
+        when(paymentService.processPayment(order))
                 .thenReturn(false)
                 .thenReturn(false)
                 .thenReturn(true);
@@ -135,6 +135,6 @@ class PaymentProcessorTest {
         OrderStatus status = processor.updatePaymentStatus(order);
 
         assertEquals(OrderStatus.VALIDATED, status);
-        verify(paymentService, times(3)).processExternalPayment(order);
+        verify(paymentService, times(3)).processPayment(order);
     }
 }

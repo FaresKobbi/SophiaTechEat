@@ -47,19 +47,15 @@ public class OrderManager {
         // Le processeur dépendra du type de paiement
         IPaymentService processor;
 
-        if (paymentMethod == PaymentMethod.EXTERNAL){
-            // Utilise le processeur par défaut (avec la logique externe/mockée)
+        if (paymentMethod == PaymentMethod.EXTERNAL) {
             processor = new PaymentService();
         }
         else if (paymentMethod == PaymentMethod.INTERNAL) {
-            // Utilise le processeur de paiement interne
             processor = new InternalPaymentProcessor();
-        } else {
-            // Gérer les cas non reconnus
-            order.setOrderStatus(OrderStatus.CANCELED);
-            return;
         }
-
+        else {
+            throw new IllegalArgumentException("Unsupported payment method: " + paymentMethod);
+        }
         // Traitement du paiement (réutilisé pour les deux types)
         boolean paymentSuccessful = processor.processPayment(order);
 
