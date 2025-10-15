@@ -18,13 +18,12 @@ public class PaymentProcessor {
     }
 
 
-
     public OrderStatus processPayment() {
         return processPayment(order);
     }
 
     public OrderStatus processPayment(Order order){
-        boolean paymentSuccessful = paymentService.processExternalPayment(order);
+        boolean paymentSuccessful = paymentService.processPayment(order);
         return paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
     }
 

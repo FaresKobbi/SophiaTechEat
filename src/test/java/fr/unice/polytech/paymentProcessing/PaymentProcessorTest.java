@@ -33,27 +33,27 @@ class PaymentProcessorTest {
     @Test
     void processPaymentWithSuccessfulExternalPaymentValidatesOrder() {
         IPaymentService paymentService = mock(IPaymentService.class);
-        when(paymentService.processExternalPayment(order)).thenReturn(true);
+        when(paymentService.processPayment(order)).thenReturn(true);
         PaymentProcessor processor = new PaymentProcessor(order, paymentService);
 
         OrderStatus status = processor.processPayment();
 
         assertEquals(OrderStatus.VALIDATED, status);
         assertEquals(OrderStatus.PENDING, order.getOrderStatus());
-        verify(paymentService).processExternalPayment(order);
+        verify(paymentService).processPayment(order);
     }
 
     @Test
     void processPaymentWithFailedExternalPaymentCancelsOrder() {
         IPaymentService paymentService = mock(IPaymentService.class);
-        when(paymentService.processExternalPayment(order)).thenReturn(false);
+        when(paymentService.processPayment(order)).thenReturn(false);
         PaymentProcessor processor = new PaymentProcessor(order, paymentService);
 
         OrderStatus status = processor.processPayment();
 
         assertEquals(OrderStatus.CANCELED, status);
         assertEquals(OrderStatus.PENDING, order.getOrderStatus());
-        verify(paymentService).processExternalPayment(order);
+        verify(paymentService).processPayment(order);
     }
 
     @Test
@@ -68,14 +68,14 @@ class PaymentProcessorTest {
                 .build();
         Order otherOrder = new Order.Builder(otherStudent).build();
 
-        when(paymentService.processExternalPayment(otherOrder)).thenReturn(false);
+        when(paymentService.processPayment(otherOrder)).thenReturn(false);
 
         OrderStatus status = processor.processPayment(otherOrder);
 
         assertEquals(OrderStatus.CANCELED, status);
         assertEquals(OrderStatus.PENDING, order.getOrderStatus());
-        verify(paymentService).processExternalPayment(otherOrder);
-        verify(paymentService, never()).processExternalPayment(order);
+        verify(paymentService).processPayment(otherOrder);
+        verify(paymentService, never()).processPayment(order);
     }
 
     @Test
