@@ -21,6 +21,7 @@ public class Restaurant {
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
     private DishType cuisineType;
+    private DishManager dishManager = new DishManager(this);
 
 
     //Simple initialisation
@@ -47,61 +48,7 @@ public class Restaurant {
         this.cuisineType = builder.cuisineType;
     }
     
-    // ========== BUILDER PATTERN ==========
-    
-    /**
-     * Builder class for constructing Restaurant objects with many optional parameters.
-     * We use this class when we  need to create a Restaurant with initial dishes and time slots.
-     */
-    public static class Builder {
-        private final String restaurantName;
-        private List<Dish> dishes = new ArrayList<>();
-        private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-        private DishType cuisineType;
-        public Builder withCuisineType(DishType cuisineType) {
-            this.cuisineType = cuisineType;
-            return this;
-        }
-        public Builder(String restaurantName) {
-            if (restaurantName == null || restaurantName.isEmpty()) {
-                throw new IllegalArgumentException("Restaurant name is required");
-            }
-            this.restaurantName = restaurantName;
-        }
-        
-        public Builder withDish(Dish dish) {
-            if (dish != null) {
-                this.dishes.add(dish);
-            }
-            return this;
-        }
-        
-        public Builder withDishes(List<Dish> dishes) {
-            if (dishes != null) {
-                this.dishes.addAll(dishes);
-            }
-            return this;
-        }
-        
-        public Builder withTimeSlot(TimeSlot timeSlot) {
-            if (timeSlot != null) {
-                this.availableTimeSlots.add(timeSlot);
-            }
-            return this;
-        }
-        
-        public Builder withTimeSlots(List<TimeSlot> timeSlots) {
-            if (timeSlots != null) {
-                this.availableTimeSlots.addAll(timeSlots);
-            }
-            return this;
-        }
-        
-        public Restaurant build() {
-            return new Restaurant(this);
-        }
-    }
-    
+
 
     
     public String getRestaurantName() {
@@ -163,52 +110,41 @@ public class Restaurant {
 
 
     // ========== DISH MANAGEMENT METHODS ==========
-    /**
-     * Adds a dish to the restaurant's menu.
-     * Use this AFTER construction instead of passing dishes to constructor.
-     * @param dish The dish to add
-     * @throws IllegalArgumentException if the dish is null or already exists
-     */
-    public void addDish(Dish dish) {
-        if (dish == null) {
-            throw new IllegalArgumentException("Dish cannot be null");
+    public void addDish(String name, String description, double price) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Dish name cannot be null or empty");
         }
-        if (dishes.contains(dish)) {
-            throw new IllegalArgumentException("Dish already exists in the menu");
+        if (description == null) {
+            throw new IllegalArgumentException("Dish description cannot be null");
         }
+        if (price < 0) {
+            throw new IllegalArgumentException("Dish price cannot be negative");
+        }
+        Dish dish = dishManager.createDish(name, description, price);
         dishes.add(dish);
     }
 
-    /**
-     * Adds multiple dishes at once.
-     * @param dishList List of dishes to add
-     */
-    public void addDishes(List<Dish> dishList) {
-        if (dishList == null) {
-            throw new IllegalArgumentException("Dish list cannot be null");
+    public void updateDish(Dish oldDish, String description) {
+        if (!dishes.contains(oldDish)){
+            throw new IllegalArgumentException("Dish not found in the menu");
         }
-        for (Dish dish : dishList) {
-            addDish(dish);
+        if (description == null) {
+            throw new IllegalArgumentException("Dish description cannot be null");
         }
+
+        dishManager.updateDescription(oldDish,description);
     }
 
 
+    public void updateDish(Dish oldDish, int price) {
+        if (!dishes.contains(oldDish)){
+            throw new IllegalArgumentException("Dish not found in the menu");
+        }
+        if (price<0) {
+            throw new IllegalArgumentException("Dish description cannot be null");
+        }
 
-    /**
-     * Updates an existing dish in the restaurant's menu.
-     * @param oldDish The dish to replace
-     * @param newDish The new dish
-     * @throws IllegalArgumentException if oldDish is not found or newDish is null
-     */
-    public void updateDish(Dish oldDish, Dish newDish) {
-        if (oldDish == null || newDish == null) {
-            throw new IllegalArgumentException("Old dish and new dish cannot be null");
-        }
-        int index = dishes.indexOf(oldDish);
-        if (index == -1) {
-            throw new IllegalArgumentException("The dish to update does not exist in the menu");
-        }
-        dishes.set(index, newDish);
+        dishManager.updatePrice(oldDish,price);
     }
 
     public void addOrder(Order order) {
@@ -248,6 +184,62 @@ public class Restaurant {
 
     public List<OpeningHours> getOpeningHours() {
         return openingHours;
+    }
+
+
+    // ========== BUILDER PATTERN ==========
+
+    /**
+     * Builder class for constructing Restaurant objects with many optional parameters.
+     * We use this class when we  need to create a Restaurant with initial dishes and time slots.
+     */
+    public static class Builder {
+        private final String restaurantName;
+        private List<Dish> dishes = new ArrayList<>();
+        private List<TimeSlot> availableTimeSlots = new ArrayList<>();
+        private DishType cuisineType;
+        public Builder withCuisineType(DishType cuisineType) {
+            this.cuisineType = cuisineType;
+            return this;
+        }
+        public Builder(String restaurantName) {
+            if (restaurantName == null || restaurantName.isEmpty()) {
+                throw new IllegalArgumentException("Restaurant name is required");
+            }
+            this.restaurantName = restaurantName;
+        }
+
+        public Builder withDish(Dish dish) {
+            if (dish != null) {
+                this.dishes.add(dish);
+            }
+            return this;
+        }
+
+        public Builder withDishes(List<Dish> dishes) {
+            if (dishes != null) {
+                this.dishes.addAll(dishes);
+            }
+            return this;
+        }
+
+        public Builder withTimeSlot(TimeSlot timeSlot) {
+            if (timeSlot != null) {
+                this.availableTimeSlots.add(timeSlot);
+            }
+            return this;
+        }
+
+        public Builder withTimeSlots(List<TimeSlot> timeSlots) {
+            if (timeSlots != null) {
+                this.availableTimeSlots.addAll(timeSlots);
+            }
+            return this;
+        }
+
+        public Restaurant build() {
+            return new Restaurant(this);
+        }
     }
 }
 
