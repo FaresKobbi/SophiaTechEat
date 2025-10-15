@@ -1,8 +1,7 @@
 package fr.unice.polytech.orderManagement;
 
 import fr.unice.polytech.dishes.Dish;
-import fr.unice.polytech.paymentProcessing.PaymentMethod;
-import fr.unice.polytech.paymentProcessing.PaymentProcessor;
+import fr.unice.polytech.paymentProcessing.*;
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
@@ -45,16 +44,31 @@ public class OrderManager {
             dropOrder(order);
             return;
         }
+        // Le processeur dépendra du type de paiement
+        IPaymentService processor;
+
         if (paymentMethod == PaymentMethod.EXTERNAL){
-            OrderStatus status = new PaymentProcessor(order).processPayment();
-            if (status == OrderStatus.VALIDATED) {
-                order.setOrderStatus(OrderStatus.VALIDATED);
-            }
+            // Utilise le processeur par défaut (avec la logique externe/mockée)
+            processor = new PaymentService();
         }
-        else {
-           //TODO implement INTERNAL payment method
+        else if (paymentMethod == PaymentMethod.INTERNAL) {
+            // Utilise le processeur de paiement interne
+            processor = new InternalPaymentProcessor();
+        } else {
+            // Gérer les cas non reconnus
+            order.setOrderStatus(OrderStatus.CANCELED);
+            return;
         }
 
+        // Traitement du paiement (réutilisé pour les deux types)
+        boolean paymentSuccessful = processor.processPayment(order);
+
+        // Mise à jour du statut de la commande
+        if (paymentSuccessful) {
+            order.setOrderStatus(OrderStatus.VALIDATED);
+        } else {
+            order.setOrderStatus(OrderStatus.CANCELED);
+        }
     }
 
     private void dropOrder(Order order) {
@@ -64,9 +78,14 @@ public class OrderManager {
 
     private boolean isOrderTimedOut(Order order) {
         Long creationTime = orderCreationTimes.get(order);
-        if (creationTime == null) return true;
+        if (creationTime == null) {
+            orderCreationTimes.put(order, System.currentTimeMillis()); // first seen now
+            pendingOrders.add(order);                                   // ensure tracked
+            return false;
+        }
         return System.currentTimeMillis() - creationTime > TIMEOUT_MILLIS;
     }
+
 
     public boolean registerOrder(Order order) {
         if (order.getOrderStatus() == OrderStatus.VALIDATED) {

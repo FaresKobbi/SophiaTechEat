@@ -10,7 +10,7 @@ import fr.unice.polytech.users.UserAccount;
 import java.util.List;
 
 public class Order {
-    private UserAccount studentAccount;
+    private StudentAccount studentAccount;
     private Restaurant restaurant;
     private double amount;
     private OrderStatus orderStatus;
@@ -31,7 +31,7 @@ public class Order {
         return restaurant;
     }
 
-    public UserAccount getStudentAccount() {
+    public StudentAccount getStudentAccount() {
         return studentAccount;
     }
 
