@@ -61,3 +61,4 @@ public class TimeSlot {
         return startTime.hashCode() + endTime.hashCode();
     }
 }
+
