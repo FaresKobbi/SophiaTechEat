@@ -5,7 +5,6 @@ import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
-import fr.unice.polytech.users.UserAccount;
 
 import java.util.List;
 

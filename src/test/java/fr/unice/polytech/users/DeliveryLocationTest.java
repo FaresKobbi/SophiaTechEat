@@ -1,6 +1,5 @@
-package fr.unice.polytech;
+package fr.unice.polytech.users;
 
-import fr.unice.polytech.users.DeliveryLocation;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -45,19 +45,19 @@ public class OrderManager {
             return;
         }
         // Le processeur dépendra du type de paiement
-        IPaymentService processor;
+        IPaymentProcessor processor;
 
         if (paymentMethod == PaymentMethod.EXTERNAL) {
-            processor = new PaymentService();
+                processor = new PaymentProcessor(order);
         }
         else if (paymentMethod == PaymentMethod.INTERNAL) {
-            processor = new InternalPaymentProcessor();
+            processor = new InternalPaymentProcessor(order);
         }
         else {
             throw new IllegalArgumentException("Unsupported payment method: " + paymentMethod);
         }
         // Traitement du paiement (réutilisé pour les deux types)
-        boolean paymentSuccessful = processor.processPayment(order);
+        boolean paymentSuccessful = processor.processPayment(order)==OrderStatus.VALIDATED;
 
         // Mise à jour du statut de la commande
         if (paymentSuccessful) {
