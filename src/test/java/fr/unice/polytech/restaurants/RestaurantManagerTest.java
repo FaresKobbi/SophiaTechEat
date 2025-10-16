@@ -1,8 +1,12 @@
 package fr.unice.polytech.restaurants;
 
+
+
+
+
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
-import fr.unice.polytech.TimeSlot;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -37,9 +41,9 @@ class RestaurantManagerTest {
         slot3 = new TimeSlot(LocalTime.of(12, 0), LocalTime.of(12, 30));
 
         // Setup some capacities for restaurant1
-        restaurant1.setCapacityByTimeSlot(slot1, 10);
-        restaurant1.setCapacityByTimeSlot(slot2, 15);
-        restaurant1.setCapacityByTimeSlot(slot3, 20);
+        restaurant1.setCapacity(slot1, 10);
+        restaurant1.setCapacity(slot2, 15);
+        restaurant1.setCapacity(slot3, 20);
     }
 
     // ==================== CONSTRUCTOR TESTS ====================
@@ -241,7 +245,7 @@ class RestaurantManagerTest {
         @DisplayName("Should not reduce capacity below zero")
         void shouldNotReduceCapacityBelowZero() {
             Restaurant restaurant = new Restaurant("Test");
-            restaurant.setCapacityByTimeSlot(slot1, 1);
+            restaurant.setCapacity(slot1, 1);
             manager.addRestaurant(restaurant);
             
             manager.blockTimeSlot(slot1, restaurant);
@@ -313,9 +317,9 @@ class RestaurantManagerTest {
         manager.addRestaurant(restaurant1);
         
         // Mettre toutes les capacités à 0
-        restaurant1.setCapacityByTimeSlot(slot1, 0);
-        restaurant1.setCapacityByTimeSlot(slot2, 0);
-        restaurant1.setCapacityByTimeSlot(slot3, 0);
+        restaurant1.setCapacity(slot1, 0);
+        restaurant1.setCapacity(slot2, 0);
+        restaurant1.setCapacity(slot3, 0);
 
         List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
 
@@ -332,13 +336,13 @@ class RestaurantManagerTest {
         Restaurant restaurant = new Restaurant("Complex Restaurant");
 
         // slot1: capacity 10  available
-        restaurant.setCapacityByTimeSlot(slot1, 10);
+        restaurant.setCapacity(slot1, 10);
 
         // slot2: capacity 0 -> not available
-        restaurant.setCapacityByTimeSlot(slot2, 0);
+        restaurant.setCapacity(slot2, 0);
 
         // slot3: capacity 5, puis bloqué (capacité réduite) -> toujours disponible si capacité > 0
-        restaurant.setCapacityByTimeSlot(slot3, 5);
+        restaurant.setCapacity(slot3, 5);
 
         manager.addRestaurant(restaurant);
         manager.blockTimeSlot(slot3, restaurant); // Réduit à 4
@@ -424,7 +428,7 @@ class RestaurantManagerTest {
 
             for (int i = 0; i < restaurantCount; i++) {
                 Restaurant r = new Restaurant("Restaurant " + i);
-                r.setCapacityByTimeSlot(slot1, 10);
+                r.setCapacity(slot1, 10);
                 manager.addRestaurant(r);
             }
 
@@ -452,8 +456,8 @@ class RestaurantManagerTest {
                         LocalTime.of((hour + 1) % 24, 0)
                 );
 
-                restaurant.setCapacityByTimeSlot(morningSlot, 10);
-                restaurant.setCapacityByTimeSlot(eveningSlot, 10);
+                restaurant.setCapacity(morningSlot, 10);
+                restaurant.setCapacity(eveningSlot, 10);
             }
 
             manager.addRestaurant(restaurant);

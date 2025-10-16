@@ -1,10 +1,10 @@
 package fr.unice.polytech.orderManagement;
 
-import fr.unice.polytech.DeliveryLocation;
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.paymentProcessing.BankInfo;
 import fr.unice.polytech.paymentProcessing.PaymentMethod;
 import fr.unice.polytech.restaurants.Restaurant;
-import fr.unice.polytech.users.BankInfo;
+import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
