@@ -1,16 +1,42 @@
 package fr.unice.polytech.paymentProcessing;
 
 import fr.unice.polytech.orderManagement.Order;
+import fr.unice.polytech.orderManagement.OrderStatus;
 import fr.unice.polytech.users.StudentAccount;
 
-public class InternalPaymentProcessor implements IPaymentService {
+public class InternalPaymentProcessor implements IPaymentProcessor {
+    private final Order order;
+
+    public InternalPaymentProcessor(Order order) {
+        this.order = order;
+    }
 
     @Override
-    public boolean processPayment(Order order) {
+    public OrderStatus processPayment(Order order) {
         StudentAccount client = order.getStudentAccount();
         double orderTotal = order.getAmount();
-            return client.debit(orderTotal);
+        boolean status = client.debit(orderTotal);
+        if (status) {
+            order.setOrderStatus(OrderStatus.VALIDATED);
+        } else {
+            order.setOrderStatus(OrderStatus.PENDING);
         }
+        return  status ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
+    }
+
+    @Override
+    public OrderStatus updatePaymentStatus(Order order) {
+        OrderStatus status = processPayment(order);
+        if (status == OrderStatus.VALIDATED) {
+            return  status;
+        }
+        int i = 0;
+        while (i<2 && status == OrderStatus.CANCELED) {
+            status = processPayment(order);
+            i++;
+        }
+        return status;
+    }
 
 
 }

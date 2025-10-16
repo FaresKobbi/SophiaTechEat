@@ -4,7 +4,7 @@ import fr.unice.polytech.orderManagement.Order;
 
 public class PaymentService implements IPaymentService{
     @Override
-    public boolean processPayment(Order order) {
+    public boolean processExternalPayment(Order order) {
         return new MockedExternalPaymentSystem(order).mockedCheckingInformation();
     }
 }
