@@ -2,7 +2,6 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
-import fr.unice.polytech.TimeSlot;
 
 import fr.unice.polytech.dishes.DishType;
 
@@ -21,7 +20,6 @@ public class Restaurant {
     private List<Order> orders;
    //Simple initialisation
     private List<OpeningHours> openingHours;
-    private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
     private DishType cuisineType;
 
@@ -147,32 +145,6 @@ public class Restaurant {
         if (!availableTimeSlots.contains(slot)) availableTimeSlots.add(slot);
     }
 
-    public int getCapacity(TimeSlot slot) {
-        return capacityByTimeSlot.getOrDefault(slot, 0);
-    }
-
-    public Map<TimeSlot, Integer> getAllCapacities() {
-        return new HashMap<>(capacityByTimeSlot);
-    }
-
-    public void decreaseCapacity(TimeSlot slot) {
-        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        if (!availableTimeSlots.contains(slot)) return;
-        int capacity= capacityByTimeSlot.get(slot);
-        if (capacity > 0) { // Prevent negative capacity
-            capacityByTimeSlot.put(slot, capacity - 1);
-        } else {
-            System.out.println(" No capacity left for slot " + slot);
-        }
-    }
-
-    public void increaseCapacity(TimeSlot slot) {
-        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 0) + 1);
-    }
-
-
-
 
     //======= Capacity by slot =====
     public void setCapacityByTimeSlot(TimeSlot slot, int capacity) {
@@ -293,7 +265,7 @@ public class Restaurant {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
-                // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
+                ", timeSlots=" + getAvailableTimeSlots().size() +
                 '}';
     }
 

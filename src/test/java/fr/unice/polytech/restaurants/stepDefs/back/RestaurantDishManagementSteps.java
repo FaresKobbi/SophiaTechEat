@@ -1,4 +1,4 @@
-package fr.unice.polytech.restaurants.stepsDefs.back;
+package fr.unice.polytech.restaurants.stepDefs.back;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;

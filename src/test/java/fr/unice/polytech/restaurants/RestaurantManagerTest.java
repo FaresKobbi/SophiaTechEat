@@ -1,12 +1,7 @@
 package fr.unice.polytech.restaurants;
 
-
-import fr.unice.polytech.restaurants.Restaurant;
-
-
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
-import fr.unice.polytech.TimeSlot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -324,6 +319,8 @@ class RestaurantManagerTest {
         restaurant1.setCapacityByTimeSlot(slot3, 0);
 
         List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
+        assertTrue(availableSlots.isEmpty());
+    }
 
     @Test
     @DisplayName("Should throw exception when restaurant is null")
