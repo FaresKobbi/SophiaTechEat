@@ -1,9 +1,9 @@
-package fr.unice.polytech; // Assuming this package
+package fr.unice.polytech.users; // Assuming this package
 
 public class DeliveryLocation {
     
     // Attributes from Class Diagram:
-    private String name; // e.g., "Home", "Office", "Adress1" [cite: 108]
+    private String name;
     private String address;
     private String city;
     private String zipCode;

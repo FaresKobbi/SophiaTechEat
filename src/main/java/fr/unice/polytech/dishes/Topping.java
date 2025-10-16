@@ -1,27 +1,13 @@
 package fr.unice.polytech.dishes;
 
-public class Topping {
-    private String name;
-    private double price;
+public class Topping extends PriceableItem {
 
+    public Topping(String name) {
+        super(name);
+    }
     public Topping(String name, double price) {
-        this.name = name;
-        this.price = price;
+        super(name, price);
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    @Override
-    public String toString() {
-        return "Topping [name=" + name + ", price=" + price + "]";
-    }
-
 
     
 }
