@@ -5,6 +5,8 @@ import fr.unice.polytech.dishes.Dish;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalTime;
 
@@ -16,6 +18,8 @@ class RestaurantTest {
     private Dish dish1;
     private Dish dish2;
     private TimeSlot slot1;
+    private OpeningHours mondayHours;
+    private OpeningHours mondayUpdatedHours;
 
     @BeforeEach
     void setUp() {
@@ -25,6 +29,8 @@ class RestaurantTest {
         LocalTime endTime1 = LocalTime.of(14, 0); 
         slot1 = new TimeSlot(startTime1, endTime1);
         restaurant = new Restaurant("La Bella Vita");
+        mondayHours = new OpeningHours(DayOfWeek.MONDAY, LocalTime.of(12, 0), LocalTime.of(14, 30));
+        mondayUpdatedHours = new OpeningHours(DayOfWeek.MONDAY, LocalTime.of(19, 0), LocalTime.of(22, 0));
     }
 
     // ---------- Constructor Tests ----------
@@ -165,4 +171,76 @@ class RestaurantTest {
         assertTrue(output.contains("restaurantName='La Bella Vita'"));
         assertTrue(output.contains("dishCount=1"));
     }
+
+
+    @Test
+    void constructor_ShouldInitializeEmptyOpeningHoursList() {
+        assertNotNull(restaurant.getOpeningHours());
+        assertTrue(restaurant.getOpeningHours().isEmpty());
+    }
+
+
+    @Test
+    void addOpeningHours_ShouldAddHours_WhenDayDoesNotExist() {
+        restaurant.addOpeningHours(mondayHours);
+        assertEquals(1, restaurant.getOpeningHours().size());
+        assertTrue(restaurant.getOpeningHours().contains(mondayHours));
+    }
+
+    @Test
+    void addOpeningHours_ShouldThrowException_WhenHoursAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> restaurant.addOpeningHours(null));
+    }
+
+    @Test
+    void addOpeningHours_ShouldThrowException_WhenDayAlreadyExists() {
+        restaurant.addOpeningHours(mondayHours);
+        assertThrows(IllegalArgumentException.class, () -> restaurant.addOpeningHours(mondayUpdatedHours));
+    }
+
+
+    @Test
+    void updateOpeningHours_ShouldUpdateHours_WhenDayExists() {
+        restaurant.addOpeningHours(mondayHours);
+
+        restaurant.updateOpeningHours(mondayUpdatedHours);
+
+        assertEquals(1, restaurant.getOpeningHours().size());
+        assertFalse(restaurant.getOpeningHours().contains(mondayHours));
+        assertTrue(restaurant.getOpeningHours().contains(mondayUpdatedHours));
+    }
+
+    @Test
+    void updateOpeningHours_ShouldThrowException_WhenHoursAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> restaurant.updateOpeningHours(null));
+    }
+
+    @Test
+    void updateOpeningHours_ShouldThrowException_WhenDayDoesNotExist() {
+        assertThrows(IllegalArgumentException.class, () -> restaurant.updateOpeningHours(mondayHours));
+    }
+
+
+    @Test
+    void setOpeningHours_ShouldThrowException_WhenListIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> restaurant.setOpeningHours(null));
+    }
+
+
+    @Test
+    void setOpeningHours_ShouldReplaceExistingListWithNewList() {
+        OpeningHours monday = new OpeningHours(DayOfWeek.MONDAY, LocalTime.of(12, 0), LocalTime.of(14, 0));
+        OpeningHours tuesday = new OpeningHours(DayOfWeek.TUESDAY, LocalTime.of(19, 0), LocalTime.of(22, 0));
+        List<OpeningHours> newSchedule = List.of(monday, tuesday);
+
+        restaurant.setOpeningHours(newSchedule);
+
+        assertEquals(2, restaurant.getOpeningHours().size());
+        assertEquals(newSchedule, restaurant.getOpeningHours());
+    }
+
+
+
+
+
 }

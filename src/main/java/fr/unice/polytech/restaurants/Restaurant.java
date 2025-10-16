@@ -33,6 +33,7 @@ public class Restaurant {
         this.availableTimeSlots = new ArrayList<>();
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
+        this.openingHours = new ArrayList<>();
     }
     
     
@@ -45,6 +46,7 @@ public class Restaurant {
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
+        this.openingHours = new ArrayList<>(builder.openingHours);
     }
     
     // ========== BUILDER PATTERN ==========
@@ -58,9 +60,11 @@ public class Restaurant {
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
         private DishType cuisineType;
+        private List<OpeningHours> openingHours = new ArrayList<>();
         public Builder withCuisineType(DishType cuisineType) {
             this.cuisineType = cuisineType;
             return this;
+
         }
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
@@ -86,6 +90,13 @@ public class Restaurant {
         public Builder withTimeSlot(TimeSlot timeSlot) {
             if (timeSlot != null) {
                 this.availableTimeSlots.add(timeSlot);
+            }
+            return this;
+        }
+
+        public Builder withOpeningHours(List<OpeningHours> hours) {
+            if (hours != null) {
+                this.openingHours.addAll(hours);
             }
             return this;
         }
@@ -136,6 +147,49 @@ public class Restaurant {
         capacityByTimeSlot.put(slot, capacity);
         if (!availableTimeSlots.contains(slot)) availableTimeSlots.add(slot);
     }
+
+    public void setOpeningHours(List<OpeningHours> openingHours) {
+        if (openingHours == null) {
+            throw new IllegalArgumentException("Opening hours list cannot be null.");
+        }
+        this.openingHours = new ArrayList<>(openingHours);
+    }
+
+    public void addOpeningHours(OpeningHours newOpeningHours) {
+        if (newOpeningHours == null) {
+            throw new IllegalArgumentException("Opening hours cannot be null.");
+        }
+        for (OpeningHours existingHours : this.openingHours) {
+            if (existingHours.getDay() == newOpeningHours.getDay()) {
+                throw new IllegalArgumentException(
+                        "Opening hours for " + newOpeningHours.getDay() + " already exist."
+                );
+            }
+        }
+        this.openingHours.add(newOpeningHours);
+    }
+
+    public void updateOpeningHours(OpeningHours updatedOpeningHours) {
+        if (updatedOpeningHours == null) {
+            throw new IllegalArgumentException("Opening hours cannot be null.");
+        }
+        boolean dayFound = false;
+        for (OpeningHours existingHours : this.openingHours) {
+            if (existingHours.getDay() == updatedOpeningHours.getDay()) {
+                dayFound = true;
+                break;
+            }
+        }
+
+        if (!dayFound) {
+            throw new IllegalArgumentException("Cannot update opening hours: No entry found for " + updatedOpeningHours.getDay());
+        }
+
+        this.openingHours.removeIf(oh -> oh.getDay() == updatedOpeningHours.getDay());
+        this.openingHours.add(updatedOpeningHours);
+    }
+
+
 
     public int getCapacity(TimeSlot slot) {
         return capacityByTimeSlot.getOrDefault(slot, 0);
