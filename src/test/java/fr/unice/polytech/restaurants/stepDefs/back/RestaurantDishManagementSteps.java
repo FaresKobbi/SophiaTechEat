@@ -1,5 +1,6 @@
 package fr.unice.polytech.restaurants.stepDefs.back;
 
+import fr.unice.polytech.restaurants.Restaurant;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;

@@ -19,17 +19,14 @@ public class Restaurant {
     private String restaurantName;
     private List<Dish> dishes;
     private List<TimeSlot> availableTimeSlots;
-    private Map<TimeSlot, Integer> capacityByTimeSlot;
     private List<Order> orders;
-   //Simple initialisation
+   //Simple initialisation 
     private List<OpeningHours> openingHours;
 
     private EstablishmentType establishmentType;
     private DishType cuisineType;
    //Simple initialisation
-    private List<OpeningHours> openingHours;
-    private EstablishmentType establishmentType;
-    private DishType cuisineType;
+    private Map<TimeSlot, Integer> capacityByTimeSlot;
 
 
     //Simple initialisation
@@ -43,8 +40,8 @@ public class Restaurant {
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
     }
-
-
+    
+    
     //Private constructor for Builder pattern.
     //Avoid public Restaurant(String restaurantName, List<Dish> dishes, List<TimeSlot> availableTimeSlots) {..}
     private Restaurant(Builder builder) {
@@ -58,9 +55,9 @@ public class Restaurant {
         this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
     }
-
+    
     // ========== BUILDER PATTERN ==========
-
+    
     /**
      * Builder class for constructing Restaurant objects with many optional parameters.
      * We use this class when we  need to create a Restaurant with initial dishes and time slots.
@@ -80,47 +77,47 @@ public class Restaurant {
             }
             this.restaurantName = restaurantName;
         }
-
+        
         public Builder withDish(Dish dish) {
             if (dish != null) {
                 this.dishes.add(dish);
             }
             return this;
         }
-
+        
         public Builder withDishes(List<Dish> dishes) {
             if (dishes != null) {
                 this.dishes.addAll(dishes);
             }
             return this;
         }
-
+        
         public Builder withTimeSlot(TimeSlot timeSlot) {
             if (timeSlot != null) {
                 this.availableTimeSlots.add(timeSlot);
             }
             return this;
         }
-
+        
         public Builder withTimeSlots(List<TimeSlot> timeSlots) {
             if (timeSlots != null) {
                 this.availableTimeSlots.addAll(timeSlots);
             }
             return this;
         }
-
+        
         public Restaurant build() {
             return new Restaurant(this);
         }
     }
+    
 
-
-
+    
     public String getRestaurantName() {
         return restaurantName;
     }
-
-
+    
+    
     //return a copy of the dishes/TimeSlot list to prevent external modification.
     public List<Dish> getDishes() {
         return new ArrayList<>(dishes);
