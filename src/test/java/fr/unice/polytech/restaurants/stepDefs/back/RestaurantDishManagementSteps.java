@@ -1,4 +1,4 @@
-package fr.unice.polytech.restaurants.stepsDefs.Backend;
+package fr.unice.polytech.restaurants.stepsDefs.back;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -7,7 +7,7 @@ import io.cucumber.datatable.DataTable;
 import static org.junit.jupiter.api.Assertions.*;
 
 import fr.unice.polytech.dishes.*;
-import fr.unice.polytech.restaurants.*;
+
 import java.util.*;
 
 public class RestaurantDishManagementSteps {
