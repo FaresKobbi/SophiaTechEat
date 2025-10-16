@@ -15,13 +15,10 @@ public class InternalPaymentProcessor implements IPaymentProcessor {
     public OrderStatus processPayment(Order order) {
         StudentAccount client = order.getStudentAccount();
         double orderTotal = order.getAmount();
-        boolean status = client.debit(orderTotal);
-        if (status) {
-            order.setOrderStatus(OrderStatus.VALIDATED);
-        } else {
-            order.setOrderStatus(OrderStatus.PENDING);
-        }
-        return  status ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
+        boolean ok = client.debit(orderTotal);
+        OrderStatus status = ok ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
+        order.setOrderStatus(status);
+        return status;
     }
 
     @Override

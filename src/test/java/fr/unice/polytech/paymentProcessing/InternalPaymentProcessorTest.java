@@ -3,7 +3,6 @@ package fr.unice.polytech.paymentProcessing;
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.orderManagement.OrderStatus;
 import fr.unice.polytech.users.StudentAccount;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

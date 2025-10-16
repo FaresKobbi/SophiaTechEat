@@ -56,15 +56,10 @@ public class OrderManager {
         else {
             throw new IllegalArgumentException("Unsupported payment method: " + paymentMethod);
         }
-        // Traitement du paiement (réutilisé pour les deux types)
-        boolean paymentSuccessful = processor.processPayment(order)==OrderStatus.VALIDATED;
 
-        // Mise à jour du statut de la commande
-        if (paymentSuccessful) {
-            order.setOrderStatus(OrderStatus.VALIDATED);
-        } else {
-            order.setOrderStatus(OrderStatus.CANCELED);
-        }
+        // Traitement du paiement (réutilisé pour les deux types)
+        OrderStatus status = processor.processPayment(order);
+        order.setOrderStatus(status);
     }
 
     private void dropOrder(Order order) {
