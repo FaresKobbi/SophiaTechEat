@@ -2,7 +2,7 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
-import fr.unice.polytech.TimeSlot;
+import fr.unice.polytech.restaurants.TimeSlot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -235,7 +235,7 @@ class RestaurantTest {
         @Test
         @DisplayName("Should set capacity for time slot")
         void shouldSetCapacityForTimeSlot() {
-            restaurant.setCapacityByTimeSlot(slot1, 10);
+            restaurant.setCapacity(slot1, 10);
             assertEquals(10, restaurant.getCapacity(slot1));
         }
 
@@ -249,20 +249,20 @@ class RestaurantTest {
         @DisplayName("Should throw exception when setting capacity with null slot")
         void shouldThrowExceptionWhenSettingCapacityWithNullSlot() {
             assertThrows(IllegalArgumentException.class,
-                    () -> restaurant.setCapacityByTimeSlot(null, 10));
+                    () -> restaurant.setCapacity(null, 10));
         }
 
         @Test
         @DisplayName("Should throw exception when setting negative capacity")
         void shouldThrowExceptionWhenSettingNegativeCapacity() {
             assertThrows(IllegalArgumentException.class,
-                    () -> restaurant.setCapacityByTimeSlot(slot1, -5));
+                    () -> restaurant.setCapacity(slot1, -5));
         }
 
         @Test
         @DisplayName("Should decrease capacity correctly")
         void shouldDecreaseCapacityCorrectly() {
-            restaurant.setCapacityByTimeSlot(slot1, 10);
+            restaurant.setCapacity(slot1, 10);
             restaurant.decreaseCapacity(slot1);
             assertEquals(9, restaurant.getCapacity(slot1));
         }
@@ -270,7 +270,7 @@ class RestaurantTest {
         @Test
         @DisplayName("Should not decrease capacity below zero")
         void shouldNotDecreaseCapacityBelowZero() {
-            restaurant.setCapacityByTimeSlot(slot1, 1);
+            restaurant.setCapacity(slot1, 1);
             restaurant.decreaseCapacity(slot1);
             assertEquals(0, restaurant.getCapacity(slot1));
              // Tenter de diminuer encore
@@ -281,7 +281,7 @@ class RestaurantTest {
         @Test
         @DisplayName("Should increase capacity correctly")
         void shouldIncreaseCapacityCorrectly() {
-            restaurant.setCapacityByTimeSlot(slot1, 10);
+            restaurant.setCapacity(slot1, 10);
             restaurant.increaseCapacity(slot1);
             assertEquals(11, restaurant.getCapacity(slot1));
         }
@@ -296,8 +296,8 @@ class RestaurantTest {
         @Test
         @DisplayName("Should get all capacities")
         void shouldGetAllCapacities() {
-            restaurant.setCapacityByTimeSlot(slot1, 10);
-            restaurant.setCapacityByTimeSlot(slot2, 15);
+            restaurant.setCapacity(slot1, 10);
+            restaurant.setCapacity(slot2, 15);
 
             Map<TimeSlot, Integer> capacities = restaurant.getAllCapacities();
 
@@ -309,8 +309,8 @@ class RestaurantTest {
         @Test
         @DisplayName("Should return only available time slots with capacity > 0")
         void shouldReturnOnlyAvailableTimeSlots() {
-            restaurant.setCapacityByTimeSlot(slot1, 10);
-            restaurant.setCapacityByTimeSlot(slot2, 0);
+            restaurant.setCapacity(slot1, 10);
+            restaurant.setCapacity(slot2, 0);
 
             List<TimeSlot> availableSlots = restaurant.getAvailableTimeSlots();
 
@@ -323,7 +323,7 @@ class RestaurantTest {
     @Test
     @DisplayName("Should block time slot by reducing capacity to zero")
     void shouldBlockTimeSlotByReducingCapacity() {
-        restaurant.setCapacityByTimeSlot(slot1, 5);
+        restaurant.setCapacity(slot1, 5);
         
         // Bloquer en réduisant la capacité
         for (int i = 0; i < 5; i++) {
@@ -337,7 +337,7 @@ class RestaurantTest {
     @Test
     @DisplayName("Should unblock time slot by increasing capacity")
     void shouldUnblockTimeSlotByIncreasingCapacity() {
-        restaurant.setCapacityByTimeSlot(slot1, 0);
+        restaurant.setCapacity(slot1, 0);
         
         restaurant.unblockTimeSlot(slot1);
         
@@ -423,7 +423,7 @@ class RestaurantTest {
     @DisplayName("Should generate correct toString representation")
     void shouldGenerateCorrectToString() {
         restaurant.addDish(pizza);
-        restaurant.setCapacityByTimeSlot(slot1, 10);
+        restaurant.setCapacity(slot1, 10);
 
         String result = restaurant.toString();
 

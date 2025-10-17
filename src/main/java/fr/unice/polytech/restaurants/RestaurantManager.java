@@ -1,7 +1,6 @@
 package  fr.unice.polytech.restaurants;
 
 
-import fr.unice.polytech.TimeSlot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ public class RestaurantManager {
 
     // Storage for all restaurants (simple in-memory storage)
     private Map<String, Restaurant> restaurants;
+
 
 
     public RestaurantManager() {

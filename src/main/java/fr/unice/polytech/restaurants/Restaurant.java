@@ -1,8 +1,8 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.orderManagement.Order;
-import fr.unice.polytech.TimeSlot;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -17,9 +17,10 @@ public class Restaurant {
     private List<TimeSlot> availableTimeSlots;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private List<Order> orders;
-
-
-    //Simple initialisation
+    private DishType cuisineType;
+    private List<OpeningHours> openingHours;
+    
+   //Simple initialisation 
     public Restaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -29,6 +30,7 @@ public class Restaurant {
         this.availableTimeSlots = new ArrayList<>();
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
+        this.openingHours = new ArrayList<>();
     }
 
 
@@ -40,6 +42,9 @@ public class Restaurant {
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
         this.capacityByTimeSlot = new HashMap<>();
         orders = new ArrayList<>();
+        this.capacityByTimeSlot = new HashMap<>();
+        this.cuisineType = builder.cuisineType;
+
     }
 
     // ========== BUILDER PATTERN ==========
@@ -49,10 +54,11 @@ public class Restaurant {
      * We use this class when we  need to create a Restaurant with initial dishes and time slots.
      */
     public static class Builder {
+        public DishType cuisineType;
         private final String restaurantName;
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-
+        
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
@@ -127,8 +133,21 @@ public class Restaurant {
     }
 
 
+     //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
+    public void blockTimeSlot(TimeSlot slot){
+        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        decreaseCapacity(slot);
+    }
+
+    public void unblockTimeSlot(TimeSlot slot){
+        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        increaseCapacity(slot);
+    }
+
+    
     //======= Capacity by slot =====
-    public void setCapacityByTimeSlot(TimeSlot slot, int capacity) {
+  
+    public void setCapacity(TimeSlot slot, int capacity) {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
         if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
         capacityByTimeSlot.put(slot, capacity);
@@ -147,7 +166,7 @@ public class Restaurant {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
         if (!availableTimeSlots.contains(slot)) return;
         int capacity= capacityByTimeSlot.get(slot);
-        if (capacity > 0) {//à revoir si c'est 4 est le  minimum
+        if (capacity > 0) { // Prevent negative capacity
             capacityByTimeSlot.put(slot, capacity - 1);
         } else {
             System.out.println(" No capacity left for slot " + slot);
@@ -156,23 +175,12 @@ public class Restaurant {
 
     public void increaseCapacity(TimeSlot slot) {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+
         capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 5) + 1);
     }
 
 
-    //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
-    public void blockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        decreaseCapacity(slot);
-    }
-
-    public void unblockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        increaseCapacity(slot);
-    }
-
-
-
+    
     // ========== DISH MANAGEMENT METHODS ==========
     /**
      * Adds a dish to the restaurant's menu.
@@ -235,12 +243,11 @@ public class Restaurant {
     }
 
 
-       public void addOrder(Order order) {
-             orders.add(order);
-      }
-
-
-
+    public void addOrder(Order order) {
+        orders.add(order);
+    }
+    
+    
     @Override
     public String toString() {
         return "Restaurant{" +
@@ -261,6 +268,15 @@ public class Restaurant {
     @Override
     public int hashCode() {
         return restaurantName.hashCode();
+    }
+
+
+    public DishType getCuisineType() {
+        return cuisineType;
+    }
+
+    public List<OpeningHours> getOpeningHours() {
+        return openingHours;
     }
 }
 
