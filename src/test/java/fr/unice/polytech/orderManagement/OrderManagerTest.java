@@ -85,19 +85,33 @@ class OrderManagerTest {
 
     @Test
     void testInitiatePaymentBeforeTimeout() throws Exception {
-        orderManager.createOrder(mockDishes, mockStudentAccount, mockDeliveryLocation, mockRestaurant);
+        // 1) Factory et processor mockés
+        PaymentProcessorFactory factory = mock(PaymentProcessorFactory.class);
+        IPaymentProcessor processor = mock(IPaymentProcessor.class);
+        when(factory.createProcessor(any(Order.class), eq(PaymentMethod.EXTERNAL))).thenReturn(processor);
+        when(processor.processPayment(any(Order.class))).thenReturn(OrderStatus.VALIDATED);
 
-        Field pendingOrdersField = OrderManager.class.getDeclaredField("pendingOrders");
-        pendingOrdersField.setAccessible(true);
-        List<Order> pendingOrders = (List<Order>) pendingOrdersField.get(orderManager);
-        Order order = pendingOrders.get(0);
+        // 2) OrderManager injecté avec factory mockée
+        OrderManager manager = new OrderManager(factory);
 
-        orderManager.initiatePayment(order, PaymentMethod.EXTERNAL);
-        System.out.println("ORDER STATUS " + order.getOrderStatus());
+        // 3) Arrange
+        manager.createOrder(mockDishes, mockStudentAccount, mockDeliveryLocation, mockRestaurant);
 
-        assertEquals(1, pendingOrders.size());
+        Field f = OrderManager.class.getDeclaredField("pendingOrders");
+        f.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<Order> pending = (List<Order>) f.get(manager);
+        Order order = pending.get(0);
+
+        // 4) Act
+        manager.initiatePayment(order, PaymentMethod.EXTERNAL);
+
+        // 5) Assert : plus d’aléa
+        assertEquals(1, pending.size());
         assertNotEquals(OrderStatus.CANCELED, order.getOrderStatus());
     }
+
+
 
     @Test
     void testInitiatePaymentAfterTimeout() throws Exception {
