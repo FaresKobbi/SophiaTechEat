@@ -24,21 +24,15 @@ public class PaymentProcessor {
     }
 
     public OrderStatus processPayment(Order order){
-        boolean paymentSuccessful = paymentService.processExternalPayment(order);
-        return paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
+        for (int i = 0; i < 3; i++) {
+            boolean paymentSuccessful = paymentService.processExternalPayment(order);
+            if (paymentSuccessful) {
+                return OrderStatus.VALIDATED;
+            }
+        }
+        return OrderStatus.CANCELED;
     }
 
-    public OrderStatus updatePaymentStatus(Order order) {
-        OrderStatus status = processPayment(order);
-        if (status == OrderStatus.VALIDATED) {
-            return  status;
-        }
-        int i = 0;
-        while (i<2 && status == OrderStatus.CANCELED) {
-            status = processPayment(order);
-            i++;
-        }
-        return status;
-    }
+
 
 }

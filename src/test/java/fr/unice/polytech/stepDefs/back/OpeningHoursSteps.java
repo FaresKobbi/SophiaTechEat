@@ -1,9 +1,8 @@
-package fr.unice.polytech.resources.features.steps;
+package fr.unice.polytech.stepDefs.back;
 
 import fr.unice.polytech.restaurants.OpeningHours;
 import fr.unice.polytech.restaurants.Restaurant;
 import io.cucumber.java.en.*;
-import org.junit.jupiter.api.Assertions;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
