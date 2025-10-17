@@ -93,7 +93,7 @@ class OrderManagerTest {
         Order order = pendingOrders.get(0);
 
         orderManager.initiatePayment(order, PaymentMethod.EXTERNAL);
-
+        System.out.println("ORDER STATUS " + order.getOrderStatus());
 
         assertEquals(1, pendingOrders.size());
         assertNotEquals(OrderStatus.CANCELED, order.getOrderStatus());
