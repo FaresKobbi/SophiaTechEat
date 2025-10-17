@@ -1,8 +1,7 @@
 package fr.unice.polytech.orderManagement;
 
 import fr.unice.polytech.dishes.Dish;
-import fr.unice.polytech.paymentProcessing.BankInfo;
-import fr.unice.polytech.paymentProcessing.PaymentMethod;
+import fr.unice.polytech.paymentProcessing.*;
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
@@ -169,4 +168,37 @@ class OrderManagerTest {
         verify(mockDish1).getPrice();
         verify(mockDish2).getPrice();
     }
+
+    @Test
+    void initiatePaymentUsesFactoryAndUpdatesOrderStatus() {
+        PaymentProcessorFactory factory = mock(PaymentProcessorFactory.class);
+        OrderManager managerWithFactory = new OrderManager(factory);
+        Order order = new Order.Builder(mockStudentAccount)
+                .amount(12.0)
+                .build();
+
+        IPaymentProcessor processor = mock(IPaymentProcessor.class);
+        when(factory.createProcessor(order, PaymentMethod.EXTERNAL)).thenReturn(processor);
+        when(processor.processPayment(order)).thenReturn(OrderStatus.VALIDATED);
+
+        managerWithFactory.initiatePayment(order, PaymentMethod.EXTERNAL);
+
+        verify(factory).createProcessor(order, PaymentMethod.EXTERNAL);
+        verify(processor).processPayment(order);
+        assertEquals(OrderStatus.VALIDATED, order.getOrderStatus());
+    }
+
+    @Test
+    void initiatePaymentThrowsWhenPaymentMethodMissing() {
+        Order order = new Order.Builder(mockStudentAccount)
+                .amount(10.0)
+                .build();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> orderManager.initiatePayment(order, null));
+
+        assertTrue(exception.getMessage().contains("Payment method must be provided"));
+        assertEquals(OrderStatus.PENDING, order.getOrderStatus());
+    }
+
 }
