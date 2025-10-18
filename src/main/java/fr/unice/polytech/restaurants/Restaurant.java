@@ -1,6 +1,7 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.orderManagement.Order;
 
 import fr.unice.polytech.dishes.DishType;
@@ -21,7 +22,7 @@ public class Restaurant {
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
     private DishType cuisineType;
-    private DishManager dishManager = new DishManager(this);
+    private final DishManager dishManager = new DishManager(this);
 
 
     //Simple initialisation
@@ -146,6 +147,32 @@ public class Restaurant {
 
         dishManager.updatePrice(oldDish,price);
     }
+
+
+    public void updateDish(Dish oldDish, DishCategory dishCategory) {
+        if (!dishes.contains(oldDish)){
+            throw new IllegalArgumentException("Dish not found in the menu");
+        }
+        if (dishCategory == null) {
+            throw new IllegalArgumentException("Dish category cannot be null");
+        }
+
+        dishManager.updateDishCategory(oldDish,dishCategory);
+    }
+
+    public void updateDish(Dish oldDish, DishType dishType) {
+        if (!dishes.contains(oldDish)){
+            throw new IllegalArgumentException("Dish not found in the menu");
+        }
+        if (dishType == null) {
+            throw new IllegalArgumentException("Dish category cannot be null");
+        }
+
+        dishManager.updateDishType(oldDish,dishType);
+    }
+
+
+
 
     public void addOrder(Order order) {
         orders.add(order);

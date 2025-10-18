@@ -30,6 +30,11 @@ public class Dish extends PriceableItem {
     }
 
 
+    public void setCuisineType(DishType cuisineType) {
+        this.cuisineType = cuisineType;
+    }
+
+
     public String getDescription() {
         return description;
     }
