@@ -48,6 +48,7 @@ class OrderManagerTest {
 
 
         when(mockStudentAccount.getBankInfo()).thenReturn(mockBankInfo);
+        when(mockStudentAccount.hasDeliveryLocation(mockDeliveryLocation)).thenReturn(true);
         mockDishes = Arrays.asList(mockDish1, mockDish2);
     }
 
@@ -213,6 +214,17 @@ class OrderManagerTest {
 
         assertTrue(exception.getMessage().contains("Payment method must be provided"));
         assertEquals(OrderStatus.PENDING, order.getOrderStatus());
+    }
+
+    @Test
+    void createOrderFailsForUnknownDeliveryLocation() {
+        DeliveryLocation otherLocation = mock(DeliveryLocation.class);
+        when(mockStudentAccount.hasDeliveryLocation(otherLocation)).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> orderManager.createOrder(mockDishes, mockStudentAccount, otherLocation, mockRestaurant));
+
+        assertTrue(exception.getMessage().contains("saved locations"));
     }
 
 }

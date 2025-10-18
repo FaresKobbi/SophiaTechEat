@@ -71,12 +71,7 @@ public class OrderManager {
 
     private boolean isOrderTimedOut(Order order) {
         Long creationTime = orderCreationTimes.get(order);
-        if (creationTime == null) {
-            orderCreationTimes.put(order, System.currentTimeMillis()); // first seen now
-            pendingOrders.add(order);                                   // ensure tracked
-            return false;
-        }
-        return System.currentTimeMillis() - creationTime > TIMEOUT_MILLIS;
+        return creationTime == null;
     }
 
 
