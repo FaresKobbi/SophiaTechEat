@@ -6,7 +6,6 @@ import fr.unice.polytech.restaurants.TimeSlot;
 
 import fr.unice.polytech.dishes.DishType;
 
-import javax.swing.*;
 import fr.unice.polytech.dishes.DishType;
 
 import java.util.ArrayList;
@@ -296,6 +295,11 @@ public class Restaurant {
 
     public List<OpeningHours> getOpeningHours() {
         return openingHours;
+    }
+
+
+    public EstablishmentType getEstablishmentType() {
+        return establishmentType;
     }
 }
 
