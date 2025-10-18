@@ -88,15 +88,15 @@ class OrderManagerTest {
     void testInitiatePaymentBeforeTimeout() throws Exception {
         orderManager.createOrder(mockDishes, mockStudentAccount, mockDeliveryLocation, mockRestaurant);
 
-        Field pendingOrdersField = OrderManager.class.getDeclaredField("pendingOrders");
-        pendingOrdersField.setAccessible(true);
-        List<Order> pendingOrders = (List<Order>) pendingOrdersField.get(orderManager);
-        Order order = pendingOrders.get(0);
+        Field orderCreationTimesField = OrderManager.class.getDeclaredField("orderCreationTimes");
+        orderCreationTimesField.setAccessible(true);
+        Map<Order, Long> orderCreationTimes = (Map<Order, Long>) orderCreationTimesField.get(orderManager);
+        Order order = orderManager.getPendingOrders().get(0);
+        orderCreationTimes.put(order, System.currentTimeMillis());
 
         orderManager.initiatePayment(order, PaymentMethod.EXTERNAL);
 
-
-        assertEquals(1, pendingOrders.size());
+        assertEquals(1, orderManager.getPendingOrders().size());
         assertNotEquals(OrderStatus.CANCELED, order.getOrderStatus());
     }
 
