@@ -2,6 +2,7 @@ package fr.unice.polytech.dishes;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Dish extends PriceableItem {
     private String description;
     private DishType cuisineType = DishType.GENERAL;
@@ -20,8 +21,6 @@ public class Dish extends PriceableItem {
     public DishType getCuisineType() {
         return cuisineType;
     }
-
-
 
     public Dish(String name, String description, double price) {
         super(name, price);
