@@ -1,9 +1,9 @@
-package fr.unice.polytech.restaurants.stepsDefs.Backend;
+package fr.unice.polytech.restaurants.stepsDefs.back;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import fr.unice.polytech.dishes.*;
@@ -11,48 +11,36 @@ import fr.unice.polytech.restaurants.*;
 import java.util.*;
 
 public class RestaurantDishManagementSteps {
+    private final ScenarioContext ctx;
+    public RestaurantDishManagementSteps(ScenarioContext ctx) { this.ctx = ctx; }
 
-    private Restaurant restaurant;
     private Dish currentDish;
-    private List<String> currentDishTags = new ArrayList<>();
+    private final List<String> currentDishTags = new ArrayList<>();
     private String currentAllergenInfo;
-
-    // ============ BACKGROUND STEPS ============
-
-    @Given("a restaurant {string} exists")
-    public void a_restaurant_exists(String restaurantName) {
-        restaurant = new Restaurant(restaurantName);
-    }
-
-    @Given("I am logged in as restaurant manager of {string}")
-    public void i_am_logged_in_as_restaurant_manager(String restaurantName) {
-        assertNotNull(restaurant, "Restaurant should be initialized");
-        assertEquals(restaurantName, restaurant.getRestaurantName());
-    }
 
     // ============ SCENARIO 1: Add a new dish ============
 
     @When("I add a new dish with the following details:")
     public void i_add_a_new_dish_with_details(DataTable dataTable) {
         Map<String, String> dishData = dataTable.asMap(String.class, String.class);
-        
+
         String name = dishData.get("name");
         String description = dishData.get("description");
         double price = Double.parseDouble(dishData.get("price"));
-        
+
         currentDish = new Dish(name, description, price);
-        
+
         if (dishData.containsKey("category")) {
             String category = dishData.get("category").replace(" ", "_").toUpperCase();
             currentDish.setCategory(DishCategory.valueOf(category));
         }
-        
-        restaurant.addDish(currentDish);
+
+        ctx.restaurant.addDish(currentDish);
     }
 
     @Then("the dish {string} should be added to the menu")
     public void the_dish_should_be_added_to_menu(String dishName) {
-        Dish dish = restaurant.findDishByName(dishName);
+        Dish dish = ctx.restaurant.findDishByName(dishName);
         assertNotNull(dish, "Dish should be found in the menu");
         assertEquals(dishName, dish.getName());
     }
@@ -75,18 +63,18 @@ public class RestaurantDishManagementSteps {
 
     @Then("the dish {string} should have tag {string}")
     public void the_dish_should_have_tag(String dishName, String expectedTag) {
-        Dish dish = restaurant.findDishByName(dishName);
+        Dish dish = ctx.restaurant.findDishByName(dishName);
         assertNotNull(dish, "Dish should exist");
-        assertTrue(currentDishTags.contains(expectedTag), 
-            "Tag '" + expectedTag + "' should be present");
+        assertTrue(currentDishTags.contains(expectedTag),
+                "Tag '" + expectedTag + "' should be present");
     }
 
     // ============ SCENARIO 3: Toppings ============
 
-    @Given("a dish {string} exists with price {double}")
+    @io.cucumber.java.en.Given("a dish {string} exists with price {double}")
     public void a_dish_exists_with_price(String dishName, double price) {
         currentDish = new Dish(dishName, "Test dish", price);
-        restaurant.addDish(currentDish);
+        ctx.restaurant.addDish(currentDish);
     }
 
     @When("I add a topping {string} with price {double}")
@@ -106,9 +94,9 @@ public class RestaurantDishManagementSteps {
     public void topping_should_cost_euros(String toppingName, double expectedPrice) {
         assertNotNull(currentDish, "Current dish should not be null");
         Topping topping = currentDish.getToppings().stream()
-            .filter(t -> t.getName().equals(toppingName))
-            .findFirst()
-            .orElse(null);
+                .filter(t -> t.getName().equals(toppingName))
+                .findFirst()
+                .orElse(null);
         assertNotNull(topping, "Topping '" + toppingName + "' should exist");
         assertEquals(expectedPrice, topping.getPrice(), 0.01);
     }
@@ -129,7 +117,7 @@ public class RestaurantDishManagementSteps {
 
     @Then("the dish {string} should have price {double}")
     public void the_dish_should_have_price(String dishName, double expectedPrice) {
-        Dish dish = restaurant.findDishByName(dishName);
+        Dish dish = ctx.restaurant.findDishByName(dishName);
         assertNotNull(dish, "Dish should be found");
         assertEquals(expectedPrice, dish.getPrice(), 0.01);
     }
@@ -142,40 +130,36 @@ public class RestaurantDishManagementSteps {
 
     // ============ SCENARIO 5: Remove dish ============
 
-    @Given("a dish {string} exists in the menu")
+    @io.cucumber.java.en.Given("a dish {string} exists in the menu")
     public void a_dish_exists_in_the_menu(String dishName) {
         Dish dish = new Dish(dishName, "Test dish", 10.00);
-        restaurant.addDish(dish);
+        ctx.restaurant.addDish(dish);
     }
 
     @When("I remove the dish {string} from the menu")
     public void i_remove_the_dish_from_menu(String dishName) {
-        restaurant.removeDish(dishName);
+        ctx.restaurant.removeDish(dishName);
     }
 
     @Then("the dish {string} should not be available")
     public void the_dish_should_not_be_available(String dishName) {
-        Dish dish = restaurant.findDishByName(dishName);
+        Dish dish = ctx.restaurant.findDishByName(dishName);
         assertNull(dish, "Dish should not be found in menu");
     }
 
     @Then("customers should not see {string} in the menu")
     public void customers_should_not_see_in_menu(String dishName) {
-        List<Dish> allDishes = restaurant.getDishes();
-        boolean found = allDishes.stream()
-            .anyMatch(d -> d.getName().equals(dishName));
+        List<Dish> allDishes = ctx.restaurant.getDishes();
+        boolean found = allDishes.stream().anyMatch(d -> d.getName().equals(dishName));
         assertFalse(found, "Dish should not be visible in menu");
     }
 
-    // ============ SCENARIO 6: Extra options ============
-    // Note: Les extra options ne sont pas encore implémentées dans le domaine
-    // On utilise une variable temporaire pour faire passer les tests
+    // ============ SCENARIO 6: Extra options (fake storage) ============
 
-    private Map<String, Double> extraOptions = new HashMap<>();
+    private final Map<String, Double> extraOptions = new HashMap<>();
 
     @When("I define an extra option {string} with price {double}")
     public void i_define_an_extra_option_with_price(String extraName, double price) {
-        // TODO: À implémenter dans la classe Restaurant si nécessaire
         extraOptions.put(extraName, price);
     }
 
@@ -186,8 +170,8 @@ public class RestaurantDishManagementSteps {
 
     @Then("option {string} should cost {double} euros")
     public void option_should_cost_euros(String optionName, double expectedPrice) {
-        assertTrue(extraOptions.containsKey(optionName), 
-            "Extra option '" + optionName + "' should exist");
+        assertTrue(extraOptions.containsKey(optionName),
+                "Extra option '" + optionName + "' should exist");
         assertEquals(expectedPrice, extraOptions.get(optionName), 0.01);
     }
 
@@ -209,6 +193,6 @@ public class RestaurantDishManagementSteps {
     public void the_warning_should_mention(String allergen) {
         assertNotNull(currentAllergenInfo, "Allergen information should exist");
         assertTrue(currentAllergenInfo.toLowerCase().contains(allergen.toLowerCase()),
-            "Allergen warning should mention '" + allergen + "'");
+                "Allergen warning should mention '" + allergen + "'");
     }
 }
