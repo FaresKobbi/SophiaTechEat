@@ -22,7 +22,7 @@ public class Restaurant {
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
     private DishType cuisineType;
-    private final DishManager dishManager = new DishManager(this);
+    private final DishManager dishManager = new DishManager();
 
 
     //Simple initialisation

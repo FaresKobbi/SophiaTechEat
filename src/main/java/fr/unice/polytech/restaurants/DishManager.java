@@ -5,11 +5,6 @@ import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.dishes.DishType;
 
 public class DishManager {
-    private Restaurant restaurant;
-
-    public DishManager(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
 
     public Dish createDish(String name, String description, double price) {
         return new Dish(name, description, price);
