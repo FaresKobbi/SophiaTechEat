@@ -1,13 +1,5 @@
 package fr.unice.polytech.restaurants;
 
-
-
-
-
-import fr.unice.polytech.restaurants.TimeSlot;
-import fr.unice.polytech.dishes.Dish;
-import fr.unice.polytech.dishes.DishCategory;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -102,9 +94,8 @@ class RestaurantManagerTest {
             manager.addRestaurant(restaurant1);
 
             Restaurant newPizzaPalace = new Restaurant("Pizza Palace");
-            Dish pizza = new Dish("Margherita", "Classic Italian pizza", 12.0);
-            pizza.setCategory(DishCategory.MAIN_COURSE);
-            newPizzaPalace.addDish(pizza);
+            newPizzaPalace.addDish("Margherita", "Classic Italian pizza", 12.0);
+
 
             manager.addRestaurant(newPizzaPalace);
 
