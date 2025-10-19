@@ -24,6 +24,7 @@ public class Restaurant {
     private List<Order> orders;
     private DishType cuisineType;
     private List<OpeningHours> openingHours;
+    private EstablishmentType establishmentType;
     
    //Simple initialisation 
     public Restaurant(String restaurantName) {
@@ -187,19 +188,7 @@ public class Restaurant {
     }
 
 
-    //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
-    public void blockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        decreaseCapacity(slot);
-    }
-
-    public void unblockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        increaseCapacity(slot);
-    }
-
-
-
+ 
 
 
 
