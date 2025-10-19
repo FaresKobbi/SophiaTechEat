@@ -83,34 +83,39 @@ class OrderManagerTest {
         Long creationTime = orderCreationTimes.values().iterator().next();
         assertTrue(Math.abs(System.currentTimeMillis() - creationTime) < 1000);
     }
-
     @Test
     void testInitiatePaymentBeforeTimeout() throws Exception {
-        // 1) Factory et processor mockés
         PaymentProcessorFactory factory = mock(PaymentProcessorFactory.class);
         IPaymentProcessor processor = mock(IPaymentProcessor.class);
-        when(factory.createProcessor(any(Order.class), eq(PaymentMethod.EXTERNAL))).thenReturn(processor);
-        when(processor.processPayment(any(Order.class))).thenReturn(OrderStatus.VALIDATED);
+        when(factory.createProcessor(any(Order.class), eq(PaymentMethod.EXTERNAL)))
+                .thenReturn(processor);
+        when(processor.processPayment(any(Order.class)))
+                .thenReturn(OrderStatus.VALIDATED);
 
-        // 2) OrderManager injecté avec factory mockée
         OrderManager manager = new OrderManager(factory);
 
-        // 3) Arrange
         manager.createOrder(mockDishes, mockStudentAccount, mockDeliveryLocation, mockRestaurant);
 
         Field f = OrderManager.class.getDeclaredField("pendingOrders");
         f.setAccessible(true);
+        @SuppressWarnings("unchecked")
         List<Order> pending = (List<Order>) f.get(manager);
+        assertEquals(1, pending.size());
         Order order = pending.get(0);
 
-        // 4) Act
+        Field t = OrderManager.class.getDeclaredField("orderCreationTimes");
+        t.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<Order, Long> orderCreationTimes = (Map<Order, Long>) t.get(manager);
+        orderCreationTimes.put(order, System.currentTimeMillis());
+
         manager.initiatePayment(order, PaymentMethod.EXTERNAL);
 
-        // 5) Assert : plus d’aléa
-        assertEquals(1, pending.size());
+        verify(factory).createProcessor(order, PaymentMethod.EXTERNAL);
+        verify(processor).processPayment(order);
         assertEquals(OrderStatus.VALIDATED, order.getOrderStatus());
+        assertEquals(1, pending.size()); // still pending until registerOrder is called
     }
-
 
 
     @Test
