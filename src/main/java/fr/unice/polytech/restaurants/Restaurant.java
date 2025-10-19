@@ -2,14 +2,10 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
-import fr.unice.polytech.restaurants.TimeSlot;
 
 import fr.unice.polytech.dishes.DishType;
 
-import fr.unice.polytech.dishes.DishType;
-import fr.unice.polytech.orderManagement.Order;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +44,6 @@ public class Restaurant {
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
         this.capacityByTimeSlot = new HashMap<>();
         orders = new ArrayList<>();
-        this.capacityByTimeSlot = new HashMap<>();
-        this.cuisineType = builder.cuisineType;
-        orders = new ArrayList<>();
-        this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
     }
 
