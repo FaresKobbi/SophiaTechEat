@@ -102,9 +102,8 @@ class RestaurantManagerTest {
             manager.addRestaurant(restaurant1);
 
             Restaurant newPizzaPalace = new Restaurant("Pizza Palace");
-            Dish pizza = new Dish("Margherita", "Classic Italian pizza", 12.0);
-            pizza.setCategory(DishCategory.MAIN_COURSE);
-            newPizzaPalace.addDish(pizza);
+            newPizzaPalace.addDish("Margherita", "Classic Italian pizza", 12.0);
+
 
             manager.addRestaurant(newPizzaPalace);
 
@@ -295,7 +294,7 @@ class RestaurantManagerTest {
     @DisplayName("Should exclude blocked time slots from available slots")
     void shouldExcludeBlockedTimeSlotsFromAvailableSlots() {
         manager.addRestaurant(restaurant1);
-        
+
         // Réduire la capacité à 0 pour bloquer
         for (int i = 0; i < 10; i++) {
             manager.blockTimeSlot(slot1, restaurant1);
@@ -316,7 +315,7 @@ class RestaurantManagerTest {
     @DisplayName("Should return empty list when all slots have zero capacity")
     void shouldReturnEmptyListWhenAllSlotsHaveZeroCapacity() {
         manager.addRestaurant(restaurant1);
-        
+
         // Mettre toutes les capacités à 0
         restaurant1.setCapacity(slot1, 0);
         restaurant1.setCapacity(slot2, 0);
