@@ -102,9 +102,8 @@ class RestaurantManagerTest {
             manager.addRestaurant(restaurant1);
 
             Restaurant newPizzaPalace = new Restaurant("Pizza Palace");
-            Dish pizza = new Dish("Margherita", "Classic Italian pizza", 12.0);
-            pizza.setCategory(DishCategory.MAIN_COURSE);
-            newPizzaPalace.addDish(pizza);
+            newPizzaPalace.addDish("Margherita", "Classic Italian pizza", 12.0);
+
 
             manager.addRestaurant(newPizzaPalace);
 
