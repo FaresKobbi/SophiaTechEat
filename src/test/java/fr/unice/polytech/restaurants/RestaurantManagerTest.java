@@ -4,159 +4,307 @@ package fr.unice.polytech.restaurants;
 import fr.unice.polytech.restaurants.Restaurant;
 
 
+import fr.unice.polytech.restaurants.TimeSlot;
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.dishes.DishCategory;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 
 import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for RestaurantManager class.
- */
+@DisplayName("RestaurantManager Tests")
 class RestaurantManagerTest {
 
     private RestaurantManager manager;
-    private Restaurant restaurant;
+    private Restaurant restaurant1;
+    private Restaurant restaurant2;
     private TimeSlot slot1;
     private TimeSlot slot2;
     private TimeSlot slot3;
 
     @BeforeEach
     void setUp() {
-        // Initialize manager
         manager = new RestaurantManager();
 
-        // Create time slots
-        slot1 = new TimeSlot(LocalTime.of(12, 0), LocalTime.of(12, 30));
-        slot2 = new TimeSlot(LocalTime.of(12, 30), LocalTime.of(13, 0));
-        slot3 = new TimeSlot(LocalTime.of(13, 0), LocalTime.of(13, 30));
+        // Create sample restaurants
+        restaurant1 = new Restaurant("Pizza Palace");
+        restaurant2 = new Restaurant("Pasta House");
 
-        // Create a restaurant with dishes and time slots
-        restaurant = new Restaurant.Builder("Chez Luigi")
-                .withTimeSlot(slot1)
-                .withTimeSlot(slot2)
-                .withTimeSlot(slot3)
-                .withDish(new Dish("Pizza Margherita", "Tomato, mozzarella", 12.50))
-                .withDish(new Dish("Pasta Carbonara", "Pasta with bacon", 11.00))
-                .build();
+        // Create sample time slots
+        slot1 = new TimeSlot(LocalTime.of(11, 0), LocalTime.of(11, 30));
+        slot2 = new TimeSlot(LocalTime.of(11, 30), LocalTime.of(12, 0));
+        slot3 = new TimeSlot(LocalTime.of(12, 0), LocalTime.of(12, 30));
 
-        // Add restaurant to manager
-        manager.addRestaurant(restaurant);
+        // Setup some capacities for restaurant1
+        restaurant1.setCapacity(slot1, 10);
+        restaurant1.setCapacity(slot2, 15);
+        restaurant1.setCapacity(slot3, 20);
     }
 
-    // ========== TESTS FOR getRestaurant() ==========
+    // ==================== CONSTRUCTOR TESTS ====================
 
-    @Test
-    @DisplayName("Should return restaurant when it exists")
-    void testGetRestaurant_Success() {
-        Restaurant result = manager.getRestaurant("Chez Luigi");
+    @Nested
+    @DisplayName("Constructor Tests")
+    class ConstructorTests {
 
-        assertNotNull(result);
-        assertEquals("Chez Luigi", result.getRestaurantName());
-        assertEquals(2, result.getDishes().size());
+        @Test
+        @DisplayName("Should create empty RestaurantManager")
+        void shouldCreateEmptyRestaurantManager() {
+            RestaurantManager newManager = new RestaurantManager();
+            assertNotNull(newManager);
+            assertTrue(newManager.getAllRestaurants().isEmpty());
+        }
     }
 
-    @Test
-    @DisplayName("Should return null when restaurant does not exist")
-    void testGetRestaurant_NotFound() {
-        Restaurant result = manager.getRestaurant("Non Existent Restaurant");
+    // ==================== ADD RESTAURANT TESTS ====================
 
-        assertNull(result);
+    @Nested
+    @DisplayName("Add Restaurant Tests")
+    class AddRestaurantTests {
+
+        @Test
+        @DisplayName("Should add restaurant successfully")
+        void shouldAddRestaurantSuccessfully() {
+            manager.addRestaurant(restaurant1);
+
+            assertTrue(manager.hasRestaurant("Pizza Palace"));
+            assertEquals(1, manager.getAllRestaurants().size());
+        }
+
+        @Test
+        @DisplayName("Should add multiple restaurants")
+        void shouldAddMultipleRestaurants() {
+            manager.addRestaurant(restaurant1);
+            manager.addRestaurant(restaurant2);
+
+            assertEquals(2, manager.getAllRestaurants().size());
+            assertTrue(manager.hasRestaurant("Pizza Palace"));
+            assertTrue(manager.hasRestaurant("Pasta House"));
+        }
+
+        @Test
+        @DisplayName("Should throw exception when adding null restaurant")
+        void shouldThrowExceptionWhenAddingNullRestaurant() {
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> manager.addRestaurant(null));
+            assertEquals("Restaurant cannot be null", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should replace restaurant with same name")
+        void shouldReplaceRestaurantWithSameName() {
+            manager.addRestaurant(restaurant1);
+
+            Restaurant newPizzaPalace = new Restaurant("Pizza Palace");
+            Dish pizza = new Dish("Margherita", "Classic Italian pizza", 12.0);
+            pizza.setCategory(DishCategory.MAIN_COURSE);
+            newPizzaPalace.addDish(pizza);
+
+            manager.addRestaurant(newPizzaPalace);
+
+            assertEquals(1, manager.getAllRestaurants().size());
+            Restaurant retrieved = manager.getRestaurant("Pizza Palace");
+            assertEquals(1, retrieved.getDishes().size());
+        }
     }
 
-    @Test
-    @DisplayName("Should throw exception when restaurant name is null")
-    void testGetRestaurant_NullName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.getRestaurant(null);
-        });
+    // ==================== GET RESTAURANT TESTS ====================
+
+    @Nested
+    @DisplayName("Get Restaurant Tests")
+    class GetRestaurantTests {
+
+        @Test
+        @DisplayName("Should get restaurant by name")
+        void shouldGetRestaurantByName() {
+            manager.addRestaurant(restaurant1);
+
+            Restaurant retrieved = manager.getRestaurant("Pizza Palace");
+
+            assertNotNull(retrieved);
+            assertEquals("Pizza Palace", retrieved.getRestaurantName());
+        }
+
+        @Test
+        @DisplayName("Should return null for non-existent restaurant")
+        void shouldReturnNullForNonExistentRestaurant() {
+            Restaurant retrieved = manager.getRestaurant("Unknown Restaurant");
+            assertNull(retrieved);
+        }
+
+        @Test
+        @DisplayName("Should throw exception when getting restaurant with null name")
+        void shouldThrowExceptionWhenGettingRestaurantWithNullName() {
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> manager.getRestaurant(null));
+            assertEquals("Restaurant name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when getting restaurant with empty name")
+        void shouldThrowExceptionWhenGettingRestaurantWithEmptyName() {
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> manager.getRestaurant(""));
+            assertEquals("Restaurant name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should get all restaurants")
+        void shouldGetAllRestaurants() {
+            manager.addRestaurant(restaurant1);
+            manager.addRestaurant(restaurant2);
+
+            List<Restaurant> allRestaurants = manager.getAllRestaurants();
+
+            assertEquals(2, allRestaurants.size());
+            assertTrue(allRestaurants.contains(restaurant1));
+            assertTrue(allRestaurants.contains(restaurant2));
+        }
+
+        @Test
+        @DisplayName("Should return empty list when no restaurants")
+        void shouldReturnEmptyListWhenNoRestaurants() {
+            List<Restaurant> allRestaurants = manager.getAllRestaurants();
+            assertNotNull(allRestaurants);
+            assertTrue(allRestaurants.isEmpty());
+        }
     }
 
-    @Test
-    @DisplayName("Should throw exception when restaurant name is empty")
-    void testGetRestaurant_EmptyName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.getRestaurant("");
-        });
+    // ==================== HAS RESTAURANT TESTS ====================
+
+    @Nested
+    @DisplayName("Has Restaurant Tests")
+    class HasRestaurantTests {
+
+        @Test
+        @DisplayName("Should return true when restaurant exists")
+        void shouldReturnTrueWhenRestaurantExists() {
+            manager.addRestaurant(restaurant1);
+            assertTrue(manager.hasRestaurant("Pizza Palace"));
+        }
+
+        @Test
+        @DisplayName("Should return false when restaurant does not exist")
+        void shouldReturnFalseWhenRestaurantDoesNotExist() {
+            assertFalse(manager.hasRestaurant("Unknown Restaurant"));
+        }
+
+        @Test
+        @DisplayName("Should return false for null restaurant name")
+        void shouldReturnFalseForNullRestaurantName() {
+            assertFalse(manager.hasRestaurant(null));
+        }
     }
 
-    // ========== TESTS FOR blockTimeSlot() ==========
+    // ==================== BLOCK TIME SLOT TESTS ====================
 
-    @Test
-    @DisplayName("Should block a time slot successfully")
-    void testBlockTimeSlot_Success() {
-        manager.blockTimeSlot(slot1, restaurant);
+    @Nested
+    @DisplayName("Block Time Slot Tests")
+    class BlockTimeSlotTests {
 
-        List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant);
+        @Test
+        @DisplayName("Should block time slot by decreasing capacity")
+        void shouldBlockTimeSlotByDecreasingCapacity() {
+            manager.addRestaurant(restaurant1);
+            int initialCapacity = restaurant1.getCapacity(slot1);
+            
+            manager.blockTimeSlot(slot1, restaurant1);
+            
+            assertEquals(initialCapacity - 1, restaurant1.getCapacity(slot1));
+        }
 
-        assertEquals(1, blockedSlots.size());
-        assertTrue(blockedSlots.contains(slot1));
+        @Test
+        @DisplayName("Should throw exception when blocking with null restaurant")
+        void shouldThrowExceptionWhenBlockingWithNullRestaurant() {
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> manager.blockTimeSlot(slot1, null));
+            assertEquals("Restaurant cannot be null", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should block multiple time slots independently")
+        void shouldBlockMultipleTimeSlotsIndependently() {
+            manager.addRestaurant(restaurant1);
+            
+            int capacity1Before = restaurant1.getCapacity(slot1);
+            int capacity2Before = restaurant1.getCapacity(slot2);
+            
+            manager.blockTimeSlot(slot1, restaurant1);
+            manager.blockTimeSlot(slot2, restaurant1);
+
+            assertEquals(capacity1Before - 1, restaurant1.getCapacity(slot1));
+            assertEquals(capacity2Before - 1, restaurant1.getCapacity(slot2));
+        }
+        
+        @Test
+        @DisplayName("Should not reduce capacity below zero")
+        void shouldNotReduceCapacityBelowZero() {
+            Restaurant restaurant = new Restaurant("Test");
+            restaurant.setCapacity(slot1, 1);
+            manager.addRestaurant(restaurant);
+            
+            manager.blockTimeSlot(slot1, restaurant);
+            assertEquals(0, restaurant.getCapacity(slot1));
+            
+            manager.blockTimeSlot(slot1, restaurant);
+            assertEquals(0, restaurant.getCapacity(slot1)); // Reste à 0
+        }
     }
 
-    @Test
-    @DisplayName("Should block multiple time slots")
-    void testBlockTimeSlot_Multiple() {
-        manager.blockTimeSlot(slot1, restaurant);
-        manager.blockTimeSlot(slot2, restaurant);
+    // ==================== UNBLOCK TIME SLOT TESTS ====================
 
-        List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant);
+    @Nested
+    @DisplayName("Unblock Time Slot Tests")
+    class UnblockTimeSlotTests {
 
-        assertEquals(2, blockedSlots.size());
-        assertTrue(blockedSlots.contains(slot1));
-        assertTrue(blockedSlots.contains(slot2));
+        @Test
+        @DisplayName("Should unblock time slot by increasing capacity")
+        void shouldUnblockTimeSlotByIncreasingCapacity() {
+            manager.addRestaurant(restaurant1);
+            
+            int capacityBefore = restaurant1.getCapacity(slot1);
+            manager.unblockTimeSlot(slot1, restaurant1);
+            
+            assertEquals(capacityBefore + 1, restaurant1.getCapacity(slot1));
+        }
+
+        @Test
+        @DisplayName("Should allow unblocking without prior blocking")
+        void shouldAllowUnblockingWithoutPriorBlocking() {
+            manager.addRestaurant(restaurant1);
+            assertDoesNotThrow(() -> manager.unblockTimeSlot(slot1, restaurant1));
+        }
+
+        @Test
+        @DisplayName("Should throw exception when unblocking with null restaurant")
+        void shouldThrowExceptionWhenUnblockingWithNullRestaurant() {
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> manager.unblockTimeSlot(slot1, null));
+            assertEquals("Restaurant cannot be null", exception.getMessage());
+        }
     }
 
-    @Test
-    @DisplayName("Should not duplicate blocked time slots")
-    void testBlockTimeSlot_NoDuplicates() {
-        manager.blockTimeSlot(slot1, restaurant);
-        manager.blockTimeSlot(slot1, restaurant); // Block same slot again
-
-        List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant);
-
-        assertEquals(1, blockedSlots.size());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when time slot is null")
-    void testBlockTimeSlot_NullSlot() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.blockTimeSlot(null, restaurant);
-        });
-    }
-
-    @Test
-    @DisplayName("Should throw exception when restaurant is null")
-    void testBlockTimeSlot_NullRestaurant() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.blockTimeSlot(slot1, null);
-        });
-    }
-
-    // ========== TESTS FOR getAvailableTimeSlots() ==========
-
-    @Test
-    @DisplayName("Should return all time slots when none are blocked")
-    void testGetAvailableTimeSlots_NoneBlocked() {
-        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
-
-        assertEquals(3, availableSlots.size());
-        assertTrue(availableSlots.contains(slot1));
-        assertTrue(availableSlots.contains(slot2));
-        assertTrue(availableSlots.contains(slot3));
-    }
-
+    // ==================== GET AVAILABLE TIME SLOTS TESTS ====================
     @Test
     @DisplayName("Should exclude blocked time slots from available slots")
-    void testGetAvailableTimeSlots_WithBlockedSlots() {
-        manager.blockTimeSlot(slot1, restaurant);
-        manager.blockTimeSlot(slot2, restaurant);
+    void shouldExcludeBlockedTimeSlotsFromAvailableSlots() {
+        manager.addRestaurant(restaurant1);
+        
+        // Réduire la capacité à 0 pour bloquer
+        for (int i = 0; i < 10; i++) {
+            manager.blockTimeSlot(slot1, restaurant1);
+        }
+        for (int i = 0; i < 15; i++) {
+            manager.blockTimeSlot(slot2, restaurant1);
+        }
 
-        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
+        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
 
         assertEquals(1, availableSlots.size());
         assertFalse(availableSlots.contains(slot1));
@@ -165,177 +313,175 @@ class RestaurantManagerTest {
     }
 
     @Test
-    @DisplayName("Should return empty list when all slots are blocked")
-    void testGetAvailableTimeSlots_AllBlocked() {
-        manager.blockTimeSlot(slot1, restaurant);
-        manager.blockTimeSlot(slot2, restaurant);
-        manager.blockTimeSlot(slot3, restaurant);
+    @DisplayName("Should return empty list when all slots have zero capacity")
+    void shouldReturnEmptyListWhenAllSlotsHaveZeroCapacity() {
+        manager.addRestaurant(restaurant1);
+        
+        // Mettre toutes les capacités à 0
+        restaurant1.setCapacity(slot1, 0);
+        restaurant1.setCapacity(slot2, 0);
+        restaurant1.setCapacity(slot3, 0);
 
-        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
-
-        assertTrue(availableSlots.isEmpty());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when restaurant is null")
-    void testGetAvailableTimeSlots_NullRestaurant() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.getAvailableTimeSlots(null);
-        });
-    }
-
-    @Test
-    @DisplayName("Should return empty list for restaurant with no time slots")
-    void testGetAvailableTimeSlots_NoTimeSlots() {
-        Restaurant emptyRestaurant = new Restaurant("Empty Restaurant");
-        manager.addRestaurant(emptyRestaurant);
-
-        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(emptyRestaurant);
+        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant1);
 
         assertTrue(availableSlots.isEmpty());
     }
 
-    // ========== TESTS FOR unblockTimeSlot() ==========
+
+
+    // ==================== INTEGRATION TESTS ====================
 
     @Test
-    @DisplayName("Should unblock a previously blocked time slot")
-    void testUnblockTimeSlot_Success() {
-        manager.blockTimeSlot(slot1, restaurant);
-        manager.blockTimeSlot(slot2, restaurant);
+    @DisplayName("Should correctly filter available slots based on capacity only")
+    void shouldCorrectlyFilterAvailableSlotsBasedOnCapacity() {
+        Restaurant restaurant = new Restaurant("Complex Restaurant");
 
-        manager.unblockTimeSlot(slot1, restaurant);
+        // slot1: capacity 10  available
+        restaurant.setCapacity(slot1, 10);
 
-        List<TimeSlot> blockedSlots = manager.getBlockedTimeSlots(restaurant);
+        // slot2: capacity 0 -> not available
+        restaurant.setCapacity(slot2, 0);
+
+        // slot3: capacity 5, puis bloqué (capacité réduite) -> toujours disponible si capacité > 0
+        restaurant.setCapacity(slot3, 5);
+
+        manager.addRestaurant(restaurant);
+        manager.blockTimeSlot(slot3, restaurant); // Réduit à 4
+
         List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
 
-        assertEquals(1, blockedSlots.size());
-        assertFalse(blockedSlots.contains(slot1));
-        assertTrue(blockedSlots.contains(slot2));
-
-        assertEquals(2, availableSlots.size());
+        assertEquals(2, availableSlots.size()); // slot1 et slot3
         assertTrue(availableSlots.contains(slot1));
+        assertFalse(availableSlots.contains(slot2));
+        assertTrue(availableSlots.contains(slot3)); // Toujours disponible car capacité > 0
     }
 
     @Test
-    @DisplayName("Should handle unblocking non-blocked slot gracefully")
-    void testUnblockTimeSlot_NotBlocked() {
-        // Should not throw exception
-        assertDoesNotThrow(() -> {
-            manager.unblockTimeSlot(slot1, restaurant);
-        });
+    @DisplayName("Should handle blocking and unblocking cycles")
+    void shouldHandleBlockingAndUnblockingCycles() {
+        manager.addRestaurant(restaurant1);
+
+        int initialCapacity = restaurant1.getCapacity(slot1);
+        int initialAvailable = manager.getAvailableTimeSlots(restaurant1).size();
+
+        // Block slot1
+        manager.blockTimeSlot(slot1, restaurant1);
+        assertEquals(initialCapacity - 1, restaurant1.getCapacity(slot1));
+
+        // Unblock slot1
+        manager.unblockTimeSlot(slot1, restaurant1);
+        assertEquals(initialCapacity, restaurant1.getCapacity(slot1));
+
+        // Vérifier que le nombre de slots disponibles est revenu
+        assertEquals(initialAvailable, manager.getAvailableTimeSlots(restaurant1).size());
+    }
+    // ==================== EDGE CASES TESTS ====================
+
+    @Nested
+    @DisplayName("Edge Cases Tests")
+    class EdgeCasesTests {
+
+        
+        @Test
+        @DisplayName("Should handle blocking slot not in capacity map")
+        void shouldHandleBlockingSlotNotInCapacityMap() {
+            manager.addRestaurant(restaurant1);
+            TimeSlot newSlot = new TimeSlot(LocalTime.of(18, 0), LocalTime.of(18, 30));
+
+            // Ne devrait rien faire car le slot n'existe pas dans capacityMap
+            assertDoesNotThrow(() -> manager.blockTimeSlot(newSlot, restaurant1));
+            assertEquals(0, restaurant1.getCapacity(newSlot));
+        }
+            
+
+        @Test
+        @DisplayName("Should handle restaurant name with special characters")
+        void shouldHandleRestaurantNameWithSpecialCharacters() {
+            Restaurant specialRestaurant = new Restaurant("Café & Restaurant #1");
+            manager.addRestaurant(specialRestaurant);
+
+            assertTrue(manager.hasRestaurant("Café & Restaurant #1"));
+            assertNotNull(manager.getRestaurant("Café & Restaurant #1"));
+        }
+
+        @Test
+        @DisplayName("Should handle very long restaurant name")
+        void shouldHandleVeryLongRestaurantName() {
+            String longName = "A".repeat(500);
+            Restaurant longNameRestaurant = new Restaurant(longName);
+            manager.addRestaurant(longNameRestaurant);
+
+            assertTrue(manager.hasRestaurant(longName));
+            assertEquals(longName, manager.getRestaurant(longName).getRestaurantName());
+        }
     }
 
-    @Test
-    @DisplayName("Should throw exception when time slot is null")
-    void testUnblockTimeSlot_NullSlot() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.unblockTimeSlot(null, restaurant);
-        });
-    }
+    // ==================== PERFORMANCE TESTS ====================
 
-    // ========== TESTS FOR UTILITY METHODS ==========
+    @Nested
+    @DisplayName("Performance Tests")
+    class PerformanceTests {
 
-    @Test
-    @DisplayName("Should add restaurant successfully")
-    void testAddRestaurant_Success() {
-        Restaurant newRestaurant = new Restaurant("Bella Italia");
-        manager.addRestaurant(newRestaurant);
+        @Test
+        @DisplayName("Should handle many restaurants efficiently")
+        void shouldHandleManyRestaurantsEfficiently() {
+            int restaurantCount = 100;
 
-        Restaurant result = manager.getRestaurant("Bella Italia");
-        assertNotNull(result);
-        assertEquals("Bella Italia", result.getRestaurantName());
-    }
+            for (int i = 0; i < restaurantCount; i++) {
+                Restaurant r = new Restaurant("Restaurant " + i);
+                r.setCapacity(slot1, 10);
+                manager.addRestaurant(r);
+            }
 
-    @Test
-    @DisplayName("Should throw exception when adding null restaurant")
-    void testAddRestaurant_Null() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.addRestaurant(null);
-        });
-    }
+            assertEquals(restaurantCount, manager.getAllRestaurants().size());
 
-    @Test
-    @DisplayName("Should return all restaurants")
-    void testGetAllRestaurants() {
-        Restaurant restaurant2 = new Restaurant("Bella Italia");
-        manager.addRestaurant(restaurant2);
+            // Should still perform quickly
+            Restaurant restaurant = manager.getRestaurant("Restaurant 50");
+            assertNotNull(restaurant);
+            assertEquals("Restaurant 50", restaurant.getRestaurantName());
+        }
 
-        List<Restaurant> allRestaurants = manager.getAllRestaurants();
+        @Test
+        @DisplayName("Should handle many time slots per restaurant efficiently")
+        void shouldHandleManyTimeSlotsPerRestaurantEfficiently() {
+            Restaurant restaurant = new Restaurant("Busy Restaurant");
 
-        assertEquals(2, allRestaurants.size());
-    }
+            // Create 48 time slots (full day in 30-minute intervals)
+            for (int hour = 0; hour < 24; hour++) {
+                TimeSlot morningSlot = new TimeSlot(
+                        LocalTime.of(hour, 0),
+                        LocalTime.of(hour, 30)
+                );
+                TimeSlot eveningSlot = new TimeSlot(
+                        LocalTime.of(hour, 30),
+                        LocalTime.of((hour + 1) % 24, 0)
+                );
 
-    @Test
-    @DisplayName("Should check if restaurant exists")
-    void testHasRestaurant() {
-        assertTrue(manager.hasRestaurant("Chez Luigi"));
-        assertFalse(manager.hasRestaurant("Non Existent"));
-    }
+                restaurant.setCapacity(morningSlot, 10);
+                restaurant.setCapacity(eveningSlot, 10);
+            }
 
-    // ========== INTEGRATION TESTS ==========
+            manager.addRestaurant(restaurant);
 
-    @Test
-    @DisplayName("Integration test: Complete workflow")
-    void testCompleteWorkflow() {
-        // 1. Get restaurant
-        Restaurant resto = manager.getRestaurant("Chez Luigi");
-        assertNotNull(resto);
+            List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(restaurant);
+            assertEquals(48, availableSlots.size());
+        }
 
-        // 2. Check initial available slots
-        List<TimeSlot> initialSlots = manager.getAvailableTimeSlots(resto);
-        assertEquals(3, initialSlots.size());
+        @Test
+        @DisplayName("Should handle many block/unblock operations efficiently")
+        void shouldHandleManyBlockUnblockOperationsEfficiently() {
+            manager.addRestaurant(restaurant1);
+            int initialCapacity = restaurant1.getCapacity(slot1);
 
-        // 3. Block a slot
-        manager.blockTimeSlot(slot2, resto);
-        List<TimeSlot> afterBlock = manager.getAvailableTimeSlots(resto);
-        assertEquals(2, afterBlock.size());
-        assertFalse(afterBlock.contains(slot2));
+            // Perform 100 block/unblock operations
+            for (int i = 0; i < 100; i++) {
+                manager.blockTimeSlot(slot1, restaurant1);
+                manager.unblockTimeSlot(slot1, restaurant1);
+            }
 
-        // 4. Unblock the slot
-        manager.unblockTimeSlot(slot2, resto);
-        List<TimeSlot> afterUnblock = manager.getAvailableTimeSlots(resto);
-        assertEquals(3, afterUnblock.size());
-        assertTrue(afterUnblock.contains(slot2));
-    }
-
-    @Test
-    @DisplayName("Integration test: Multiple restaurants with blocked slots")
-    void testMultipleRestaurants() {
-        // Create second restaurant
-        TimeSlot slot4 = new TimeSlot(LocalTime.of(18, 0), LocalTime.of(18, 30));
-        Restaurant restaurant2 = new Restaurant.Builder("Bella Italia")
-                .withTimeSlot(slot4)
-                .build();
-        manager.addRestaurant(restaurant2);
-
-        // Block slots for different restaurants
-        manager.blockTimeSlot(slot1, restaurant);
-        manager.blockTimeSlot(slot4, restaurant2);
-
-        // Check that blocking is independent per restaurant
-        List<TimeSlot> availableRestaurant1 = manager.getAvailableTimeSlots(restaurant);
-        List<TimeSlot> availableRestaurant2 = manager.getAvailableTimeSlots(restaurant2);
-
-        assertEquals(2, availableRestaurant1.size());
-        assertEquals(0, availableRestaurant2.size());
-
-        assertFalse(availableRestaurant1.contains(slot1));
-        assertTrue(availableRestaurant1.contains(slot2));
-    }
-
-    @Test
-    @DisplayName("Edge case: Restaurant with same time slot multiple times")
-    void testDuplicateTimeSlots() {
-        Restaurant resto = new Restaurant.Builder("Test Restaurant")
-                .withTimeSlot(slot1)
-                .withTimeSlot(slot1) // Duplicate
-                .build();
-        manager.addRestaurant(resto);
-
-        manager.blockTimeSlot(slot1, resto);
-        List<TimeSlot> available = manager.getAvailableTimeSlots(resto);
-
-        // Should block all instances of the same time slot
-        assertEquals(0, available.size());
+            // La capacité devrait être revenue à l'initiale
+            assertEquals(initialCapacity, restaurant1.getCapacity(slot1));
+            assertEquals(3, manager.getAvailableTimeSlots(restaurant1).size());
+        }
     }
 }
