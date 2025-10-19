@@ -4,6 +4,7 @@ package fr.unice.polytech.restaurants;
 
 
 
+import fr.unice.polytech.restaurants.TimeSlot;
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
 

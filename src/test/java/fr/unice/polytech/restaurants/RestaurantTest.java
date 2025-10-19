@@ -2,6 +2,7 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
+import fr.unice.polytech.restaurants.TimeSlot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
