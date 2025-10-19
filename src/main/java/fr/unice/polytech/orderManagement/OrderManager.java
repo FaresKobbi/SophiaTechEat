@@ -65,10 +65,7 @@ public class OrderManager {
         // Traitement du paiement (réutilisé pour les deux types)
         OrderStatus status = processor.processPayment(order);
         order.setOrderStatus(status);
-        // trigger the registration after a successful payment
-        if (status == OrderStatus.VALIDATED) {
-            registerOrder(order);
-        }
+
     }
 
     private void dropOrder(Order order) {

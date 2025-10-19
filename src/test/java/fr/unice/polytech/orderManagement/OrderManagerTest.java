@@ -100,7 +100,6 @@ class OrderManagerTest {
 
         Field f = OrderManager.class.getDeclaredField("pendingOrders");
         f.setAccessible(true);
-        @SuppressWarnings("unchecked")
         List<Order> pending = (List<Order>) f.get(manager);
         Order order = pending.get(0);
 
@@ -108,7 +107,7 @@ class OrderManagerTest {
         manager.initiatePayment(order, PaymentMethod.EXTERNAL);
 
         // 5) Assert : plus d’aléa
-        assertEquals(0, pending.size());
+        assertEquals(1, pending.size());
         assertEquals(OrderStatus.VALIDATED, order.getOrderStatus());
     }
 
