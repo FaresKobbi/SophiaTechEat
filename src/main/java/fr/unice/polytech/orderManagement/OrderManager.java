@@ -31,6 +31,9 @@ public class OrderManager {
     }
 
     public void createOrder(List<Dish> dishes, StudentAccount studentAccount, DeliveryLocation deliveryLocation, Restaurant restaurant) {
+        if (!studentAccount.hasDeliveryLocation(deliveryLocation)) {
+            throw new IllegalArgumentException("Order creation failed: Delivery location is not among the student's saved locations.");
+        }
         Order order = new Order.Builder(studentAccount)
                 .dishes(dishes)
                 .amount(calculateTotalAmount(dishes))
@@ -46,15 +49,15 @@ public class OrderManager {
 
 
     public void initiatePayment(Order order, PaymentMethod paymentMethod) {
-        if (isOrderTimedOut(order)) {
-            dropOrder(order);
-            return;
-        }
         if (paymentMethod == null) {
             // The payment method comes from the user selection in the order confirmation flow and can be
             // missing when the client submits an incomplete request. Fail fast with an explicit error
             // instead of letting the processor selection crash on a null value.
-            throw new IllegalArgumentException("Payment method must be provided before initiating the payment");
+            throw new IllegalArgumentException("Payment method must be provided");
+        }
+        if (isOrderTimedOut(order)) {
+            dropOrder(order);
+            return;
         }
         //Creattion du processeur de paiement via la factory
         IPaymentProcessor processor = paymentProcessorFactory.createProcessor(order, paymentMethod);
@@ -62,16 +65,21 @@ public class OrderManager {
         // Traitement du paiement (réutilisé pour les deux types)
         OrderStatus status = processor.processPayment(order);
         order.setOrderStatus(status);
+        // trigger the registration after a successful payment
+        if (status == OrderStatus.VALIDATED) {
+            registerOrder(order);
+        }
     }
 
     private void dropOrder(Order order) {
         order.setOrderStatus(OrderStatus.CANCELED);
         pendingOrders.remove(order);
+        orderCreationTimes.remove(order); // Important: remove the timer
     }
 
     private boolean isOrderTimedOut(Order order) {
         Long creationTime = orderCreationTimes.get(order);
-        return creationTime == null;
+        return (System.currentTimeMillis() - creationTime) > TIMEOUT_MILLIS;
     }
 
 

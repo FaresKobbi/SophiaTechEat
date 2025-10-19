@@ -108,8 +108,8 @@ class OrderManagerTest {
         manager.initiatePayment(order, PaymentMethod.EXTERNAL);
 
         // 5) Assert : plus d’aléa
-        assertEquals(1, pending.size());
-        assertNotEquals(OrderStatus.CANCELED, order.getOrderStatus());
+        assertEquals(0, pending.size());
+        assertEquals(OrderStatus.VALIDATED, order.getOrderStatus());
     }
 
 
@@ -185,12 +185,22 @@ class OrderManagerTest {
     }
 
     @Test
-    void initiatePaymentUsesFactoryAndUpdatesOrderStatus() {
+    void initiatePaymentUsesFactoryAndUpdatesOrderStatus() throws NoSuchFieldException, IllegalAccessException {
         PaymentProcessorFactory factory = mock(PaymentProcessorFactory.class);
         OrderManager managerWithFactory = new OrderManager(factory);
         Order order = new Order.Builder(mockStudentAccount)
                 .amount(12.0)
                 .build();
+
+        Field pendingOrdersField = OrderManager.class.getDeclaredField("pendingOrders");
+        pendingOrdersField.setAccessible(true);
+        List<Order> pendingOrders = (List<Order>) pendingOrdersField.get(managerWithFactory);
+        pendingOrders.add(order);
+
+        Field orderCreationTimesField = OrderManager.class.getDeclaredField("orderCreationTimes");
+        orderCreationTimesField.setAccessible(true);
+        Map<Order, Long> orderCreationTimes = (Map<Order, Long>) orderCreationTimesField.get(managerWithFactory);
+        orderCreationTimes.put(order, System.currentTimeMillis());
 
         IPaymentProcessor processor = mock(IPaymentProcessor.class);
         when(factory.createProcessor(order, PaymentMethod.EXTERNAL)).thenReturn(processor);
