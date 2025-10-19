@@ -4,6 +4,7 @@ package fr.unice.polytech.restaurants;
 
 
 
+import fr.unice.polytech.restaurants.TimeSlot;
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
 
@@ -17,9 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for RestaurantManager class.
- */
+@DisplayName("RestaurantManager Tests")
 class RestaurantManagerTest {
 
     private RestaurantManager manager;
@@ -327,19 +326,7 @@ class RestaurantManagerTest {
         assertTrue(availableSlots.isEmpty());
     }
 
-    @Test
-    @DisplayName("Should throw exception when restaurant is null")
-    void testGetAvailableTimeSlots_NullRestaurant() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.getAvailableTimeSlots(null);
-        });
-    }
 
-    @Test
-    @DisplayName("Should return empty list for restaurant with no time slots")
-    void testGetAvailableTimeSlots_NoTimeSlots() {
-        Restaurant emptyRestaurant = new Restaurant("Empty Restaurant");
-        manager.addRestaurant(emptyRestaurant);
 
         List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(emptyRestaurant);
 

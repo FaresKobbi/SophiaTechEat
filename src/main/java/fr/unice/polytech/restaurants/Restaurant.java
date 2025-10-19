@@ -7,7 +7,9 @@ import fr.unice.polytech.restaurants.TimeSlot;
 import fr.unice.polytech.dishes.DishType;
 
 import fr.unice.polytech.dishes.DishType;
+import fr.unice.polytech.orderManagement.Order;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,17 +20,12 @@ public class Restaurant {
     private String restaurantName;
     private List<Dish> dishes;
     private List<TimeSlot> availableTimeSlots;
-    private List<Order> orders;
-   //Simple initialisation 
-    private List<OpeningHours> openingHours;
-
-    private EstablishmentType establishmentType;
-    private DishType cuisineType;
-   //Simple initialisation
     private Map<TimeSlot, Integer> capacityByTimeSlot;
-
-
-    //Simple initialisation
+    private List<Order> orders;
+    private DishType cuisineType;
+    private List<OpeningHours> openingHours;
+    
+   //Simple initialisation 
     public Restaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -38,15 +35,17 @@ public class Restaurant {
         this.availableTimeSlots = new ArrayList<>();
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
+        this.openingHours = new ArrayList<>();
     }
-    
-    
+
+
     //Private constructor for Builder pattern.
     //Avoid public Restaurant(String restaurantName, List<Dish> dishes, List<TimeSlot> availableTimeSlots) {..}
     private Restaurant(Builder builder) {
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         this.availableTimeSlots = new ArrayList<>(builder.availableTimeSlots);
+        this.capacityByTimeSlot = new HashMap<>();
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
@@ -54,69 +53,66 @@ public class Restaurant {
         this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
     }
-    
+
     // ========== BUILDER PATTERN ==========
-    
+
     /**
      * Builder class for constructing Restaurant objects with many optional parameters.
      * We use this class when we  need to create a Restaurant with initial dishes and time slots.
      */
     public static class Builder {
+        public DishType cuisineType;
         private final String restaurantName;
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-        private DishType cuisineType;
-        public Builder withCuisineType(DishType cuisineType) {
-            this.cuisineType = cuisineType;
-            return this;
-        }
+        
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
             }
             this.restaurantName = restaurantName;
         }
-        
+
         public Builder withDish(Dish dish) {
             if (dish != null) {
                 this.dishes.add(dish);
             }
             return this;
         }
-        
+
         public Builder withDishes(List<Dish> dishes) {
             if (dishes != null) {
                 this.dishes.addAll(dishes);
             }
             return this;
         }
-        
+
         public Builder withTimeSlot(TimeSlot timeSlot) {
             if (timeSlot != null) {
                 this.availableTimeSlots.add(timeSlot);
             }
             return this;
         }
-        
+
         public Builder withTimeSlots(List<TimeSlot> timeSlots) {
             if (timeSlots != null) {
                 this.availableTimeSlots.addAll(timeSlots);
             }
             return this;
         }
-        
+
         public Restaurant build() {
             return new Restaurant(this);
         }
     }
-    
 
-    
+
+
     public String getRestaurantName() {
         return restaurantName;
     }
-    
-    
+
+
     //return a copy of the dishes/TimeSlot list to prevent external modification.
     public List<Dish> getDishes() {
         return new ArrayList<>(dishes);
@@ -144,6 +140,18 @@ public class Restaurant {
     }
 
 
+     //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
+    public void blockTimeSlot(TimeSlot slot){
+        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        decreaseCapacity(slot);
+    }
+
+    public void unblockTimeSlot(TimeSlot slot){
+        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        increaseCapacity(slot);
+    }
+
+    
     //======= Capacity by slot =====
 
     public void setCapacity(TimeSlot slot, int capacity) {
@@ -195,6 +203,7 @@ public class Restaurant {
 
 
 
+    
     // ========== DISH MANAGEMENT METHODS ==========
     /**
      * Adds a dish to the restaurant's menu.
