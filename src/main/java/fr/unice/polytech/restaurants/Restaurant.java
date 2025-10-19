@@ -2,13 +2,9 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
-import fr.unice.polytech.restaurants.TimeSlot;
 
-import javax.swing.*;
 import fr.unice.polytech.dishes.DishType;
-import fr.unice.polytech.orderManagement.Order;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -192,7 +188,7 @@ public class Restaurant {
         capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 5) + 1);
     }
 
-    // ========== DISH MANAGEMENT METHODS ==========
+  // ========== DISH MANAGEMENT METHODS ==========
     /**
      * Adds a dish to the restaurant's menu.
      * Use this AFTER construction instead of passing dishes to constructor.
