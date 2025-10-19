@@ -67,7 +67,6 @@ public class Restaurant {
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
 
-        private DishType cuisineType;
         public Builder withCuisineType(DishType cuisineType) {
             this.cuisineType = cuisineType;
             return this;
@@ -193,16 +192,6 @@ public class Restaurant {
         capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 5) + 1);
     }
 
-
-
-
-    
-
-
-    }
-
-
-    
     // ========== DISH MANAGEMENT METHODS ==========
     /**
      * Adds a dish to the restaurant's menu.
