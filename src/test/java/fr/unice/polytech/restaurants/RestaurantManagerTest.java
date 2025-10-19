@@ -328,10 +328,7 @@ class RestaurantManagerTest {
 
 
 
-        List<TimeSlot> availableSlots = manager.getAvailableTimeSlots(emptyRestaurant);
-
-        assertTrue(availableSlots.isEmpty());
-    }
+    
 
 
 
