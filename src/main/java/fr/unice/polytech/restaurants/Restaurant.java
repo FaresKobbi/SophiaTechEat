@@ -47,64 +47,7 @@ public class Restaurant {
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
         this.cuisineType = builder.cuisineType;
-
-    }
-
-    // ========== BUILDER PATTERN ==========
-
-    /**
-     * Builder class for constructing Restaurant objects with many optional parameters.
-     * We use this class when we  need to create a Restaurant with initial dishes and time slots.
-     */
-    public static class Builder {
-        public DishType cuisineType;
-        private final String restaurantName;
-        private List<Dish> dishes = new ArrayList<>();
-        private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-
-        public Builder withCuisineType(DishType cuisineType) {
-            this.cuisineType = cuisineType;
-            return this;
-        }
-        
-        public Builder(String restaurantName) {
-            if (restaurantName == null || restaurantName.isEmpty()) {
-                throw new IllegalArgumentException("Restaurant name is required");
-            }
-            this.restaurantName = restaurantName;
-        }
-
-        public Builder withDish(Dish dish) {
-            if (dish != null) {
-                this.dishes.add(dish);
-            }
-            return this;
-        }
-
-        public Builder withDishes(List<Dish> dishes) {
-            if (dishes != null) {
-                this.dishes.addAll(dishes);
-            }
-            return this;
-        }
-
-        public Builder withTimeSlot(TimeSlot timeSlot) {
-            if (timeSlot != null) {
-                this.availableTimeSlots.add(timeSlot);
-            }
-            return this;
-        }
-
-        public Builder withTimeSlots(List<TimeSlot> timeSlots) {
-            if (timeSlots != null) {
-                this.availableTimeSlots.addAll(timeSlots);
-            }
-            return this;
-        }
-
-        public Restaurant build() {
-            return new Restaurant(this);
-        }
+        this.openingHours = new ArrayList<>(builder.openingHours);
     }
     
 
@@ -159,6 +102,49 @@ public class Restaurant {
         if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
         capacityByTimeSlot.put(slot, capacity);
     }
+
+    public void setOpeningHours(List<OpeningHours> openingHours) {
+        if (openingHours == null) {
+            throw new IllegalArgumentException("Opening hours list cannot be null.");
+        }
+        this.openingHours = new ArrayList<>(openingHours);
+    }
+
+    public void addOpeningHours(OpeningHours newOpeningHours) {
+        if (newOpeningHours == null) {
+            throw new IllegalArgumentException("Opening hours cannot be null.");
+        }
+        for (OpeningHours existingHours : this.openingHours) {
+            if (existingHours.getDay() == newOpeningHours.getDay()) {
+                throw new IllegalArgumentException(
+                        "Opening hours for " + newOpeningHours.getDay() + " already exist."
+                );
+            }
+        }
+        this.openingHours.add(newOpeningHours);
+    }
+
+    public void updateOpeningHours(OpeningHours updatedOpeningHours) {
+        if (updatedOpeningHours == null) {
+            throw new IllegalArgumentException("Opening hours cannot be null.");
+        }
+        boolean dayFound = false;
+        for (OpeningHours existingHours : this.openingHours) {
+            if (existingHours.getDay() == updatedOpeningHours.getDay()) {
+                dayFound = true;
+                break;
+            }
+        }
+
+        if (!dayFound) {
+            throw new IllegalArgumentException("Cannot update opening hours: No entry found for " + updatedOpeningHours.getDay());
+        }
+
+        this.openingHours.removeIf(oh -> oh.getDay() == updatedOpeningHours.getDay());
+        this.openingHours.add(updatedOpeningHours);
+    }
+
+
 
     public int getCapacity(TimeSlot slot) {
         return capacityByTimeSlot.getOrDefault(slot, 0);
@@ -290,11 +276,6 @@ public class Restaurant {
         return openingHours;
     }
 
-
-
-
-
-        
     /**
      * Ajoute un plat au menu du restaurant
      * @param dish Le plat à ajouter
@@ -334,5 +315,69 @@ public class Restaurant {
                 .findFirst()
                 .orElse(null);
     }
+
+    // ========== BUILDER PATTERN ==========
+
+    /**
+     * Builder class for constructing Restaurant objects with many optional parameters.
+     * We use this class when we  need to create a Restaurant with initial dishes and time slots.
+     */
+    public static class Builder {
+        private final String restaurantName;
+        private List<Dish> dishes = new ArrayList<>();
+        private List<TimeSlot> availableTimeSlots = new ArrayList<>();
+        private DishType cuisineType;
+        private List<OpeningHours> openingHours = new ArrayList<>();
+
+        public Builder withCuisineType(DishType cuisineType) {
+            this.cuisineType = cuisineType;
+            return this;
+        }
+        public Builder(String restaurantName) {
+            if (restaurantName == null || restaurantName.isEmpty()) {
+                throw new IllegalArgumentException("Restaurant name is required");
+            }
+            this.restaurantName = restaurantName;
+        }
+
+        public Builder withDish(Dish dish) {
+            if (dish != null) {
+                this.dishes.add(dish);
+            }
+            return this;
+        }
+
+        public Builder withDishes(List<Dish> dishes) {
+            if (dishes != null) {
+                this.dishes.addAll(dishes);
+            }
+            return this;
+        }
+
+        public Builder withTimeSlot(TimeSlot timeSlot) {
+            if (timeSlot != null) {
+                this.availableTimeSlots.add(timeSlot);
+            }
+            return this;
+        }
+
+        public Builder withTimeSlots(List<TimeSlot> timeSlots) {
+            if (timeSlots != null) {
+                this.availableTimeSlots.addAll(timeSlots);
+            }
+            return this;
+        }
+
+        public Builder withOpeningHours(List<OpeningHours> hours) {
+            if (hours != null) {
+                this.openingHours.addAll(hours);
+            }
+            return this;
+        }
+        public Restaurant build() {
+            return new Restaurant(this);
+        }
+    }
+
 }
 

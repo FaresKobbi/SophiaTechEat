@@ -1,7 +1,8 @@
-package fr.unice.polytech.paymentProcessing;
+package fr.unice.polytech.stepDefs.back;
 
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.orderManagement.OrderStatus;
+import fr.unice.polytech.paymentProcessing.InternalPaymentProcessor;
 import fr.unice.polytech.users.StudentAccount;
 import org.junit.jupiter.api.Test;
 
