@@ -1,5 +1,6 @@
-package fr.unice.polytech.restaurants.stepsDefs.back;
+package fr.unice.polytech.stepDefs.back;
 
+import fr.unice.polytech.restaurants.ScenarioContext;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.But;

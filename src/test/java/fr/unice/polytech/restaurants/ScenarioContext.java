@@ -1,6 +1,4 @@
-package fr.unice.polytech.restaurants.stepsDefs.back;
-
-import fr.unice.polytech.restaurants.Restaurant;
+package fr.unice.polytech.restaurants;
 
 public class ScenarioContext {
     public Restaurant restaurant;
