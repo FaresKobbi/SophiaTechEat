@@ -1,10 +1,6 @@
-package fr.unice.polytech.restaurants.stepDefs.back;
+package fr.unice.polytech.stepDefs.back;
 
-import fr.unice.polytech.restaurants.Restaurant;
-import fr.unice.polytech.restaurants.stepsDefs.back.ScenarioContext;
-import io.cucumber.java.en.Given;
-
-
+import fr.unice.polytech.restaurants.ScenarioContext;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
@@ -12,30 +8,16 @@ import io.cucumber.datatable.DataTable;
 import static org.junit.jupiter.api.Assertions.*;
 
 import fr.unice.polytech.dishes.*;
-
+import fr.unice.polytech.restaurants.*;
 import java.util.*;
 
 public class RestaurantDishManagementSteps {
     private final ScenarioContext ctx;
     public RestaurantDishManagementSteps(ScenarioContext ctx) { this.ctx = ctx; }
 
-    private Restaurant restaurant;
     private Dish currentDish;
-    private List<String> currentDishTags = new ArrayList<>();
+    private final List<String> currentDishTags = new ArrayList<>();
     private String currentAllergenInfo;
-
-    // ============ BACKGROUND STEPS ============
-
-    @Given("a restaurant {string} exists")
-    public void a_restaurant_exists(String restaurantName) {
-        restaurant = new Restaurant(restaurantName);
-    }
-
-    @Given("I am logged in as restaurant manager of {string}")
-    public void i_am_logged_in_as_restaurant_manager(String restaurantName) {
-        assertNotNull(restaurant, "Restaurant should be initialized");
-        assertEquals(restaurantName, restaurant.getRestaurantName());
-    }
 
     // ============ SCENARIO 1: Add a new dish ============
 
@@ -82,7 +64,6 @@ public class RestaurantDishManagementSteps {
 
     @Then("the dish {string} should have tag {string}")
     public void the_dish_should_have_tag(String dishName, String expectedTag) {
-
         Dish dish = ctx.restaurant.findDishByName(dishName);
         assertNotNull(dish, "Dish should exist");
         assertTrue(currentDishTags.contains(expectedTag),
@@ -94,7 +75,6 @@ public class RestaurantDishManagementSteps {
     @io.cucumber.java.en.Given("a dish {string} exists with price {double}")
     public void a_dish_exists_with_price(String dishName, double price) {
         currentDish = new Dish(dishName, "Test dish", price);
-
         ctx.restaurant.addDish(currentDish);
     }
 
@@ -175,13 +155,9 @@ public class RestaurantDishManagementSteps {
         assertFalse(found, "Dish should not be visible in menu");
     }
 
-    // ============ SCENARIO 6: Extra options ============
-    // Note: Les extra options ne sont pas encore implémentées dans le domaine
-    // On utilise une variable temporaire pour faire passer les tests
+    // ============ SCENARIO 6: Extra options (fake storage) ============
 
-
-
-    private final Map<String, Double> extraOptions = new HashMap<>();
+    private Map<String, Double> extraOptions = new HashMap<>();
 
     @When("I define an extra option {string} with price {double}")
     public void i_define_an_extra_option_with_price(String extraName, double price) {
@@ -220,5 +196,5 @@ public class RestaurantDishManagementSteps {
         assertNotNull(currentAllergenInfo, "Allergen information should exist");
         assertTrue(currentAllergenInfo.toLowerCase().contains(allergen.toLowerCase()),
             "Allergen warning should mention '" + allergen + "'");
-}
+ }
 }

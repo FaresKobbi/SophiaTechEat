@@ -1,4 +1,4 @@
- package fr.unice.polytech.resources.features.steps;
+package fr.unice.polytech.stepDefs.back;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
