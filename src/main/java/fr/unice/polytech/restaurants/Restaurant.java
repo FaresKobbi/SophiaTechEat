@@ -1,10 +1,11 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
+
+import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.orderManagement.Order;
 
-import fr.unice.polytech.dishes.DishType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,15 +17,14 @@ public class Restaurant {
     private String restaurantName;
     private List<Dish> dishes;
     private List<Order> orders;
-   //Simple initialisation 
-    private List<OpeningHours> openingHours;
+   private List<OpeningHours> openingHours;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
     private DishType cuisineType;
     private final DishManager dishManager = new DishManager();
 
 
-    //Simple initialisation
+   
 
    //Simple initialisation
     public Restaurant(String restaurantName) {
@@ -46,7 +46,7 @@ public class Restaurant {
         this.dishes = new ArrayList<>(builder.dishes);
         orders = new ArrayList<>();
         this.cuisineType = builder.cuisineType;
-
+        this.capacityByTimeSlot = new HashMap<>();
     }
 
     // ========== BUILDER PATTERN ==========
@@ -65,7 +65,7 @@ public class Restaurant {
             this.cuisineType = cuisineType;
             return this;
         }
-        
+      
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
@@ -153,6 +153,7 @@ public class Restaurant {
 
 
     //======= Capacity by slot =====
+
     public void setCapacity(TimeSlot slot, int capacity) {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
         if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
@@ -263,6 +264,7 @@ public class Restaurant {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
+                ", timeSlots=" + getAvailableTimeSlots().size() +
                 // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
                 '}';
     }
@@ -288,8 +290,6 @@ public class Restaurant {
     public List<OpeningHours> getOpeningHours() {
         return openingHours;
     }
-
-
 
 
 
