@@ -15,8 +15,6 @@ public class OrderManager {
 
     private List<Order> registeredOrders;
     private List<Order> pendingOrders;
-    private Map<Order, Long> orderCreationTimes;
-    private static final long TIMEOUT_MILLIS = 3 * 60 * 1000; // 3 minutes
     private final PaymentProcessorFactory paymentProcessorFactory;
 
     public OrderManager(){
@@ -27,7 +25,6 @@ public class OrderManager {
         this.paymentProcessorFactory = paymentProcessorFactory;
         registeredOrders = new java.util.ArrayList<>();
         pendingOrders = new java.util.ArrayList<>();
-        orderCreationTimes = new HashMap<>();
     }
 
     public void createOrder(List<Dish> dishes, StudentAccount studentAccount, DeliveryLocation deliveryLocation, Restaurant restaurant) {
@@ -42,7 +39,6 @@ public class OrderManager {
                 .build();
 
         pendingOrders.add(order);
-        orderCreationTimes.put(order, System.currentTimeMillis());
 
     }
 
@@ -51,10 +47,8 @@ public class OrderManager {
         if (paymentMethod == null) {
             throw new IllegalArgumentException("Payment method must be provided");
         }
-        if (isOrderTimedOut(order)) {
-            dropOrder(order);
-            return;
-        }
+        /*
+        * */
         //Creattion du processeur de paiement via la factory
         IPaymentProcessor processor = paymentProcessorFactory.createProcessor(order, paymentMethod);
 
@@ -65,27 +59,21 @@ public class OrderManager {
     }
 
     private void dropOrder(Order order) {
-        order.setOrderStatus(OrderStatus.CANCELED);
         pendingOrders.remove(order);
-        orderCreationTimes.remove(order); // Important: remove the timer
     }
 
-    private boolean isOrderTimedOut(Order order) {
-        Long creationTime = orderCreationTimes.get(order);
-        return (System.currentTimeMillis() - creationTime) > TIMEOUT_MILLIS;
-    }
 
 
     public boolean registerOrder(Order order, Restaurant restaurant) {
         if (order.getOrderStatus() == OrderStatus.VALIDATED) {
             registeredOrders.add(order);
             pendingOrders.remove(order);
-            orderCreationTimes.remove(order);
             restaurant.addOrder(order);
             return true;
-        } else {
-            return false;
+        } else if (order.getOrderStatus() == OrderStatus.CANCELED) {
+            dropOrder(order);
         }
+        return false;
     }
 
 
