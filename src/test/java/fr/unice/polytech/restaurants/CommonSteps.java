@@ -1,6 +1,5 @@
-package fr.unice.polytech.restaurants.stepsDefs.back;
+package fr.unice.polytech.restaurants;
 
-import fr.unice.polytech.restaurants.Restaurant;
 import io.cucumber.java.en.Given;
 
 import static org.junit.Assert.assertEquals;

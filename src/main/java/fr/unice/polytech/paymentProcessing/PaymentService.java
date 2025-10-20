@@ -4,9 +4,12 @@ import fr.unice.polytech.orderManagement.Order;
 
 public class PaymentService implements IPaymentService{
     MockedExternalPaymentSystem externalPaymentSystem;
-
     public PaymentService(MockedExternalPaymentSystem externalPaymentSystem, Order order){
 
+    }
+
+
+    public PaymentService(){
     }
 
     public PaymentService(Order order) {
@@ -15,7 +18,7 @@ public class PaymentService implements IPaymentService{
 
     @Override
     public boolean processExternalPayment(Order order) {
-        return externalPaymentSystem.mockedCheckingInformation();
+        return externalPaymentSystem.mockedCheckingInformation(order);
     }
 
 

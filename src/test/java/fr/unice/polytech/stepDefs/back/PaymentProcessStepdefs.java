@@ -48,7 +48,7 @@ public class PaymentProcessStepdefs {
     public void approveFirstPaymentRequest(){
         when(paymentService.processExternalPayment(pendingOrder)).thenReturn(true);
         expectedPaymentAttempts = 1;
-        resultingStatus = paymentProcessor.updatePaymentStatus(pendingOrder);
+        resultingStatus = paymentProcessor.processPayment(pendingOrder);
     }
 
     //Scenario: Payment initially rejected then accepted on the second attempt
@@ -56,7 +56,7 @@ public class PaymentProcessStepdefs {
     public void approveSecondPaymentAttemptAfterFirstRejection() {
         when(paymentService.processExternalPayment(pendingOrder)).thenReturn(false, true);
         expectedPaymentAttempts = 2;
-        resultingStatus = paymentProcessor.updatePaymentStatus(pendingOrder);
+        resultingStatus = paymentProcessor.processPayment(pendingOrder);
     }
 
 
@@ -65,7 +65,7 @@ public class PaymentProcessStepdefs {
     public void approveThirdPaymentAttemptAfterFirstOnesRejection() {
         when(paymentService.processExternalPayment(pendingOrder)).thenReturn(false, false, true);
         expectedPaymentAttempts = 3;
-        resultingStatus = paymentProcessor.updatePaymentStatus(pendingOrder);
+        resultingStatus = paymentProcessor.processPayment(pendingOrder);
     }
 
     //Scenario: Payment permanently rejected after three attempts
@@ -73,7 +73,7 @@ public class PaymentProcessStepdefs {
     public void rejectThirdPaymentAttemptAfterFirstOnesRejection() {
         when(paymentService.processExternalPayment(pendingOrder)).thenReturn(false, false, false);
         expectedPaymentAttempts = 3;
-        resultingStatus = paymentProcessor.updatePaymentStatus(pendingOrder);
+        resultingStatus = paymentProcessor.processPayment(pendingOrder);
     }
 
 
