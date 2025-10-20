@@ -9,7 +9,7 @@ public class PaymentProcessor {
     private final IPaymentService paymentService;
 
     public PaymentProcessor(Order order) {
-        this(order, new PaymentService());
+        this(order, new PaymentService(order));
     }
 
     public PaymentProcessor(Order order, IPaymentService paymentService) {
