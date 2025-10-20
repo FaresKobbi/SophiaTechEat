@@ -8,7 +8,6 @@ import io.cucumber.datatable.DataTable;
 import static org.junit.jupiter.api.Assertions.*;
 
 import fr.unice.polytech.dishes.*;
-import fr.unice.polytech.restaurants.*;
 import java.util.*;
 
 public class RestaurantDishManagementSteps {
