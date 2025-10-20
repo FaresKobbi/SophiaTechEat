@@ -3,7 +3,7 @@ package fr.unice.polytech.paymentProcessing;
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.orderManagement.OrderStatus;
 
-public class PaymentProcessor {
+public class PaymentProcessor implements IPaymentProcessor{
 
     private final Order order;
     private final IPaymentService paymentService;
@@ -18,27 +18,19 @@ public class PaymentProcessor {
     }
 
 
-
     public OrderStatus processPayment() {
         return processPayment(order);
     }
 
-    public OrderStatus processPayment(Order order){
-        boolean paymentSuccessful = paymentService.processExternalPayment(order);
-        return paymentSuccessful ? OrderStatus.VALIDATED : OrderStatus.CANCELED;
-    }
 
-    public OrderStatus updatePaymentStatus(Order order) {
-        OrderStatus status = processPayment(order);
-        if (status == OrderStatus.VALIDATED) {
-            return  status;
+    public OrderStatus processPayment(Order order){
+        for (int i = 0; i < 3; i++) {
+            boolean paymentSuccessful = paymentService.processExternalPayment(order);
+            if (paymentSuccessful) {
+                return OrderStatus.VALIDATED;
+            }
         }
-        int i = 0;
-        while (i<2 && status == OrderStatus.CANCELED) {
-            status = processPayment(order);
-            i++;
-        }
-        return status;
+        return OrderStatus.CANCELED;
     }
 
 }
