@@ -41,7 +41,6 @@ public class OrderManager {
                 .restaurant(restaurant)
                 .build();
 
-        restaurant.addOrder(order);
         pendingOrders.add(order);
         orderCreationTimes.put(order, System.currentTimeMillis());
 
@@ -50,9 +49,6 @@ public class OrderManager {
 
     public void initiatePayment(Order order, PaymentMethod paymentMethod) {
         if (paymentMethod == null) {
-            // The payment method comes from the user selection in the order confirmation flow and can be
-            // missing when the client submits an incomplete request. Fail fast with an explicit error
-            // instead of letting the processor selection crash on a null value.
             throw new IllegalArgumentException("Payment method must be provided");
         }
         if (isOrderTimedOut(order)) {
@@ -62,7 +58,7 @@ public class OrderManager {
         //Creattion du processeur de paiement via la factory
         IPaymentProcessor processor = paymentProcessorFactory.createProcessor(order, paymentMethod);
 
-        // Traitement du paiement (réutilisé pour les deux types)
+        order.setPaymentMethod(paymentMethod);
         OrderStatus status = processor.processPayment(order);
         order.setOrderStatus(status);
 
@@ -80,11 +76,12 @@ public class OrderManager {
     }
 
 
-    public boolean registerOrder(Order order) {
+    public boolean registerOrder(Order order, Restaurant restaurant) {
         if (order.getOrderStatus() == OrderStatus.VALIDATED) {
             registeredOrders.add(order);
             pendingOrders.remove(order);
             orderCreationTimes.remove(order);
+            restaurant.addOrder(order);
             return true;
         } else {
             return false;

@@ -56,7 +56,6 @@ class OrderManagerTest {
     void testCreateOrder() throws Exception {
         orderManager.createOrder(mockDishes, mockStudentAccount, mockDeliveryLocation, mockRestaurant);
 
-        verify(mockRestaurant).addOrder(any(Order.class));
 
         Field pendingOrdersField = OrderManager.class.getDeclaredField("pendingOrders");
         pendingOrdersField.setAccessible(true);
@@ -155,7 +154,7 @@ class OrderManagerTest {
         Map<Order, Long> orderCreationTimes = (Map<Order, Long>) orderCreationTimesField.get(orderManager);
         orderCreationTimes.put(order, System.currentTimeMillis());
 
-        boolean result = orderManager.registerOrder(order);
+        boolean result = orderManager.registerOrder(order, mockRestaurant);
 
         assertTrue(result);
         assertEquals(0, pendingOrders.size());
@@ -174,7 +173,7 @@ class OrderManagerTest {
                 .orderStatus(OrderStatus.PENDING)
                 .build();
 
-        boolean result = orderManager.registerOrder(order);
+        boolean result = orderManager.registerOrder(order, mockRestaurant);
 
         assertFalse(result);
     }
