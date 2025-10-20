@@ -279,18 +279,6 @@ public class Restaurant {
     }
 
     /**
-     * Ajoute un plat au menu du restaurant
-     * @param dish Le plat à ajouter
-     * @throws IllegalArgumentException si le plat est null
-     */
-    public void addDish(Dish dish) {
-        if (dish == null) {
-            throw new IllegalArgumentException("Dish cannot be null");
-        }
-        dishes.add(dish);
-    }
-
-    /**
      * Retire un plat du menu par son nom
      * @param dishName Le nom du plat à retirer
      * @throws IllegalArgumentException si le nom est null ou vide
