@@ -234,6 +234,9 @@ public class Restaurant {
         dishManager.updateDishType(oldDish,dishType);
     }
 
+
+
+
     public void addOrder(Order order) {
         orders.add(order);
     }
@@ -273,6 +276,45 @@ public class Restaurant {
         return openingHours;
     }
 
+    /**
+     * Ajoute un plat au menu du restaurant
+     * @param dish Le plat à ajouter
+     * @throws IllegalArgumentException si le plat est null
+     */
+    public void addDish(Dish dish) {
+        if (dish == null) {
+            throw new IllegalArgumentException("Dish cannot be null");
+        }
+        dishes.add(dish);
+    }
+
+    /**
+     * Retire un plat du menu par son nom
+     * @param dishName Le nom du plat à retirer
+     * @throws IllegalArgumentException si le nom est null ou vide
+     */
+    public void removeDish(String dishName) {
+        if (dishName == null || dishName.isEmpty()) {
+            throw new IllegalArgumentException("Dish name cannot be null or empty");
+        }
+        dishes.removeIf(dish -> dish.getName().equals(dishName));
+    }
+
+    /**
+     * Recherche un plat dans le menu par son nom
+     * @param dishName Le nom du plat recherché
+     * @return Le plat trouvé ou null si aucun plat ne correspond
+     * @throws IllegalArgumentException si le nom est null ou vide
+     */
+    public Dish findDishByName(String dishName) {
+        if (dishName == null || dishName.isEmpty()) {
+            throw new IllegalArgumentException("Dish name cannot be null or empty");
+        }
+        return dishes.stream()
+                .filter(dish -> dish.getName().equals(dishName))
+                .findFirst()
+                .orElse(null);
+    }
 
     // ========== BUILDER PATTERN ==========
 
@@ -336,5 +378,6 @@ public class Restaurant {
             return new Restaurant(this);
         }
     }
+
 }
 

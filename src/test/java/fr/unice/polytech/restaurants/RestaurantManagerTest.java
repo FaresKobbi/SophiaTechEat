@@ -1,7 +1,7 @@
 package fr.unice.polytech.restaurants;
 
 
-import fr.unice.polytech.restaurants.Restaurant;
+
 
 
 import fr.unice.polytech.restaurants.TimeSlot;
