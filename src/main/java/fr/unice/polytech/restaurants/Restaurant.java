@@ -6,6 +6,8 @@ import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.orderManagement.Order;
 
+import fr.unice.polytech.dishes.DishType;
+import fr.unice.polytech.users.UserAccount;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Restaurant {
+public class Restaurant extends UserAccount {
     private String restaurantName;
     private List<Dish> dishes;
     private List<Order> orders;
