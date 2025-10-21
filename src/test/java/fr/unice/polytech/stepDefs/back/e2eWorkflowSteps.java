@@ -118,9 +118,8 @@ public class e2eWorkflowSteps {
             String name = row.get("name");
             String description = row.get("description");
             double price = Double.parseDouble(row.get("price"));
-            Dish dish = new Dish(name, description, price);
-            currentRestaurant.addDish(dish);
-            availableDishes.put(name, dish);
+            currentRestaurant.addDish(name,description,price);
+            availableDishes.put(name, currentRestaurant.findDishByName(name));
         }
     }
 
