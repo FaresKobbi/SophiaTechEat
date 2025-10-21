@@ -1,21 +1,20 @@
 package fr.unice.polytech.stepDefs.back;
 
 import fr.unice.polytech.restaurants.ScenarioContext;
-import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
+import io.cucumber.java.en.*;
 import io.cucumber.datatable.DataTable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import fr.unice.polytech.dishes.*;
-
 import java.util.*;
 
 public class RestaurantDishManagementSteps {
     private final ScenarioContext ctx;
     public RestaurantDishManagementSteps(ScenarioContext ctx) { this.ctx = ctx; }
 
-    private Dish currentDish;
+    // On mémorise juste le dernier plat manipulé
+    private String lastDishName;
     private final List<String> currentDishTags = new ArrayList<>();
     private String currentAllergenInfo;
 
@@ -29,14 +28,16 @@ public class RestaurantDishManagementSteps {
         String description = dishData.get("description");
         double price = Double.parseDouble(dishData.get("price"));
 
-        currentDish = new Dish(name, description, price);
+        ctx.restaurant.addDish(name, description, price);
+        lastDishName = name;
 
         if (dishData.containsKey("category")) {
+            Dish dish = ctx.restaurant.findDishByName(lastDishName);
+            assertNotNull(dish, "Dish should exist after being added");
             String category = dishData.get("category").replace(" ", "_").toUpperCase();
-            currentDish.setCategory(DishCategory.valueOf(category));
+            dish.setCategory(DishCategory.valueOf(category));
         }
-
-        ctx.restaurant.addDish(currentDish);
+        // "type" est ignoré ici (pas utilisé par les assertions)
     }
 
     @Then("the dish {string} should be added to the menu")
@@ -48,15 +49,17 @@ public class RestaurantDishManagementSteps {
 
     @Then("the dish should have price {double} euros")
     public void the_dish_should_have_price_euros(double expectedPrice) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        assertEquals(expectedPrice, currentDish.getPrice(), 0.01);
+        assertNotNull(lastDishName, "A dish should have been created earlier");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Last dish should exist");
+        assertEquals(expectedPrice, dish.getPrice(), 0.01);
     }
 
     // ============ SCENARIO 2: Dietary tags ============
 
     @When("I tag the dish as {string} and {string}")
     public void i_tag_the_dish_as(String tag1, String tag2) {
-        assertNotNull(currentDish, "Current dish should not be null");
+        assertNotNull(lastDishName, "A dish should have been created earlier");
         currentDishTags.clear();
         currentDishTags.add(tag1);
         currentDishTags.add(tag2);
@@ -72,32 +75,36 @@ public class RestaurantDishManagementSteps {
 
     // ============ SCENARIO 3: Toppings ============
 
-    @io.cucumber.java.en.Given("a dish {string} exists with price {double}")
+    @Given("a dish {string} exists with price {double}")
     public void a_dish_exists_with_price(String dishName, double price) {
-        currentDish = new Dish(dishName, "Test dish", price);
-        ctx.restaurant.addDish(currentDish);
+        ctx.restaurant.addDish(dishName, "Test dish", price);
+        lastDishName = dishName;
     }
 
     @When("I add a topping {string} with price {double}")
     public void i_add_a_topping_with_price(String toppingName, double price) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        Topping topping = new Topping(toppingName, price);
-        currentDish.addTopping(topping);
+        assertNotNull(lastDishName, "No current dish context");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Dish should exist");
+        dish.addTopping(new Topping(toppingName, price));
     }
 
     @Then("the dish should have {int} toppings available")
     public void the_dish_should_have_toppings_available(int expectedCount) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        assertEquals(expectedCount, currentDish.getToppings().size());
+        assertNotNull(lastDishName, "No current dish context");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Dish should exist");
+        assertEquals(expectedCount, dish.getToppings().size());
     }
 
     @Then("topping {string} should cost {double} euros")
     public void topping_should_cost_euros(String toppingName, double expectedPrice) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        Topping topping = currentDish.getToppings().stream()
+        assertNotNull(lastDishName, "No current dish context");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Dish should exist");
+        Topping topping = dish.getToppings().stream()
                 .filter(t -> t.getName().equals(toppingName))
-                .findFirst()
-                .orElse(null);
+                .findFirst().orElse(null);
         assertNotNull(topping, "Topping '" + toppingName + "' should exist");
         assertEquals(expectedPrice, topping.getPrice(), 0.01);
     }
@@ -106,14 +113,18 @@ public class RestaurantDishManagementSteps {
 
     @When("I update the dish price to {double}")
     public void i_update_the_dish_price_to(double newPrice) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        currentDish.setPrice(newPrice);
+        assertNotNull(lastDishName, "No current dish context");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Dish should exist");
+        dish.setPrice(newPrice);
     }
 
     @When("I update the description to {string}")
     public void i_update_the_description_to(String newDescription) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        currentDish.setDescription(newDescription);
+        assertNotNull(lastDishName, "No current dish context");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Dish should exist");
+        dish.setDescription(newDescription);
     }
 
     @Then("the dish {string} should have price {double}")
@@ -125,21 +136,24 @@ public class RestaurantDishManagementSteps {
 
     @Then("the dish description should be {string}")
     public void the_dish_description_should_be(String expectedDescription) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        assertEquals(expectedDescription, currentDish.getDescription());
+        assertNotNull(lastDishName, "No current dish context");
+        Dish dish = ctx.restaurant.findDishByName(lastDishName);
+        assertNotNull(dish, "Dish should exist");
+        assertEquals(expectedDescription, dish.getDescription());
     }
 
     // ============ SCENARIO 5: Remove dish ============
 
-    @io.cucumber.java.en.Given("a dish {string} exists in the menu")
+    @Given("a dish {string} exists in the menu")
     public void a_dish_exists_in_the_menu(String dishName) {
-        Dish dish = new Dish(dishName, "Test dish", 10.00);
-        ctx.restaurant.addDish(dish);
+        ctx.restaurant.addDish(dishName, "Test dish", 10.00);
+        lastDishName = dishName;
     }
 
     @When("I remove the dish {string} from the menu")
     public void i_remove_the_dish_from_menu(String dishName) {
         ctx.restaurant.removeDish(dishName);
+        if (dishName.equals(lastDishName)) lastDishName = null;
     }
 
     @Then("the dish {string} should not be available")
@@ -180,13 +194,15 @@ public class RestaurantDishManagementSteps {
 
     @When("I add allergen information {string}")
     public void i_add_allergen_information(String allergenInfo) {
-        assertNotNull(currentDish, "Current dish should not be null");
-        currentAllergenInfo = allergenInfo;
+        assertNotNull(lastDishName, "No current dish context");
+        // Si ton domaine supporte l’info allergène, fais :
+        // ctx.restaurant.findDishByName(lastDishName).setAllergenInfo(allergenInfo);
+        currentAllergenInfo = allergenInfo; // stock local pour assertions
     }
 
     @Then("the dish should display allergen warning")
     public void the_dish_should_display_allergen_warning() {
-        assertNotNull(currentDish, "Current dish should not be null");
+        assertNotNull(lastDishName, "No current dish context");
         assertNotNull(currentAllergenInfo, "Allergen information should be set");
     }
 
