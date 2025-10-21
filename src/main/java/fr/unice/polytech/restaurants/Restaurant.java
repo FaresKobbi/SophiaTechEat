@@ -316,6 +316,10 @@ public class Restaurant {
                 .orElse(null);
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
     // ========== BUILDER PATTERN ==========
 
     /**
