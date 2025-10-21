@@ -28,6 +28,19 @@ Feature: End-to-End Order Placement and Confirmation
     And the order status should become VALIDATED
     And the order should be registered successfully with "Pizza Palace"
 
+  Scenario: Failed order using External Payment (Payment Declined)
+    Given Jordan has selected the following items from "Pizza Palace":
+      | item             | quantity |
+      | Margherita Pizza | 1        |
+      | Coke             | 1        |
+    When Jordan creates an order for "Pizza Palace" with delivery to "Home"
+    And the external payment system rejects the payment on all attempts
+    And Jordan initiates the payment for the order using EXTERNAL method
+    Then the payment attempt should fail due to external decline
+    And the order status should become CANCELED
+    And Jordan's balance should remain 30.00 euros
+    And the order should not be registered with "Pizza Palace"
+
   Scenario: Successful order using Internal Payment (Sufficient Balance)
     Given Jordan has selected the following items from "Pizza Palace":
       | item             | quantity |

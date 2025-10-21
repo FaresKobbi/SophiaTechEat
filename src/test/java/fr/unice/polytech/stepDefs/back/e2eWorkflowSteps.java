@@ -177,6 +177,12 @@ public class e2eWorkflowSteps {
         when(mockPaymentService.processExternalPayment(any(Order.class))).thenReturn(true);
     }
 
+    @When("the external payment system rejects the payment on all attempts")
+    public void external_payment_rejects_on_all_attempts() {
+        assertNotNull(currentOrder, "Order must exist for payment rejection simulation");
+        when(mockPaymentService.processExternalPayment(any(Order.class))).thenReturn(false);
+    }
+
     @When("{word} initiates the payment for the order using {word} method")
     public void user_initiates_payment(String userName, String paymentMethodStr) {
         assertNotNull(currentOrder, "Order must exist before initiating payment");
@@ -232,6 +238,12 @@ public class e2eWorkflowSteps {
     public void payment_attempt_should_fail_insufficient_balance() {
         assertNotNull(currentOrder, "Order context must be set");
         assertEquals(OrderStatus.CANCELED, currentOrder.getOrderStatus(), "Order status should be CANCELED after failed internal payment");
+    }
+
+    @Then("the payment attempt should fail due to external decline")
+    public void payment_attempt_should_fail_due_to_external_decline() {
+        assertNotNull(currentOrder, "Order context must be set");
+        assertEquals(OrderStatus.CANCELED, currentOrder.getOrderStatus(), "Order status should be CANCELED after failed external payment");
     }
 
     @Then("{word}'s balance should remain {double} euros")
