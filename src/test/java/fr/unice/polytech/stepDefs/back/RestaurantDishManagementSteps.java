@@ -24,12 +24,7 @@ public class RestaurantDishManagementSteps {
 
     // ============ BACKGROUND STEPS ============
 
-    @Given("the restaurant manager is logged in to {string}")
-    public void the_restaurant_manager_is_logged_in_to(String restaurantName) {
-        assertNotNull(ctx.restaurant, "Restaurant should be initialized");
-        assertEquals(restaurantName, ctx.restaurant.getRestaurantName());
-        ctx.managerLoggedIn = true;
-    }
+
 
     // ============ SCENARIO 1: Add a new dish ============
 
