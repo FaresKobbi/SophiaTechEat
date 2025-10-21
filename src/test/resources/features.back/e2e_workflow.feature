@@ -22,11 +22,13 @@ Feature: End-to-End Order Placement and Confirmation
       | Margherita Pizza | 1        |
       | Coke             | 1        |
     When Jordan creates an order for "Pizza Palace" with delivery to "Home"
+    And Jordan chooses a time slot from those that are available
     And the external payment system approves the payment on the first attempt
     And Jordan initiates the payment for the order using EXTERNAL method
     Then a validated order should exist for Jordan with total amount 14.50
     And the order status should become VALIDATED
     And the order should be registered successfully with "Pizza Palace"
+    And the time slot should remain blocked
 
   Scenario: Failed order using External Payment (Payment Declined)
     Given Jordan has selected the following items from "Pizza Palace":
@@ -34,12 +36,14 @@ Feature: End-to-End Order Placement and Confirmation
       | Margherita Pizza | 1        |
       | Coke             | 1        |
     When Jordan creates an order for "Pizza Palace" with delivery to "Home"
+    And Jordan chooses a time slot from those that are available
     And the external payment system rejects the payment on all attempts
     And Jordan initiates the payment for the order using EXTERNAL method
     Then the payment attempt should fail due to external decline
     And the order status should become CANCELED
     And Jordan's balance should remain 30.00 euros
     And the order should not be registered with "Pizza Palace"
+    And the time slot should not remain blocked
 
   Scenario: Successful order using Internal Payment (Sufficient Balance)
     Given Jordan has selected the following items from "Pizza Palace":
@@ -47,12 +51,14 @@ Feature: End-to-End Order Placement and Confirmation
       | Margherita Pizza | 1        |
       | Coke             | 1        |
     When Jordan creates an order for "Pizza Palace" with delivery to "Home"
+    And Jordan chooses a time slot from those that are available
     And Jordan initiates the payment for the order using INTERNAL method
     Then a validated order should exist for Jordan with total amount 14.50
     And the payment should be debited from Jordan's balance
     And Jordan's balance should be 15.50 euros
     And the order status should become VALIDATED
     And the order should be registered successfully with "Pizza Palace"
+    And the time slot should remain blocked
 
   Scenario: Failed order using Internal Payment (Insufficient Balance)
     Given Jordan has selected the following items from "Pizza Palace":
@@ -60,8 +66,10 @@ Feature: End-to-End Order Placement and Confirmation
       | Margherita Pizza | 2        |
       | Coke             | 3        |
     When Jordan creates an order for "Pizza Palace" with delivery to "Home"
+    And Jordan chooses a time slot from those that are available
     And Jordan initiates the payment for the order using INTERNAL method
     Then the payment attempt should fail due to insufficient balance
     And Jordan's balance should remain 30.00 euros
     And the order status should become CANCELED
     And the order should not be registered with "Pizza Palace"
+    And the time slot should not remain blocked
