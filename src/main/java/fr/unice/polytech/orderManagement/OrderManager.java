@@ -28,6 +28,12 @@ public class OrderManager {
     }
 
     public void createOrder(List<Dish> dishes, StudentAccount studentAccount, DeliveryLocation deliveryLocation, Restaurant restaurant) {
+        if (dishes == null || dishes.isEmpty()) {
+            throw new IllegalArgumentException("Empty cart");
+        }
+        if (deliveryLocation == null) {
+            throw new IllegalArgumentException("Missing delivery address");
+        }
         if (!studentAccount.hasDeliveryLocation(deliveryLocation)) {
             throw new IllegalArgumentException("Order creation failed: Delivery location is not among the student's saved locations.");
         }
@@ -36,6 +42,7 @@ public class OrderManager {
                 .amount(calculateTotalAmount(dishes))
                 .deliveryLocation(deliveryLocation)
                 .restaurant(restaurant)
+                .orderStatus(OrderStatus.PENDING)
                 .build();
 
         pendingOrders.add(order);

@@ -1,6 +1,8 @@
 package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.Dish;
+
+import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.orderManagement.Order;
 
@@ -25,7 +27,7 @@ public class Restaurant extends UserAccount {
     private final DishManager dishManager = new DishManager();
 
 
-    //Simple initialisation
+
 
    //Simple initialisation
     public Restaurant(String restaurantName) {
@@ -98,6 +100,7 @@ public class Restaurant extends UserAccount {
 
 
     //======= Capacity by slot =====
+
     public void setCapacity(TimeSlot slot, int capacity) {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
         if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
@@ -278,18 +281,6 @@ public class Restaurant extends UserAccount {
     }
 
     /**
-     * Ajoute un plat au menu du restaurant
-     * @param dish Le plat à ajouter
-     * @throws IllegalArgumentException si le plat est null
-     */
-    public void addDish(Dish dish) {
-        if (dish == null) {
-            throw new IllegalArgumentException("Dish cannot be null");
-        }
-        dishes.add(dish);
-    }
-
-    /**
      * Retire un plat du menu par son nom
      * @param dishName Le nom du plat à retirer
      * @throws IllegalArgumentException si le nom est null ou vide
@@ -315,6 +306,10 @@ public class Restaurant extends UserAccount {
                 .filter(dish -> dish.getName().equals(dishName))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public List<Order> getOrders() {
+        return orders;
     }
 
     // ========== BUILDER PATTERN ==========
