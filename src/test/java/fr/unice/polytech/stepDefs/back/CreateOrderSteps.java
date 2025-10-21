@@ -118,8 +118,8 @@ public class CreateOrderSteps {
             orderManager.createOrder(cartDishes, studentAccount, deliveryLocation, restaurant);
 
             // Retrieve last created order
-            List<Order> orders = restaurant.getOrders();
-            currentOrder = orders.isEmpty() ? null : orders.get(orders.size() - 1);
+            List<Order> pendingOrders = orderManager.getPendingOrders();
+            currentOrder = pendingOrders.isEmpty() ? null : pendingOrders.get(pendingOrders.size() - 1);
 
             // Initiate payment (handled by OrderManager)
             if (currentOrder != null && paymentMethod != null) {
@@ -128,7 +128,7 @@ public class CreateOrderSteps {
 
             // Register validated order
             if (currentOrder != null && currentOrder.getOrderStatus() == OrderStatus.VALIDATED) {
-                orderManager.registerOrder(currentOrder);
+                orderManager.registerOrder(currentOrder,restaurant);
             }
 
         } catch (Exception e) {
