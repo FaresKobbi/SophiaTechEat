@@ -11,17 +11,25 @@ import java.util.*;
 
 public class RestaurantDishManagementSteps {
     private final ScenarioContext ctx;
-    public RestaurantDishManagementSteps(ScenarioContext ctx) { this.ctx = ctx; }
+
+    public RestaurantDishManagementSteps(ScenarioContext ctx) {
+        this.ctx = ctx;
+    }
 
     // On mémorise juste le dernier plat manipulé
     private String lastDishName;
     private final List<String> currentDishTags = new ArrayList<>();
     private String currentAllergenInfo;
+    private final Map<String, Double> extraOptions = new HashMap<>();
+
+    // ============ BACKGROUND STEPS ============
+
+
 
     // ============ SCENARIO 1: Add a new dish ============
 
-    @When("I add a new dish with the following details:")
-    public void i_add_a_new_dish_with_details(DataTable dataTable) {
+    @When("the restaurant manager adds a new dish with the following details:")
+    public void the_restaurant_manager_adds_a_new_dish_with_details(DataTable dataTable) {
         Map<String, String> dishData = dataTable.asMap(String.class, String.class);
 
         String name = dishData.get("name");
@@ -37,7 +45,6 @@ public class RestaurantDishManagementSteps {
             String category = dishData.get("category").replace(" ", "_").toUpperCase();
             dish.setCategory(DishCategory.valueOf(category));
         }
-        // "type" est ignoré ici (pas utilisé par les assertions)
     }
 
     @Then("the dish {string} should be added to the menu")
@@ -57,8 +64,8 @@ public class RestaurantDishManagementSteps {
 
     // ============ SCENARIO 2: Dietary tags ============
 
-    @When("I tag the dish as {string} and {string}")
-    public void i_tag_the_dish_as(String tag1, String tag2) {
+    @When("the restaurant manager tags the dish as {string} and {string}")
+    public void the_restaurant_manager_tags_the_dish_as(String tag1, String tag2) {
         assertNotNull(lastDishName, "A dish should have been created earlier");
         currentDishTags.clear();
         currentDishTags.add(tag1);
@@ -81,8 +88,8 @@ public class RestaurantDishManagementSteps {
         lastDishName = dishName;
     }
 
-    @When("I add a topping {string} with price {double}")
-    public void i_add_a_topping_with_price(String toppingName, double price) {
+    @When("the restaurant manager adds a topping {string} with price {double}")
+    public void the_restaurant_manager_adds_a_topping_with_price(String toppingName, double price) {
         assertNotNull(lastDishName, "No current dish context");
         Dish dish = ctx.restaurant.findDishByName(lastDishName);
         assertNotNull(dish, "Dish should exist");
@@ -111,16 +118,16 @@ public class RestaurantDishManagementSteps {
 
     // ============ SCENARIO 4: Update dish ============
 
-    @When("I update the dish price to {double}")
-    public void i_update_the_dish_price_to(double newPrice) {
+    @When("the restaurant manager updates the dish price to {double}")
+    public void the_restaurant_manager_updates_the_dish_price_to(double newPrice) {
         assertNotNull(lastDishName, "No current dish context");
         Dish dish = ctx.restaurant.findDishByName(lastDishName);
         assertNotNull(dish, "Dish should exist");
         dish.setPrice(newPrice);
     }
 
-    @When("I update the description to {string}")
-    public void i_update_the_description_to(String newDescription) {
+    @When("the restaurant manager updates the description to {string}")
+    public void the_restaurant_manager_updates_the_description_to(String newDescription) {
         assertNotNull(lastDishName, "No current dish context");
         Dish dish = ctx.restaurant.findDishByName(lastDishName);
         assertNotNull(dish, "Dish should exist");
@@ -150,8 +157,8 @@ public class RestaurantDishManagementSteps {
         lastDishName = dishName;
     }
 
-    @When("I remove the dish {string} from the menu")
-    public void i_remove_the_dish_from_menu(String dishName) {
+    @When("the restaurant manager removes the dish {string} from the menu")
+    public void the_restaurant_manager_removes_the_dish_from_menu(String dishName) {
         ctx.restaurant.removeDish(dishName);
         if (dishName.equals(lastDishName)) lastDishName = null;
     }
@@ -169,12 +176,10 @@ public class RestaurantDishManagementSteps {
         assertFalse(found, "Dish should not be visible in menu");
     }
 
-    // ============ SCENARIO 6: Extra options (fake storage) ============
+    // ============ SCENARIO 6: Extra options ============
 
-    private final Map<String, Double> extraOptions = new HashMap<>();
-
-    @When("I define an extra option {string} with price {double}")
-    public void i_define_an_extra_option_with_price(String extraName, double price) {
+    @When("the restaurant manager defines an extra option {string} with price {double}")
+    public void the_restaurant_manager_defines_an_extra_option_with_price(String extraName, double price) {
         extraOptions.put(extraName, price);
     }
 
@@ -192,12 +197,10 @@ public class RestaurantDishManagementSteps {
 
     // ============ SCENARIO 7: Allergen information ============
 
-    @When("I add allergen information {string}")
-    public void i_add_allergen_information(String allergenInfo) {
+    @When("the restaurant manager adds allergen information {string}")
+    public void the_restaurant_manager_adds_allergen_information(String allergenInfo) {
         assertNotNull(lastDishName, "No current dish context");
-        // Si ton domaine supporte l’info allergène, fais :
-        // ctx.restaurant.findDishByName(lastDishName).setAllergenInfo(allergenInfo);
-        currentAllergenInfo = allergenInfo; // stock local pour assertions
+        currentAllergenInfo = allergenInfo;
     }
 
     @Then("the dish should display allergen warning")

@@ -14,11 +14,11 @@ public class CommonSteps {
         ctx.restaurant = new Restaurant(restaurantName);
     }
 
-    @Given("I am logged in as restaurant manager of {string}")
-    public void i_am_logged_in_as_restaurant_manager(String restaurantName) {
-        assertNotNull(ctx.restaurant, "Restaurant should be initialized");
-        // adapte selon ta classe Restaurant: getName() ou getRestaurantName()
+    @Given("the restaurant manager is logged in to {string}")
+    public void the_restaurant_manager_is_logged_in_to(String restaurantName) {
+        assertNotNull(ctx.restaurant);
         assertEquals(restaurantName, ctx.restaurant.getRestaurantName());
         ctx.managerLoggedIn = true;
     }
+
 }
