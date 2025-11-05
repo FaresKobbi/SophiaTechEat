@@ -1,11 +1,9 @@
 # SopiaTech Eats – Team I-1
 
 ## Équipe projet
-- Fares Kobbi – Software Architect (SA)
-- Youssef Ben Mzoughia – Software Architect (SA)
+- Fares Kobbi – Software Architect (SA/QA)
+- Youssef Ben Mzoughia – Software Architect (SA/PO)
 - Younes Hammoud – Operations (OPS)
-- Rajaa Tchani – Product Owner (PO)
-- Imane Amraoui – Quality Assurance (QA)
 
 ## Installer et lancer le projet
 1. **Prérequis**
