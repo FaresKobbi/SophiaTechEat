@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:SophiaTech-Eats": "node dist/sophia-tech-eats/server/server.mjs"
+    "serve:ssr:SophiaTech-Eats": "node dist/sophia-tech-eats/server/server.mjs",
+    "generate:component": "ng generate component"
   },
   "private": true,
   "dependencies": {
