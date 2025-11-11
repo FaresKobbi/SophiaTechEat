@@ -1,7 +1,7 @@
-<body class="home-body">
+<div class="home-body">
 <div class="container">
   <div class="card">
-    <button class="btn">CREATE STUDENT</button>
+    <button class="btn" routerLink="/create-student-page">CREATE STUDENT</button>
     <app-item-list [title]="'Students'" [items]="students"></app-item-list>
   </div>
 
@@ -10,5 +10,5 @@
     <app-item-list [title]="'Restaurants'" [items]="restaurants"></app-item-list>
   </div>
 </div>
-</body>
+</div>
 
