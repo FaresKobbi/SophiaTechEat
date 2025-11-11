@@ -1,0 +1,46 @@
+.create-student-page-body{
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #d9d9d9;
+  height: 100vh;
+  gap: 30px;
+}
+
+.form-card {
+  background-color: #b0b0b0;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  font-size: 16px;
+  color: #000;
+}
+
+input {
+  width: 200px;
+  height: 25px;
+  border: none;
+  padding: 5px;
+}
+
+.btn {
+  background-color: #b0b0b0;
+  border: none;
+  padding: 15px 30px;
+  font-family: 'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
