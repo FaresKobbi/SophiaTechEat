@@ -1,4 +1,4 @@
-package fr.unice.polytech.APIGateWay;
+package fr.unice.polytech.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-class ApiRegistry {
+public class ApiRegistry {
     private final Map<String, HttpHandler> routes = new HashMap<>();
     private HttpHandler fallbackHandler = new NotFoundHandler();
 

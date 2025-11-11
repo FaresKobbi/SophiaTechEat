@@ -13,6 +13,8 @@
         <java.version>17</java.version>
         <junit.jupiter.version>5.8.0</junit.jupiter.version>
         <cucumber.version>7.13.0</cucumber.version>
+        <jackson.version>2.16.1</jackson.version>
+
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -90,7 +92,11 @@
             <artifactId>picocli</artifactId>
             <version>4.7.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

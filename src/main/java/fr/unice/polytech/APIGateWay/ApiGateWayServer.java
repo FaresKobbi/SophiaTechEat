@@ -1,5 +1,8 @@
 package fr.unice.polytech.APIGateWay;
 
+import fr.unice.polytech.server.ApiRegistry;
+import fr.unice.polytech.server.SimpleServer;
+
 import java.io.IOException;
 
 public class ApiGateWayServer {

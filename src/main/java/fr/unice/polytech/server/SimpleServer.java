@@ -1,4 +1,4 @@
-package fr.unice.polytech.APIGateWay;
+package fr.unice.polytech.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-class SimpleServer {
+public class SimpleServer {
     private final HttpServer server;
     private final int port;
 
