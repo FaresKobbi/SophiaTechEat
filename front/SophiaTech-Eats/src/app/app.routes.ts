@@ -2,6 +2,7 @@
 
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component'; // <-- 1. IMPORT
+import { CreateStudentPageComponent } from './create-student-page/create-student-page.component';
 
 export const routes: Routes = [
   // 2. ADD THIS ROUTE
@@ -10,8 +11,5 @@ export const routes: Routes = [
     component: HomeComponent,
     title: 'Home Page' // Optional: Sets the browser tab title
   },
-
-  // You can add other routes here later, e.g.:
-  // { path: 'about', component: AboutComponent },
-  // { path: 'contact', component: ContactComponent },
+  { path: 'create-student-page', component: CreateStudentPageComponent },
 ];
