@@ -6,6 +6,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import fr.unice.polytech.server.ApiRegistry;
 import fr.unice.polytech.server.SimpleServer;
+import fr.unice.polytech.services.handlers.DynamicAccountsHandler;
+import fr.unice.polytech.services.handlers.StaticAccountsHandler;
 import fr.unice.polytech.users.StudentAccount;
 import fr.unice.polytech.users.StudentAccountManager;
 
@@ -37,39 +39,13 @@ public class StudentAccountService {
 
         ApiRegistry registry = new ApiRegistry();
 
-        registry.register("GET", "/accounts", new AccountsHandler());
+        registry.register("GET", "/accounts", new StaticAccountsHandler(accountManager, objectMapper));
+        registry.register("POST", "/accounts", new StaticAccountsHandler(accountManager, objectMapper));
+        registry.registerFallback(new DynamicAccountsHandler());
 
         server.start(registry);
         System.out.println("StudentAccountService started on port " + port);
-        System.out.println("Now serving exact route: GET /accounts");    }
+        System.out.println("Serving STATIC routes:  GET /accounts, POST /accounts");
 
-    /**
-     * Handles GET /accounts
-     */
-    static class AccountsHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            try {
-                if ("GET".equals(exchange.getRequestMethod())) {
-                    List<StudentAccount> accounts = accountManager.getAllAccounts();
-                    String jsonResponse = objectMapper.writeValueAsString(accounts);
-                    sendResponse(exchange, 200, jsonResponse);
-                } else {
-                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Internal Server Error\"}");
-            }
-        }
-    }
-
-    private static void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
-        byte[] responseBytes = response.getBytes("UTF-8");
-        exchange.sendResponseHeaders(statusCode, responseBytes.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(responseBytes);
-        }
     }
 }
