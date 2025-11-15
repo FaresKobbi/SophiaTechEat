@@ -9,17 +9,14 @@ import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.users.UserAccount;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class Restaurant extends UserAccount {
+    private String restaurantId;
     private String restaurantName;
     private List<Dish> dishes;
-    private List<Order> orders;
-   //Simple initialisation 
+    private List<String> orders;
     private List<OpeningHours> openingHours;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private EstablishmentType establishmentType;
@@ -34,6 +31,7 @@ public class Restaurant extends UserAccount {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
         }
+        this.restaurantId = UUID.randomUUID().toString();
         this.restaurantName = restaurantName;
         this.dishes = new ArrayList<>();
         orders = new ArrayList<>();
@@ -45,6 +43,7 @@ public class Restaurant extends UserAccount {
     //Private constructor for Builder pattern.
     //Avoid public Restaurant(String restaurantName, List<Dish> dishes, List<TimeSlot> availableTimeSlots) {..}
     private Restaurant(Builder builder) {
+        this.restaurantId = UUID.randomUUID().toString();
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         orders = new ArrayList<>();
@@ -241,8 +240,8 @@ public class Restaurant extends UserAccount {
 
 
 
-    public void addOrder(Order order) {
-        orders.add(order);
+    public void addOrder(String orderId) {
+        orders.add(orderId);
     }
     
     
@@ -308,7 +307,7 @@ public class Restaurant extends UserAccount {
                 .orElse(null);
     }
 
-    public List<Order> getOrders() {
+    public List<String> getOrderIds() {
         return orders;
     }
 
