@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ListComponent} from '../item-list/item-list.component';
+import {ListComponent} from '../../components/item-list/item-list.component';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
-import {Restaurant, RestaurantService} from '../services/restaurant/restaurant.service';
+import {Restaurant, RestaurantService} from '../../services/restaurant/restaurant.service';
 import {Subscription} from 'rxjs';
 
 @Component({

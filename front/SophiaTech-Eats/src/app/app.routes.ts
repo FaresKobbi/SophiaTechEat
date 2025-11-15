@@ -1,8 +1,9 @@
 // src/app/app.routes.ts
 
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component'; // <-- 1. IMPORT
-import { CreateStudentPageComponent } from './create-student-page/create-student-page.component';
+import { HomeComponent } from './pages/home/home.component'; // <-- 1. IMPORT
+import { CreateStudentPageComponent } from './pages/create-student-page/create-student-page.component';
+import {CreateRestaurantPageComponent} from './pages/create-restaurant-page/create-restaurant-page.component';
 
 export const routes: Routes = [
   // 2. ADD THIS ROUTE
@@ -12,4 +13,5 @@ export const routes: Routes = [
     title: 'Home Page' // Optional: Sets the browser tab title
   },
   { path: 'create-student-page', component: CreateStudentPageComponent },
+  { path: 'create-restaurant-page', component: CreateRestaurantPageComponent },
 ];
