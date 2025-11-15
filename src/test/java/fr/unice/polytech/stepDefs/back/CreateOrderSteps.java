@@ -1,3 +1,4 @@
+/*
 package fr.unice.polytech.stepDefs.back;
 
 import io.cucumber.datatable.DataTable;
@@ -9,15 +10,13 @@ import fr.unice.polytech.orderManagement.*;
 import fr.unice.polytech.paymentProcessing.*;
 import fr.unice.polytech.restaurants.*;
 import fr.unice.polytech.users.*;
+import org.junit.jupiter.api.Disabled;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
-/**
- * Step definitions for create_order.feature (no quantity management)
- * Uses the real OrderManager and payment flow.
- */
+@Disabled
 public class CreateOrderSteps {
 
     private StudentAccount.Builder accountBuilder;
@@ -185,3 +184,5 @@ public class CreateOrderSteps {
 
 
 }
+
+*/

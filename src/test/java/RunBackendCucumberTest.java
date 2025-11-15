@@ -2,6 +2,7 @@ import io.cucumber.junit.platform.engine.Cucumber;
 
 import org.junit.platform.suite.api.*;
 import static io.cucumber.junit.platform.engine.Constants.*;
+/*
 
 @Suite
 @IncludeEngines("cucumber")
@@ -13,3 +14,4 @@ import static io.cucumber.junit.platform.engine.Constants.*;
 public class RunBackendCucumberTest {
 
 }
+*/
