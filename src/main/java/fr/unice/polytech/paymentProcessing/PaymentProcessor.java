@@ -8,9 +8,7 @@ public class PaymentProcessor implements IPaymentProcessor{
     private final Order order;
     private final IPaymentService paymentService;
 
-    public PaymentProcessor(Order order) {
-        this(order, new PaymentService(order));
-    }
+
 
     public PaymentProcessor(Order order, IPaymentService paymentService) {
         this.order = order;

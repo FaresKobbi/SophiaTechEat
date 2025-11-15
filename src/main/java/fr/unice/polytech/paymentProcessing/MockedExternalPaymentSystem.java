@@ -9,23 +9,21 @@ import java.util.Random;
 
 public class MockedExternalPaymentSystem {
 
-    private Order order;
     private final Random random = new Random();
 
-
-    public MockedExternalPaymentSystem(Order order) {
-        this.order = order;
+    public MockedExternalPaymentSystem() {
     }
 
-    public boolean mockedCheckingInformation(Order givenOrder){
-        this.order = givenOrder;
-        BankInfo bankInfo = ((StudentAccount)order.getStudentAccount()).getBankInfo();
+
+    public boolean mockedCheckingInformation(BankInfo bankInfo){
+        if (bankInfo == null) {
+            return false;
+        }
 
         if (bankInfo.getExpirationDate().isBefore(YearMonth.now())) {
             return false;
         }
 
         return random.nextDouble() < 0.8;
-
     }
 }

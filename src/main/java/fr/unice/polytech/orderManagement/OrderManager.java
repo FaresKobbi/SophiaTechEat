@@ -2,50 +2,46 @@ package fr.unice.polytech.orderManagement;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.paymentProcessing.*;
-import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.users.DeliveryLocation;
-import fr.unice.polytech.users.StudentAccount;
 
+import java.net.http.HttpClient;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class OrderManager {
 
 
-    private List<Order> registeredOrders;
-    private List<Order> pendingOrders;
+
+    private Map<String, Order> allOrders;
     private final PaymentProcessorFactory paymentProcessorFactory;
 
-    public OrderManager(){
-        this(new PaymentProcessorFactory());
 
-    }
-    public OrderManager(PaymentProcessorFactory paymentProcessorFactory) {
-        this.paymentProcessorFactory = paymentProcessorFactory;
-        registeredOrders = new java.util.ArrayList<>();
-        pendingOrders = new java.util.ArrayList<>();
+    // CHANGED: Constructor now takes HttpClient
+    public OrderManager(HttpClient httpClient){
+        this.paymentProcessorFactory = new PaymentProcessorFactory(httpClient);
+        this.allOrders = new HashMap<>();
     }
 
-    public void createOrder(List<Dish> dishes, StudentAccount studentAccount, DeliveryLocation deliveryLocation, Restaurant restaurant) {
+    public void createOrder(List<Dish> dishes, String studentId, DeliveryLocation deliveryLocation, String restaurantId) {
         if (dishes == null || dishes.isEmpty()) {
             throw new IllegalArgumentException("Empty cart");
         }
         if (deliveryLocation == null) {
             throw new IllegalArgumentException("Missing delivery address");
         }
-        if (!studentAccount.hasDeliveryLocation(deliveryLocation)) {
-            throw new IllegalArgumentException("Order creation failed: Delivery location is not among the student's saved locations.");
-        }
-        Order order = new Order.Builder(studentAccount)
+        Order order = new Order.Builder(studentId)
                 .dishes(dishes)
                 .amount(calculateTotalAmount(dishes))
                 .deliveryLocation(deliveryLocation)
-                .restaurant(restaurant)
+                .restaurant(restaurantId)
                 .orderStatus(OrderStatus.PENDING)
                 .build();
 
-        pendingOrders.add(order);
+
+        allOrders.put(order.getOrderId(), order);
 
     }
 
@@ -65,6 +61,8 @@ public class OrderManager {
 
     }
 
+    //TODO : register and drop order to be moved to service layer
+    /*
     private void dropOrder(Order order) {
         pendingOrders.remove(order);
     }
@@ -83,16 +81,36 @@ public class OrderManager {
         return false;
     }
 
+    */
 
     private double calculateTotalAmount(List<Dish> dishes) {
         return dishes.stream().mapToDouble(Dish::getPrice).sum();
     }
 
-    public List<Order> getRegisteredOrders() {
-        return registeredOrders;
+
+    public Order getOrder(String orderId) {
+        return allOrders.get(orderId);
     }
+
+    public List<Order> getAllOrders() {
+        return new ArrayList<>(allOrders.values());
+    }
+
+    public List<Order> getOrdersForStudent(String studentId) {
+        return allOrders.values().stream()
+                .filter(order -> studentId.equals(order.getStudentId()))
+                .collect(Collectors.toList());
+    }
+
     public List<Order> getPendingOrders() {
-        return pendingOrders;
+        return allOrders.values().stream()
+                .filter(order -> order.getOrderStatus() == OrderStatus.PENDING)
+                .collect(Collectors.toList());
+    }
+    public List<Order> getRegisteredOrders() {
+        return allOrders.values().stream()
+                .filter(order -> order.getOrderStatus() == OrderStatus.VALIDATED)
+                .collect(Collectors.toList());
     }
 
 

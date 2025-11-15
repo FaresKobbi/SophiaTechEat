@@ -2,10 +2,7 @@ package fr.unice.polytech.users; // Assuming this package
 
 import fr.unice.polytech.paymentProcessing.BankInfo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 // Note: Requires UserAccount class from above.
 public class StudentAccount extends UserAccount {
@@ -13,14 +10,14 @@ public class StudentAccount extends UserAccount {
     private String studentID;
     private double balance = 30 ;
     private BankInfo bankInfo;
-    private List<DeliveryLocation> prerecordedLocations = new ArrayList<>();
+    private List<DeliveryLocation> prerecordedLocations;
 
     /**
      * Constructor for StudentAccount.
      */
     private StudentAccount(Builder builder) {
         super(builder.name, builder.surname, builder.email); // Initialize attributes from UserAccount
-        this.studentID = builder.studentID;
+        this.studentID = UUID.randomUUID().toString();
         this.bankInfo = builder.bankInfo;
         this.balance = builder.balance;
         this.prerecordedLocations = new ArrayList<>(builder.prerecordedLocations);
@@ -66,7 +63,6 @@ public class StudentAccount extends UserAccount {
         private String name;
         private String surname;
         private String email;
-        private String studentID;
         private BankInfo bankInfo;
         private double balance = 30;
         private List<DeliveryLocation> prerecordedLocations = new ArrayList<>();
@@ -81,10 +77,7 @@ public class StudentAccount extends UserAccount {
             return this;
         }
 
-        public Builder studentId(String studentID){
-            this.studentID = studentID;
-            return this;
-        }
+
 
         public Builder bankInfo(String cardNumber, int CVV, int month, int year){
             this.bankInfo = new BankInfo(cardNumber, CVV, month, year);

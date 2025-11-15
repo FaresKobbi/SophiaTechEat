@@ -243,10 +243,10 @@ public class Restaurant extends UserAccount {
     public void addOrder(String orderId) {
         orders.add(orderId);
     }
-    
-    
 
-
+    public String getRestaurantId() {
+        return restaurantId;
+    }
 
     @Override
     public String toString() {

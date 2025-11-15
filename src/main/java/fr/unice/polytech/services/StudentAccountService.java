@@ -23,13 +23,11 @@ public class StudentAccountService {
         //MOCK
         accountManager.addAccount(
                 new StudentAccount.Builder("Alice", "Smith")
-                        .studentId("22400632")
                         .email("alice.smith@etu.unice.fr")
                         .build()
         );
         accountManager.addAccount(
                 new StudentAccount.Builder("Bob", "Martin")
-                        .studentId("22400633")
                         .email("bob.martin@etu.unice.fr")
                         .build()
         );

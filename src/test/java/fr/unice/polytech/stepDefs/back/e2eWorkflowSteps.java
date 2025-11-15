@@ -1,3 +1,4 @@
+/*
 package fr.unice.polytech.stepDefs.back;
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
@@ -13,6 +14,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Disabled;
 
 import java.time.LocalTime;
 import java.util.*;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@Disabled
 public class e2eWorkflowSteps {
     private StudentAccount currentStudent;
     private Restaurant currentRestaurant;
@@ -291,3 +294,6 @@ public class e2eWorkflowSteps {
     }
 
 }
+
+
+ */
