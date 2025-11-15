@@ -1,0 +1,53 @@
+<div class="create-page-wrapper">
+
+  <div class="restaurant-card">
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- Name -->
+      <div class="form-section">
+        <label class="section-title">Name</label>
+        <input type="text" formControlName="name" placeholder="Nom" class="text-input">
+      </div>
+
+      <!-- Establishment Type -->
+      <div class="form-section">
+        <p class="section-title clickable" (click)="isEstablishmentOpen = !isEstablishmentOpen">
+          Establishment Type
+        </p>
+
+        <div *ngIf="isEstablishmentOpen" class="scroll-box">
+          <div *ngFor="let type of ESTABLISHMENT_TYPES">
+            <label>
+              <input type="radio" [value]="type" formControlName="establishmentType">
+              {{ type }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuisine Type -->
+      <div class="form-section">
+        <p class="section-title clickable" (click)="isCuisineOpen = !isCuisineOpen">
+          Cuisine Type
+        </p>
+
+        <div *ngIf="isCuisineOpen" class="scroll-box" formArrayName="cuisines">
+          <div *ngFor="let ctrl of form.controls.cuisines.controls; let i = index">
+            <label>
+              <input type="checkbox" [formControlName]="i">
+              {{ CUISINE_TYPES[i] }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="submit-btn" type="submit">
+        CREATE RESTAURANT
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
