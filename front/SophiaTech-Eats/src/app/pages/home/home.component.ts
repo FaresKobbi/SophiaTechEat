@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
     });
     this.studentSub = this.studentService.students$.subscribe({
       next: (data: StudentAccount[]) => {
-        this.students = data.map(student => `${student.firstName} ${student.lastName}`);
+        this.students = data.map(student => `${student.name} ${student.surname}`);
       },
       error: (err) => console.error('Erreur de récupération des étudiants', err)
     });

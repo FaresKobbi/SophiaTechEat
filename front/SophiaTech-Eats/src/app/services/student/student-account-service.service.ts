@@ -5,8 +5,8 @@ import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 
 export interface StudentAccount {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
+  surname: string;
 }
 
 @Injectable({
