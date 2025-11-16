@@ -1,9 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {ListComponent} from '../item-list/item-list.component';
+import {ListComponent} from '../../components/item-list/item-list.component';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
-import {Restaurant, RestaurantService} from '../services/restaurant/restaurant.service';
+import {Restaurant, RestaurantService} from '../../services/restaurant/restaurant.service';
 import {Subscription} from 'rxjs';
+
+import {StudentAccount, StudentAccountService} from '../../services/student/student-account-service.service';
+
 
 @Component({
   selector: 'app-home',
@@ -13,11 +16,13 @@ import {Subscription} from 'rxjs';
 })
 export class HomeComponent implements OnInit {
 
-  students = ['STUDENT 1', 'STUDENT 2', 'STUDENT 3','STUDENT 4','STUDENT 5'];
   restaurants: string[] = [];
   private sub?: Subscription;
 
-  constructor(private restaurantService: RestaurantService) {
+  students: string[] = [];
+  private studentSub?: Subscription;
+
+  constructor(private restaurantService: RestaurantService, private studentService: StudentAccountService) {
   }
 
 
@@ -30,6 +35,14 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => console.error('Erreur de récupération des restaurants', err)
     });
+    this.studentSub = this.studentService.students$.subscribe({
+      next: (data: StudentAccount[]) => {
+        this.students = data.map(student => `${student.name} ${student.surname}`);
+      },
+      error: (err) => console.error('Erreur de récupération des étudiants', err)
+    });
+
+
   }
 
 }
