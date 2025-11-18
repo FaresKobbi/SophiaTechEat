@@ -4,6 +4,8 @@ import {Observable, of, tap} from 'rxjs';
 
 export interface Restaurant {
   restaurantName: string;
+  restaurantId: string;
+
 }
 
 @Injectable({
@@ -12,6 +14,8 @@ export interface Restaurant {
 export class RestaurantService {
   private apiUrl = 'http://localhost:8080/api/restaurants';
   private cache: Restaurant[] | null = null;
+  private selectedRestaurant: Restaurant | null = null;
+
 
   constructor(private http: HttpClient) {}
 
@@ -23,6 +27,14 @@ export class RestaurantService {
         tap((data) => this.cache = data)
       );
     }
+  }
+  setSelectedRestaurant(restaurant: Restaurant): void {
+    this.selectedRestaurant = restaurant;
+    console.log('Restaurant selected:', restaurant.restaurantName);
+  }
+  // ADDED: Getter for the selected restaurant
+  getSelectedRestaurant(): Restaurant | null {
+    return this.selectedRestaurant;
   }
 
   clearCache(): void {
