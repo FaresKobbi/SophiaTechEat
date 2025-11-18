@@ -1,13 +1,14 @@
 package fr.unice.polytech.dishes;
 
 public enum DishType {
-    GENERAL,
-    ITALIAN,
-    FRENCH,
-    JAPANESE,
-    INDIAN,
-    AMERICAN,
-    CHINESE,
-    MEXICAN,
-    VEGETARIAN
+    PASTA,
+    MEAT,
+    PIZZA,
+    BURGER,
+    SUSHI,
+    ICE_CREAM,
+    CAKE,
+    SALAD,
+    DRINK,
+    GENERAL
 }
