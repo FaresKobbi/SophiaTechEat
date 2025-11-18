@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input, Output,EventEmitter} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,5 +10,16 @@ import { CommonModule } from '@angular/common';
 })
 export class ListComponent {
   @Input() title: string = '';
-  @Input() items: string[] = [];
-}
+  @Input() items: any[] = [];
+  @Input() displayKey: string = 'name';
+  @Output() itemClicked = new EventEmitter<any>();
+
+  onItemClick(item: any): void {
+    if (this.title.toLowerCase() === 'restaurants') {
+      this.itemClicked.emit(item);
+    }
+  }
+
+  getDisplayValue(item: any): string {
+    return item[this.displayKey] || 'N/A';
+  }}
