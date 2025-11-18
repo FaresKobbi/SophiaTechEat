@@ -17,7 +17,7 @@ import {StudentAccount, StudentAccountService} from '../../services/student/stud
 export class HomeComponent implements OnInit {
 
   restaurants: string[] = [];
-  private sub?: Subscription;
+  private restaurantSub?: Subscription;
 
   students: string[] = [];
   private studentSub?: Subscription;
@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.sub = this.restaurantService.getRestaurants().subscribe({
+    this.restaurantSub = this.restaurantService.getRestaurants().subscribe({
       next: (data) => {
         this.restaurants = data
           .map(r => r.restaurantName)
@@ -43,6 +43,12 @@ export class HomeComponent implements OnInit {
     });
 
 
+
+  }
+
+  ngOnDestroy(): void {
+    this.restaurantSub?.unsubscribe();
+    this.studentSub?.unsubscribe();
   }
 
 }
