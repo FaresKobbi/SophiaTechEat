@@ -37,6 +37,14 @@ export class StudentAccountService {
     ).subscribe();
   }
 
+  createStudent(data: {name: string, surname: string, email: string}): Observable<StudentAccount> {
+    return this.http.post<StudentAccount>(this.apiUrl, data).pipe(
+      tap(() => {
+        this.refreshStudents();
+      })
+    );
+  }
+
 
   public refreshStudents(): void {
     this.loadStudents();

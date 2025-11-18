@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ListComponent} from '../../components/item-list/item-list.component';
 import {CommonModule} from '@angular/common';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {Restaurant, RestaurantService} from '../../services/restaurant/restaurant.service';
 import {Subscription} from 'rxjs';
 
@@ -16,33 +16,55 @@ import {StudentAccount, StudentAccountService} from '../../services/student/stud
 })
 export class HomeComponent implements OnInit {
 
-  restaurants: string[] = [];
-  private sub?: Subscription;
+  allRestaurants: Restaurant[] = [];
+  restaurantsForList: Restaurant[] = [];
 
-  students: string[] = [];
+  private restaurantSub?: Subscription;
+
+  students: StudentAccount[] = [];
   private studentSub?: Subscription;
 
-  constructor(private restaurantService: RestaurantService, private studentService: StudentAccountService) {
+  constructor(
+    private restaurantService: RestaurantService,
+    private studentService: StudentAccountService,
+    private router: Router
+  ) {
   }
 
 
+
   ngOnInit(): void {
-    this.sub = this.restaurantService.getRestaurants().subscribe({
+    this.restaurantSub = this.restaurantService.getRestaurants().subscribe({
       next: (data) => {
-        this.restaurants = data
-          .map(r => r.restaurantName)
-          .filter(name => !!name);
+        this.allRestaurants = data;
+        this.restaurantsForList = data;
       },
       error: (err) => console.error('Erreur de récupération des restaurants', err)
     });
     this.studentSub = this.studentService.students$.subscribe({
       next: (data: StudentAccount[]) => {
-        this.students = data.map(student => `${student.name} ${student.surname}`);
+        this.students = data;
       },
       error: (err) => console.error('Erreur de récupération des étudiants', err)
     });
 
 
+  }
+
+  ngOnDestroy(): void {
+    this.restaurantSub?.unsubscribe();
+    this.studentSub?.unsubscribe();
+  }
+
+  onRestaurantSelect(restaurant: Restaurant): void {
+    if (!restaurant || !restaurant.restaurantId) {
+      console.error('Invalid restaurant data received.');
+      return;
+    }
+
+    this.restaurantService.setSelectedRestaurant(restaurant);
+
+    this.router.navigate(['/manager/dashboard', restaurant.restaurantId]);
   }
 
 }

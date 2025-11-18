@@ -7,8 +7,12 @@
 
   <div class="card">
     <button class="btn">CREATE RESTAURANT</button>
-    <app-item-list [title]="'Restaurants'" [items]="restaurants"></app-item-list>
-  </div>
+    <app-item-list
+      [title]="'Restaurants'"
+      [items]="restaurantsForList"
+      [displayKey]="'restaurantName'"
+      (itemClicked)="onRestaurantSelect($event)">
+    </app-item-list>  </div>
 </div>
 </div>
 
