@@ -27,6 +27,14 @@ public class PassthroughHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*"); // Allows Angular frontend
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+        if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
+            exchange.sendResponseHeaders(204, -1);
+            return;
+        }
         String path = exchange.getRequestURI().getPath();
         String query = exchange.getRequestURI().getQuery();
         String method = exchange.getRequestMethod();
@@ -67,10 +75,10 @@ public class PassthroughHandler implements HttpHandler {
             }
 
             exchange.getRequestHeaders().forEach((key, values) -> {
-                if (key.equalsIgnoreCase("Content-Type") || key.equalsIgnoreCase("Accept")) {
-                    values.forEach(value -> requestBuilder.header(key, value));
-                }
-            });
+                if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
+                        !key.equalsIgnoreCase("Content-Length")) {
+                    values.forEach(value -> exchange.getResponseHeaders().add(key, value));
+                }            });
 
             HttpRequest request = requestBuilder.build();
             HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());

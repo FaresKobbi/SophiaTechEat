@@ -2,16 +2,23 @@
   <div class="form-container">
     <div class="form-card">
       <label>First name:</label>
-      <input type="text" />
+      <input type="text" [(ngModel)]="name" />
 
       <label>Surname:</label>
-      <input type="text" />
+      <input type="text" [(ngModel)]="surname" />
 
       <label>Email:</label>
-      <input type="text" />
+      <input type="email" [(ngModel)]="email" />
     </div>
 
-    <button class="btn">CREATE STUDENT</button>
+    <button class="btn" (click)="createStudent()" [disabled]="isLoading">
+      {{ isLoading ? 'CREATING...' : 'CREATE STUDENT' }}
+    </button>
+
+    <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+      {{ errorMessage }}
+    </div>
+
     <button class="btn home" routerLink="/">HOME PAGE</button>
   </div>
 </div>
