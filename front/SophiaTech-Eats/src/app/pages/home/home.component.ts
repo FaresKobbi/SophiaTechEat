@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
 
   private restaurantSub?: Subscription;
 
-  students: string[] = [];
+  students: StudentAccount[] = [];
   private studentSub?: Subscription;
 
   constructor(
@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
     });
     this.studentSub = this.studentService.students$.subscribe({
       next: (data: StudentAccount[]) => {
-        this.students = data.map(student => `${student.name} ${student.surname}`);
+        this.students = data;
       },
       error: (err) => console.error('Erreur de récupération des étudiants', err)
     });
