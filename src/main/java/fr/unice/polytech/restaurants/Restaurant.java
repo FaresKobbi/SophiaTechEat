@@ -1,5 +1,6 @@
 package fr.unice.polytech.restaurants;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.unice.polytech.dishes.*;
 
 import fr.unice.polytech.orderManagement.Order;
@@ -19,7 +20,7 @@ public class Restaurant extends UserAccount {
     private Map<TimeSlot, Integer> capacityByTimeSlot;
     private CuisineType cuisineType;
     private Set<DietaryLabel> availableDietaryLabels = new HashSet<>();
-
+    @JsonIgnore
     private final DishManager dishManager = new DishManager();
 
 
