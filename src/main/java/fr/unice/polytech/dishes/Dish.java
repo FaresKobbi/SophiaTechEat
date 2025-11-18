@@ -6,9 +6,10 @@ import java.util.Objects;
 
 public class Dish extends PriceableItem {
     private String description;
-    private DishType cuisineType = DishType.GENERAL;
+    private DishType dishType;
     private DishCategory category;
     private List<Topping> toppings;
+    private List<DietaryLabel> dietaryLabels;
 
     public Dish(String name, double price) {
         super(name, price);
@@ -19,8 +20,8 @@ public class Dish extends PriceableItem {
         this.description = description;
     }
 
-    public DishType getCuisineType() {
-        return cuisineType;
+    public DishType getDishType() {
+        return dishType;
     }
 
     public Dish(String name, String description, double price) {
@@ -29,9 +30,16 @@ public class Dish extends PriceableItem {
         this.toppings = new ArrayList<>();
     }
 
+    public Dish(String name, String description, double price, DishType dishType ) {
+        super(name, price);
+        this.description = description;
+        this.toppings = new ArrayList<>();
+        this.dishType = dishType;
+    }
 
-    public void setCuisineType(DishType cuisineType) {
-        this.cuisineType = cuisineType;
+
+    public void setDishType(DishType dishType) {
+        this.dishType = dishType;
     }
 
 
@@ -63,6 +71,14 @@ public class Dish extends PriceableItem {
         this.setPrice(newPrice);
     }
 
+    public void setDietaryLabels(List<DietaryLabel> dietaryLabels) {
+        this.dietaryLabels = dietaryLabels;
+    }
+
+    public List<DietaryLabel> getDietaryLabels() {
+        return dietaryLabels;
+    }
+
     public void addTopping(Topping topping) {
         this.toppings.add(topping);
     }
@@ -79,11 +95,11 @@ public class Dish extends PriceableItem {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return Objects.equals(description, dish.description) && cuisineType == dish.cuisineType && category == dish.category && Objects.equals(toppings, dish.toppings);
+        return Objects.equals(description, dish.description) && dishType == dish.dishType && category == dish.category && Objects.equals(toppings, dish.toppings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, cuisineType, category, toppings);
+        return Objects.hash(description, dishType, category, toppings);
     }
 }

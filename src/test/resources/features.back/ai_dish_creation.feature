@@ -5,7 +5,7 @@ Feature: AI-Powered Dish Information Generation
 
   Scenario: AI generates dish information with high confidence
     Given the system receives an image of a "Pizza"
-    And the AI analysis generates "Pizza Margherita", "A classic Italian pizza with tomato and mozzarella.", "ITALIAN", "MAIN_COURSE" with 95% confidence
+    And the AI analysis generates "Pizza Margherita", "A classic Italian pizza with tomato and mozzarella.", "PIZZA", "MAIN_COURSE" with 95% confidence
     When the system processes the image to generate dish information
     Then the user should see the accurate dish name "Pizza Margherita" and description "A classic Italian pizza with tomato and mozzarella."
 
