@@ -27,7 +27,7 @@ export class RestaurantService {
         tap((data) => this.restaurantsSubject.next(data))
       );
     }
-  }
+
   setSelectedRestaurant(restaurant: Restaurant): void {
     this.selectedRestaurant = restaurant;
     console.log('Restaurant selected:', restaurant.restaurantName);
