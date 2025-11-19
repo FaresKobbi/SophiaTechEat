@@ -13,10 +13,10 @@ public class KeywordSuggestionProvider implements SuggestionProvider {
 
     public KeywordSuggestionProvider() {
         keywordMap = Map.of(
-                "pizza", new DishInfo("Pizza", "A classic Italian dish", DishType.ITALIAN, DishCategory.MAIN_COURSE),
-                "burger", new DishInfo("Burger", "An American classic", DishType.AMERICAN, DishCategory.MAIN_COURSE),
-                "sushi", new DishInfo("Sushi", "A Japanese specialty", DishType.JAPANESE, DishCategory.MAIN_COURSE),
-                "salade", new DishInfo("Salad", "A healthy starter", DishType.GENERAL, DishCategory.STARTER)
+                "pizza", new DishInfo("Pizza", "A classic Italian dish", DishType.PIZZA, DishCategory.MAIN_COURSE),
+                "burger", new DishInfo("Burger", "An American classic", DishType.BURGER, DishCategory.MAIN_COURSE),
+                "sushi", new DishInfo("Sushi", "A Japanese specialty", DishType.SUSHI, DishCategory.MAIN_COURSE),
+                "salade", new DishInfo("Salad", "A healthy starter", DishType.SALAD, DishCategory.STARTER)
         );
     }
 

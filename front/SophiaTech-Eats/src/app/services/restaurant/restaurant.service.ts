@@ -5,6 +5,8 @@ import {StudentAccount} from '../student/student-account-service.service';
 
 export interface Restaurant {
   restaurantName: string;
+  restaurantId: string;
+
 }
 
 @Injectable({
@@ -15,6 +17,9 @@ export class RestaurantService {
   private cache: Restaurant[] | null = null;
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([])
   public restaurants$ = this.restaurantsSubject.asObservable();
+  private selectedRestaurant: Restaurant | null = null;
+
+
   constructor(private http: HttpClient) {}
 
   getRestaurants(): Observable<Restaurant[]> {
@@ -22,6 +27,15 @@ export class RestaurantService {
         tap((data) => this.restaurantsSubject.next(data))
       );
     }
+  }
+  setSelectedRestaurant(restaurant: Restaurant): void {
+    this.selectedRestaurant = restaurant;
+    console.log('Restaurant selected:', restaurant.restaurantName);
+  }
+  // ADDED: Getter for the selected restaurant
+  getSelectedRestaurant(): Restaurant | null {
+    return this.selectedRestaurant;
+  }
 
 
   createRestaurant(data: {restaurantName : string}){

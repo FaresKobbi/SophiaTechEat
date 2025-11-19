@@ -4,6 +4,8 @@ package fr.unice.polytech.restaurants;
 
 
 
+import fr.unice.polytech.dishes.DietaryLabel;
+import fr.unice.polytech.dishes.Dish;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -480,6 +482,186 @@ class RestaurantManagerTest {
             // La capacité devrait être revenue à l'initiale
             assertEquals(initialCapacity, restaurant1.getCapacity(slot1));
             assertEquals(3, manager.getAvailableTimeSlots(restaurant1).size());
+        }
+    }
+
+    // ==================== SEARCH TESTS ====================
+    @Nested
+    @DisplayName("Search Tests")
+    class SearchTests {
+
+        private Restaurant italianRest;
+        private Restaurant japaneseRest;
+        private Restaurant mixedRest;
+        private Dish glutenFreePasta;
+        private Dish normalPizza;
+        private Dish sushi;
+        private Dish veganSalad;
+
+        @BeforeEach
+        void setUpSearchData() {
+            // 1. Setup Italian Restaurant (Italian Cuisine)
+            italianRest = new Restaurant("Luigi's");
+            italianRest.setCuisineType(CuisineType.ITALIAN);
+
+            glutenFreePasta = new Dish("GF Pasta", 12.0);
+            glutenFreePasta.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE, DietaryLabel.VEGETARIAN));
+
+            normalPizza = new Dish("Pizza", 10.0);
+            normalPizza.setDietaryLabels(List.of(DietaryLabel.VEGETARIAN)); // No GF label
+
+            italianRest.addDish(glutenFreePasta.getName(), "Desc", glutenFreePasta.getPrice());
+            italianRest.addDish(normalPizza.getName(), "Desc", normalPizza.getPrice());
+
+            // Manually setting labels because addDish(name, desc, price) creates a generic Dish inside Restaurant
+            // We need to update the created dishes with our specific labels
+            italianRest.getDishes().stream()
+                    .filter(d -> d.getName().equals("GF Pasta"))
+                    .findFirst().ifPresent(d -> d.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE, DietaryLabel.VEGETARIAN)));
+
+            italianRest.getDishes().stream()
+                    .filter(d -> d.getName().equals("Pizza"))
+                    .findFirst().ifPresent(d -> d.setDietaryLabels(List.of(DietaryLabel.VEGETARIAN)));
+
+
+            // 2. Setup Japanese Restaurant (Japanese Cuisine)
+            japaneseRest = new Restaurant("Sushi Zen");
+            japaneseRest.setCuisineType(CuisineType.JAPANESE);
+
+            sushi = new Dish("Sushi Set", 15.0);
+            sushi.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE)); // GF but not Vegetarian/Vegan explicitly here
+
+            japaneseRest.addDish(sushi.getName(), "Desc", sushi.getPrice());
+            japaneseRest.getDishes().get(0).setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE));
+
+
+            // 3. Setup Mixed/General Restaurant (General Cuisine)
+            mixedRest = new Restaurant("Healthy Spot");
+            mixedRest.setCuisineType(CuisineType.GENERAL);
+
+            veganSalad = new Dish("Super Salad", 9.0);
+            veganSalad.setDietaryLabels(List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
+
+            mixedRest.addDish(veganSalad.getName(), "Desc", veganSalad.getPrice());
+            mixedRest.getDishes().get(0).setDietaryLabels(List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
+
+
+            // Add all to manager
+            manager.addRestaurant(italianRest);
+            manager.addRestaurant(japaneseRest);
+            manager.addRestaurant(mixedRest);
+        }
+
+        // --- Search by Cuisine ---
+
+        @Test
+        @DisplayName("Should find restaurants by specific cuisine")
+        void shouldFindRestaurantsByCuisine() {
+            List<Restaurant> italianResults = manager.searchByCuisine(CuisineType.ITALIAN);
+            assertEquals(1, italianResults.size());
+            assertTrue(italianResults.contains(italianRest));
+
+            List<Restaurant> japaneseResults = manager.searchByCuisine(CuisineType.JAPANESE);
+            assertEquals(1, japaneseResults.size());
+            assertTrue(japaneseResults.contains(japaneseRest));
+        }
+
+        @Test
+        @DisplayName("Should return empty list for cuisine with no restaurants")
+        void shouldReturnEmptyForMissingCuisine() {
+            List<Restaurant> frenchResults = manager.searchByCuisine(CuisineType.FRENCH);
+            assertTrue(frenchResults.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return all restaurants when cuisine is null")
+        void shouldReturnAllRestaurantsWhenCuisineIsNull() {
+            List<Restaurant> results = manager.searchByCuisine(null);
+            assertEquals(3, results.size());
+        }
+
+        // --- Search by Dietary Label ---
+
+        @Test
+        @DisplayName("Should find restaurants having at least one dish with the dietary label")
+        void shouldFindRestaurantsByDietaryLabel() {
+            // Italian has GF Pasta, Japanese has Sushi (GF), Mixed has Salad (GF)
+            List<Restaurant> gfResults = manager.searchByDietaryLabel(DietaryLabel.GLUTEN_FREE);
+            assertEquals(3, gfResults.size());
+
+            // Only Mixed has VEGAN
+            List<Restaurant> veganResults = manager.searchByDietaryLabel(DietaryLabel.VEGAN);
+            assertEquals(1, veganResults.size());
+            assertTrue(veganResults.contains(mixedRest));
+        }
+
+        @Test
+        @DisplayName("Should return empty list for label found in no dishes")
+        void shouldReturnEmptyForMissingLabel() {
+            // Assume we add HALAL to enum but no dish has it
+            List<Restaurant> halalResults = manager.searchByDietaryLabel(DietaryLabel.HALAL);
+            assertTrue(halalResults.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return all restaurants when dietary label is null")
+        void shouldReturnAllRestaurantsWhenLabelIsNull() {
+            List<Restaurant> results = manager.searchByDietaryLabel(null);
+            assertEquals(3, results.size());
+        }
+
+        // --- Combined Search ---
+
+        @Test
+        @DisplayName("Should filter by both Cuisine AND Dietary Label")
+        void shouldFilterByBothCuisineAndLabel() {
+            // Italian + Vegetarian (Both Luigi's and Healthy Spot have veg options, but only Luigi is Italian)
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN, DietaryLabel.VEGETARIAN);
+
+            assertEquals(1, results.size());
+            assertTrue(results.contains(italianRest));
+        }
+
+        @Test
+        @DisplayName("Should return empty if cuisine matches but label does not")
+        void shouldReturnEmptyIfCuisineMatchesButLabelDoesNot() {
+            // Italian restaurant exists, but assumes no VEGAN dish in Luigi's
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN, DietaryLabel.VEGAN);
+            assertTrue(results.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return empty if label matches but cuisine does not")
+        void shouldReturnEmptyIfLabelMatchesButCuisineDoesNot() {
+            // Japanese restaurant exists, but assumes Sushi is not VEGAN
+            List<Restaurant> results = manager.search(CuisineType.JAPANESE, DietaryLabel.VEGAN);
+            assertTrue(results.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should default to cuisine search if label is null")
+        void shouldDefaultToCuisineSearchIfLabelIsNull() {
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN, null);
+            assertEquals(1, results.size());
+            assertTrue(results.contains(italianRest));
+        }
+
+        @Test
+        @DisplayName("Should default to label search if cuisine is null")
+        void shouldDefaultToLabelSearchIfCuisineIsNull() {
+            // Vegetarian matches Italian and Mixed
+            List<Restaurant> results = manager.search(null, DietaryLabel.VEGETARIAN);
+            assertEquals(2, results.size());
+            assertTrue(results.contains(italianRest));
+            assertTrue(results.contains(mixedRest));
+            assertFalse(results.contains(japaneseRest));
+        }
+
+        @Test
+        @DisplayName("Should return all restaurants if both arguments are null")
+        void shouldReturnAllIfBothNull() {
+            List<Restaurant> results = manager.search(null, null);
+            assertEquals(3, results.size());
         }
     }
 }

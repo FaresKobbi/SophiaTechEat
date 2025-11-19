@@ -1,10 +1,13 @@
 package  fr.unice.polytech.restaurants;
 
 
+import fr.unice.polytech.dishes.DietaryLabel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 // RestaurantManager: Manages restaurants and their time slots.
 
@@ -84,4 +87,48 @@ public class RestaurantManager {
         return restaurants.containsKey(restaurantName);
 
     }
+
+    public List<Restaurant> searchByCuisine(CuisineType cuisine) {
+        if (cuisine == null) {
+            return getAllRestaurants();
+        }
+        return restaurants.values().stream()
+                .filter(r -> r.getCuisineType() == cuisine)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<Restaurant> searchByDietaryLabel(DietaryLabel label) {
+        if (label == null) {
+            return getAllRestaurants();
+        }
+        return restaurants.values().stream()
+                .filter(r -> r.getDishes().stream()
+                        .anyMatch(dish -> dish.getDietaryLabels().contains(label)))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<Restaurant> search(CuisineType cuisine, DietaryLabel label) {
+
+        if (cuisine == null && label == null) {
+            return getAllRestaurants();
+        }
+
+        if (label == null) {
+            return searchByCuisine(cuisine);
+        }
+
+        if (cuisine == null) {
+            return searchByDietaryLabel(label);
+        }
+
+        return restaurants.values().stream()
+                .filter(r -> r.getCuisineType() == cuisine)
+                .filter(r -> r.getDishes().stream()
+                        .anyMatch(dish -> dish.getDietaryLabels().contains(label)))
+                .collect(Collectors.toList());
+    }
+
+
 }
