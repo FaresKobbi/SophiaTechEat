@@ -1,0 +1,47 @@
+<div class="manage-dish-body">
+  <div class="header-section">
+    <button class="btn back" routerLink="/manager/dashboard/{{ restaurantId }}">BACK</button>
+  </div>
+
+  <div class="content-container">
+
+    <div class="left-panel">
+      <button class="btn create-dish-btn" (click)="navigateToCreateDish()">CREATE DISH</button>
+
+      <div *ngIf="isLoading" class="loading-state">Loading dishes...</div>
+      <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+      <app-item-list
+        *ngIf="!isLoading && !errorMessage"
+        [title]="'DISHES'"
+        [items]="dishes"
+        [displayKey]="'name'"
+        (itemClicked)="onDishSelect($event)">
+      </app-item-list>
+    </div>
+
+    <div class="right-panel">
+      <div class="selected-dish-card">
+        <p class="section-title">SELECTED DISH</p>
+
+        <div class="dish-info">
+          <p *ngIf="!selectedDish">Select a dish from the list.</p>
+
+          <div *ngIf="selectedDish">
+            <p><strong>Name:</strong> {{ selectedDish.name }}</p>
+            <p><strong>Price:</strong> {{ selectedDish.price | currency:'EUR':'symbol':'1.2-2' }}</p>
+            <p><strong>Description:</strong> {{ selectedDish.description }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn update-btn"
+          [disabled]="!selectedDish"
+          (click)="navigateToUpdateDish()">
+          UPDATE
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
