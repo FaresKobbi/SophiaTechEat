@@ -1,4 +1,4 @@
-package fr.unice.polytech.services.handlers;
+package fr.unice.polytech.services.handlers.student;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

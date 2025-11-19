@@ -1,4 +1,4 @@
-package fr.unice.polytech.services.handlers;
+package fr.unice.polytech.services.handlers.student;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

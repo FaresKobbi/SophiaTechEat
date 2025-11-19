@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.restaurantSub = this.restaurantService.getRestaurants().subscribe({
+    this.restaurantSub = this.restaurantService.restaurants$.subscribe({
       next: (data) => {
         this.restaurants = data
           .map(r => r.restaurantName)
@@ -35,6 +35,9 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => console.error('Erreur de récupération des restaurants', err)
     });
+
+    this.restaurantService.getRestaurants().subscribe();
+
     this.studentSub = this.studentService.students$.subscribe({
       next: (data: StudentAccount[]) => {
         this.students = data.map(student => `${student.name} ${student.surname}`);

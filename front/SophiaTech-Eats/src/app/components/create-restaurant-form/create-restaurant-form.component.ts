@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {RestaurantService} from '../../services/restaurant/restaurant.service';
 
 @Component({
   selector: 'app-create-restaurant-form',
@@ -11,16 +12,25 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 })
 export class CreateRestaurantFormComponent {
 
+  constructor(private restaurantService: RestaurantService) {}
+
   form = new FormGroup({
     name: new FormControl('')
   });
 
   onSubmit() {
-    const formValue = this.form.value;
-
-    console.log({
-      name: formValue.name
+    const restaurantName = this.form.value.name as string;
+    const restaurantData = {
+      restaurantName: restaurantName,
+    };
+    this.restaurantService.createRestaurant(restaurantData).subscribe({
+      next: (newRestaurant) => console.log('Restaurant créé avec succès:', newRestaurant),
+      error: (err) => console.error('Erreur de création:', err)
     });
+
+    console.log('Soumission réussie:', restaurantData);
+
+    this.form.reset();
   }
 
 }

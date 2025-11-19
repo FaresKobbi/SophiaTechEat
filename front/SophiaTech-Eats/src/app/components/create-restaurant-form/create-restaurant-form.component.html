@@ -1,13 +1,11 @@
 <div class="create-page-wrapper">
-
   <div class="restaurant-card">
-
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-      <!-- Name -->
       <div class="form-section">
         <label class="section-title">Name</label>
         <input type="text" formControlName="name" placeholder="Nom" class="text-input">
+
       </div>
 
       <button class="submit-btn" type="submit">
@@ -15,7 +13,5 @@
       </button>
 
     </form>
-
   </div>
-
 </div>

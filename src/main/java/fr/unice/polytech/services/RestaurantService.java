@@ -8,6 +8,7 @@ import fr.unice.polytech.restaurants.RestaurantManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.server.ApiRegistry;
 import fr.unice.polytech.server.SimpleServer;
+import fr.unice.polytech.services.handlers.restaurant.StaticRestaurantHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,40 +30,14 @@ public class RestaurantService {
 
         ApiRegistry registry = new ApiRegistry();
 
-        registry.register("GET", "/restaurants", new RestaurantsHandler());
+        registry.register("GET", "/restaurants", new StaticRestaurantHandler(restaurantManager, objectMapper));
+        registry.register("POST", "/restaurants", new StaticRestaurantHandler(restaurantManager, objectMapper));
 
         server.start(registry);
         System.out.println("RestaurantService started on port " + port);
         System.out.println("Now serving exact route: GET /restaurants");
+        System.out.println("Now serving exact route: POST /restaurants");
     }
 
-    /**
-     * Handles GET /restaurants
-     */
-    static class RestaurantsHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            try {
 
-                if ("GET".equals(exchange.getRequestMethod())) {
-                    List<Restaurant> restaurants = restaurantManager.getAllRestaurants();
-                    String jsonResponse = objectMapper.writeValueAsString(restaurants);
-                    sendResponse(exchange, 200, jsonResponse);
-                } else {
-                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
-                }
-            } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"Internal Server Error\"}");
-            }
-        }
-    }
-
-    private static void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
-        byte[] responseBytes = response.getBytes("UTF-8");
-        exchange.sendResponseHeaders(statusCode, responseBytes.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(responseBytes);
-        }
-    }
 }
