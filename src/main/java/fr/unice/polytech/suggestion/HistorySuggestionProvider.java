@@ -17,7 +17,7 @@ public class HistorySuggestionProvider implements SuggestionProvider {
     public List<DishInfo> getSuggestions(String keyword) {
         return history.stream()
                 .filter(dish -> dish.getName().toLowerCase().contains(keyword.toLowerCase()))
-                .map(dish -> new DishInfo(dish.getName(), dish.getDescription(), dish.getCuisineType(), dish.getCategory()))
+                .map(dish -> new DishInfo(dish.getName(), dish.getDescription(), dish.getDishType(), dish.getCategory()))
                 .collect(Collectors.toList());
     }
 }

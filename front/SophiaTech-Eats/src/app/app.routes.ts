@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component'; // <-- 1. IMPORT
 import { CreateStudentPageComponent } from './pages/create-student-page/create-student-page.component';
 import {CreateRestaurantPageComponent} from './pages/create-restaurant-page/create-restaurant-page.component';
+import {RestaurantDashboardComponent} from './pages/restaurant-dashboard/restaurant-dashboard.component';
 
 export const routes: Routes = [
   // 2. ADD THIS ROUTE
@@ -14,4 +15,5 @@ export const routes: Routes = [
   },
   { path: 'create-student-page', component: CreateStudentPageComponent },
   { path: 'create-restaurant-page', component: CreateRestaurantPageComponent },
+  { path: 'manager/dashboard/:restaurantId', component: RestaurantDashboardComponent },
 ];

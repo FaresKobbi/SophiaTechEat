@@ -26,6 +26,6 @@ public class DishManager {
 
 
     public void updateDishType(Dish dish, DishType dishType) {
-        dish.setCuisineType(dishType);
+        dish.setDishType(dishType);
     }
 }

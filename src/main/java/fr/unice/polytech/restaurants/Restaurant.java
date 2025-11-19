@@ -1,9 +1,8 @@
 package fr.unice.polytech.restaurants;
 
-import fr.unice.polytech.dishes.Dish;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.unice.polytech.dishes.*;
 
-import fr.unice.polytech.dishes.DishType;
-import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.orderManagement.Order;
 
 import fr.unice.polytech.dishes.DishType;
@@ -19,8 +18,9 @@ public class Restaurant extends UserAccount {
     private List<String> orders;
     private List<OpeningHours> openingHours;
     private Map<TimeSlot, Integer> capacityByTimeSlot;
-    private EstablishmentType establishmentType;
-    private DishType cuisineType;
+    private CuisineType cuisineType;
+    private Set<DietaryLabel> availableDietaryLabels = new HashSet<>();
+    @JsonIgnore
     private final DishManager dishManager = new DishManager();
 
 
@@ -37,6 +37,7 @@ public class Restaurant extends UserAccount {
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
         this.openingHours = new ArrayList<>();
+        this.cuisineType = CuisineType.GENERAL;
     }
     
     
@@ -48,8 +49,8 @@ public class Restaurant extends UserAccount {
         this.dishes = new ArrayList<>(builder.dishes);
         orders = new ArrayList<>();
         this.capacityByTimeSlot = new HashMap<>();
-        this.cuisineType = builder.cuisineType;
         this.openingHours = new ArrayList<>(builder.openingHours);
+        this.cuisineType = builder.cuisineType != null ? builder.cuisineType : CuisineType.GENERAL;
     }
     
 
@@ -64,8 +65,15 @@ public class Restaurant extends UserAccount {
     public List<Dish> getDishes() {
         return new ArrayList<>(dishes);
     }
-    
-   
+
+    public void setAvailableDietaryLabels(Set<DietaryLabel> availableDietaryLabels) {
+        this.availableDietaryLabels = availableDietaryLabels;
+    }
+
+    public Set<DietaryLabel> getAvailableDietaryLabels() {
+        return availableDietaryLabels;
+    }
+
     public List<TimeSlot> getAvailableTimeSlots() {
         List<TimeSlot> availableSlots = new ArrayList<>();
         for (Map.Entry<TimeSlot, Integer> entry : capacityByTimeSlot.entrySet()) {
@@ -147,6 +155,12 @@ public class Restaurant extends UserAccount {
         this.openingHours.add(updatedOpeningHours);
     }
 
+    public void addDietaryLabel(DietaryLabel label) {
+        if (label == null) {
+            throw new IllegalArgumentException("Dietary label cannot be null");
+        }
+        availableDietaryLabels.add(label);
+    }
 
 
     public int getCapacity(TimeSlot slot) {
@@ -238,6 +252,41 @@ public class Restaurant extends UserAccount {
     }
 
 
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
+    }
+
+    public void setDishes(List<Dish> dishes) {
+        this.dishes = dishes;
+    }
+
+    public void setOrders(List<String> orders) {
+        this.orders = orders;
+    }
+
+    public void setCapacityByTimeSlot(Map<TimeSlot, Integer> capacityByTimeSlot) {
+        this.capacityByTimeSlot = capacityByTimeSlot;
+    }
+
+    public void setCuisineType(CuisineType cuisineType) {
+        this.cuisineType = cuisineType;
+    }
+
+    public List<String> getOrders() {
+        return orders;
+    }
+
+    public Map<TimeSlot, Integer> getCapacityByTimeSlot() {
+        return capacityByTimeSlot;
+    }
+
+    public CuisineType getCuisineType() {
+        return cuisineType;
+    }
+
+    public DishManager getDishManager() {
+        return dishManager;
+    }
 
 
     public void addOrder(String orderId) {
@@ -271,9 +320,6 @@ public class Restaurant extends UserAccount {
     }
 
 
-    public DishType getCuisineType() {
-        return cuisineType;
-    }
 
     public List<OpeningHours> getOpeningHours() {
         return openingHours;
@@ -319,20 +365,23 @@ public class Restaurant extends UserAccount {
      */
     public static class Builder {
         private final String restaurantName;
+        public CuisineType cuisineType;
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-        private DishType cuisineType;
         private List<OpeningHours> openingHours = new ArrayList<>();
 
-        public Builder withCuisineType(DishType cuisineType) {
-            this.cuisineType = cuisineType;
-            return this;
-        }
+
+
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
             }
             this.restaurantName = restaurantName;
+        }
+
+        public Builder withCuisineType(CuisineType cuisineType) {
+            this.cuisineType = cuisineType;
+            return this;
         }
 
         public Builder withDish(Dish dish) {
