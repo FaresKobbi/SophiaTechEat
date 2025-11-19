@@ -3,6 +3,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component'; // <-- 1. IMPORT
 import { CreateStudentPageComponent } from './pages/create-student-page/create-student-page.component';
+import {CreateRestaurantPageComponent} from './pages/create-restaurant-page/create-restaurant-page.component';
 import {RestaurantDashboardComponent} from './pages/restaurant-dashboard/restaurant-dashboard.component';
 
 export const routes: Routes = [
@@ -13,5 +14,6 @@ export const routes: Routes = [
     title: 'Home Page' // Optional: Sets the browser tab title
   },
   { path: 'create-student-page', component: CreateStudentPageComponent },
+  { path: 'create-restaurant-page', component: CreateRestaurantPageComponent },
   { path: 'manager/dashboard/:restaurantId', component: RestaurantDashboardComponent },
 ];

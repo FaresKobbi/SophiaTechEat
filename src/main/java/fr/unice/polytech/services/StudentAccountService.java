@@ -1,21 +1,14 @@
 package fr.unice.polytech.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
 import fr.unice.polytech.server.ApiRegistry;
 import fr.unice.polytech.server.SimpleServer;
-import fr.unice.polytech.services.handlers.DynamicAccountsHandler;
-import fr.unice.polytech.services.handlers.StaticAccountsHandler;
+import fr.unice.polytech.services.handlers.student.DynamicAccountsHandler;
+import fr.unice.polytech.services.handlers.student.StaticAccountsHandler;
 import fr.unice.polytech.users.StudentAccount;
 import fr.unice.polytech.users.StudentAccountManager;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.concurrent.Executors;
 
 public class StudentAccountService {
     private static final StudentAccountManager accountManager = new StudentAccountManager();
