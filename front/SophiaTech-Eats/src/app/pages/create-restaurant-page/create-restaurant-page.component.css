@@ -1,0 +1,29 @@
+.create-restaurant-page-body{
+  overflow: hidden;
+  background-color: #d9d9d9;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  background-color: #b0b0b0;
+  border: none;
+  padding: 15px 30px;
+  font-family: 'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;     /* distance from top */
+  right: 20px;
+  /* transition: transform 0.6s ease;   durée + fluidité */
+}
+
+/*.btn:hover {
+  transform: rotate(360deg);
+}*/
+

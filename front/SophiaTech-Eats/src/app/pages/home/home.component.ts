@@ -34,13 +34,16 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.restaurantSub = this.restaurantService.getRestaurants().subscribe({
+    this.restaurantSub = this.restaurantService.restaurants$.subscribe({
       next: (data) => {
         this.allRestaurants = data;
         this.restaurantsForList = data;
       },
       error: (err) => console.error('Erreur de récupération des restaurants', err)
     });
+
+    this.restaurantService.getRestaurants().subscribe();
+
     this.studentSub = this.studentService.students$.subscribe({
       next: (data: StudentAccount[]) => {
         this.students = data;
