@@ -8,7 +8,6 @@ import fr.unice.polytech.restaurants.RestaurantManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.server.ApiRegistry;
 import fr.unice.polytech.server.SimpleServer;
-import fr.unice.polytech.services.handlers.DynamicAccountsHandler;
 import fr.unice.polytech.services.handlers.restaurant.DynamicRestaurantHandler;
 import fr.unice.polytech.services.handlers.restaurant.StaticRestaurantHandler;
 
