@@ -1,19 +1,20 @@
-// src/app/app.routes.ts
 
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component'; // <-- 1. IMPORT
+import { HomeComponent } from './pages/home/home.component';
 import { CreateStudentPageComponent } from './pages/create-student-page/create-student-page.component';
 import {CreateRestaurantPageComponent} from './pages/create-restaurant-page/create-restaurant-page.component';
 import {RestaurantDashboardComponent} from './pages/restaurant-dashboard/restaurant-dashboard.component';
+import {ManageDishComponent} from './pages/manage-dish/manage-dish.component';
 
 export const routes: Routes = [
-  // 2. ADD THIS ROUTE
   {
-    path: '', // <-- Empty path means this is the default route
+    path: '',
     component: HomeComponent,
-    title: 'Home Page' // Optional: Sets the browser tab title
+    title: 'Home Page'
   },
   { path: 'create-student-page', component: CreateStudentPageComponent },
   { path: 'create-restaurant-page', component: CreateRestaurantPageComponent },
   { path: 'manager/dashboard/:restaurantId', component: RestaurantDashboardComponent },
+  { path: 'manager/dish/:restaurantId', component: ManageDishComponent },
+  { path: 'manager/dish/edit/:restaurantId/:dishId', component: ManageDishComponent },
 ];

@@ -8,6 +8,11 @@ export interface Restaurant {
   restaurantId: string;
 
 }
+export interface Dish {
+  name: string;
+  description: string;
+  price: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +37,13 @@ export class RestaurantService {
     this.selectedRestaurant = restaurant;
     console.log('Restaurant selected:', restaurant.restaurantName);
   }
-  // ADDED: Getter for the selected restaurant
+
+  getDishesByRestaurantId(restaurantId: string): Observable<Dish[]> {
+    const url = `${this.apiUrl}/${restaurantId}/dishes`;
+    console.log(`Fetching dishes from: ${url}`);
+    return this.http.get<Dish[]>(url);
+  }
+
   getSelectedRestaurant(): Restaurant | null {
     return this.selectedRestaurant;
   }

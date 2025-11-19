@@ -15,9 +15,7 @@ export class ListComponent {
   @Output() itemClicked = new EventEmitter<any>();
 
   onItemClick(item: any): void {
-    if (this.title.toLowerCase() === 'restaurants') {
       this.itemClicked.emit(item);
-    }
   }
 
   getDisplayValue(item: any): string {
