@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ListComponent } from '../../components/item-list/item-list.component';
-import { RestaurantService, Dish } from '../../services/restaurant/restaurant.service';
+import {Component, OnInit} from '@angular/core';
+import {Router, RouterLink} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ListComponent} from '../../components/item-list/item-list.component';
+import {RestaurantService, Dish} from '../../services/restaurant/restaurant.service';
 
 @Component({
   selector: 'app-manage-dish',
@@ -23,7 +23,8 @@ export class ManageDishComponent implements OnInit {
   constructor(
     private router: Router,
     private restaurantService: RestaurantService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     const id = this.restaurantService.getSelectedRestaurant()?.restaurantId;
@@ -58,17 +59,14 @@ export class ManageDishComponent implements OnInit {
   }
 
   navigateToCreateDish(): void {
-    console.log('Navigating to create dish page...');
-    // TODO: Implement actual navigation to the creation form page
+    this.router.navigate(['/manager/dish/create', this.restaurantId]);
   }
 
   navigateToUpdateDish(): void {
-    if (!this.selectedDish) {
-      this.errorMessage = 'Please select a dish to update.';
-      return;
-    }
-    const dishIdentifier = this.selectedDish.name;
+    if (!this.selectedDish) return;
 
-    this.router.navigate(['/manager/dish/edit', this.restaurantId, dishIdentifier]);
+    const dishIdentifier = this.selectedDish.id || this.selectedDish.name;
+
+    this.router.navigate(['/manager/dish/update', this.restaurantId, dishIdentifier]);
   }
 }

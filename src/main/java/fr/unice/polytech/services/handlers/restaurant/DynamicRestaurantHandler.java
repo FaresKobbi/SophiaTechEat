@@ -1,6 +1,6 @@
 package fr.unice.polytech.services.handlers.restaurant;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -10,7 +10,6 @@ import fr.unice.polytech.restaurants.RestaurantManager;
 
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +20,8 @@ import java.util.regex.Pattern;
 public class DynamicRestaurantHandler implements HttpHandler {
     private final RestaurantManager restaurantManager;
     private final ObjectMapper objectMapper;
-    private static final String RESTAURANTS_PATH = "/restaurants/";
 
-    // Matches: /restaurants/{restaurantId}/dishes
     private static final Pattern DISHES_COLLECTION_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/?$");
-    // Matches: /restaurants/{restaurantId}/dishes/{dishId}
     private static final Pattern DISH_ITEM_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/([^/]+)/?$");
 
     public DynamicRestaurantHandler(RestaurantManager restaurantManager, ObjectMapper objectMapper) {
@@ -106,6 +102,10 @@ public class DynamicRestaurantHandler implements HttpHandler {
             }
 
             updateDishCommonFields(dish,dishRequest);
+            //TODO handle dietary labels properly (add/remove instead of just adding)
+            dishRequest.dietaryLabels.forEach(label -> {
+                restaurant.addDietaryLabel(DietaryLabel.valueOf(label.toUpperCase()));
+            });
 
             String jsonResponse = objectMapper.writeValueAsString(dish);
             sendResponse(exchange, 200, jsonResponse);
@@ -137,6 +137,9 @@ public class DynamicRestaurantHandler implements HttpHandler {
             Dish createdDish =restaurant.findDishByName(dishRequest.name);
 
             updateDishCommonFields(createdDish,dishRequest);
+            dishRequest.dietaryLabels.forEach(label -> {
+                restaurant.addDietaryLabel(DietaryLabel.valueOf(label.toUpperCase()));
+            });
 
 
             String jsonResponse = objectMapper.writeValueAsString(createdDish);
@@ -216,7 +219,9 @@ public class DynamicRestaurantHandler implements HttpHandler {
     }
 
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class DishRequest {
+
         public String name;
         public String description;
         public Double price;
@@ -232,7 +237,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
         }
     }
 
-    // Inner class for Toppings inside the request
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class ToppingRequest {
         public String name;
         public Double price;
