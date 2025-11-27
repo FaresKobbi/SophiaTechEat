@@ -34,7 +34,7 @@ public class StudentAccountService {
 
         registry.register("GET", "/accounts", new StaticAccountsHandler(accountManager, objectMapper));
         registry.register("POST", "/accounts", new StaticAccountsHandler(accountManager, objectMapper));
-        registry.registerFallback(new DynamicAccountsHandler());
+        registry.registerFallback(new DynamicAccountsHandler(accountManager, objectMapper));
 
         server.start(registry);
         System.out.println("StudentAccountService started on port " + port);
