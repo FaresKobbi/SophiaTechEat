@@ -2,7 +2,9 @@
 <div class="container">
   <div class="card">
     <button class="btn" routerLink="/create-student-page">CREATE STUDENT</button>
-    <app-item-list [title]="'Students'" [items]="students"></app-item-list>
+    <app-item-list [title]="'Students'" [items]="students"
+                   (itemClicked)="onStudentSelect($event)">
+    </app-item-list>
   </div>
 
   <div class="card">
@@ -12,7 +14,8 @@
       [items]="restaurantsForList"
       [displayKey]="'restaurantName'"
       (itemClicked)="onRestaurantSelect($event)">
-    </app-item-list>  </div>
+    </app-item-list>
+  </div>
 </div>
 </div>
 

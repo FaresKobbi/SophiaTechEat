@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 
 
 export interface StudentAccount {
-  id: string;
+  studentID: string;
   name: string;
   surname: string;
 }
@@ -14,15 +14,22 @@ export interface StudentAccount {
 })
 export class StudentAccountService {
   private apiUrl = 'http://localhost:8080/api/accounts';
-
   private studentsSubject = new BehaviorSubject<StudentAccount[]>([]);
-
   public students$: Observable<StudentAccount[]> = this.studentsSubject.asObservable();
+  private selectedStudent: StudentAccount | null = null
 
   constructor(private http: HttpClient) {
     this.loadStudents();
   }
 
+
+
+  getSelectedStudent () : StudentAccount | null{
+    return this.selectedStudent
+  }
+  public setSelectedStudent (student : StudentAccount){
+    this.selectedStudent = student
+  }
 
   private loadStudents(): void {
     this.http.get<StudentAccount[]>(this.apiUrl).pipe(

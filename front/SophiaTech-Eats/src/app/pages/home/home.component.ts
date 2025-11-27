@@ -59,6 +59,19 @@ export class HomeComponent implements OnInit {
     this.studentSub?.unsubscribe();
   }
 
+  onStudentSelect(student: StudentAccount): void {
+    console.log(student)
+    if (!student || !student.studentID) {
+      console.error('Invalid student data received.');
+      return;
+    }
+
+    this.studentService.setSelectedStudent(student);
+
+    this.router.navigate(['/student/homepage']);
+  }
+
+
   onRestaurantSelect(restaurant: Restaurant): void {
     if (!restaurant || !restaurant.restaurantId) {
       console.error('Invalid restaurant data received.');
