@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {BehaviorSubject, Observable, of, tap} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, map, Observable, of, tap} from 'rxjs';
 import {StudentAccount} from '../student/student-account-service.service';
 
 export interface Restaurant {
@@ -8,10 +8,21 @@ export interface Restaurant {
   restaurantId: string;
 
 }
+
+export interface Topping {
+  name: string;
+  price: number;
+}
+
 export interface Dish {
+  id?: string;
   name: string;
   description: string;
   price: number;
+  category?: string;
+  dishType?: string;
+  dietaryLabels?: string[];
+  toppings?: Topping[];
 }
 
 @Injectable({
@@ -25,13 +36,14 @@ export class RestaurantService {
   private selectedRestaurant: Restaurant | null = null;
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getRestaurants(): Observable<Restaurant[]> {
     return this.http.get<Restaurant[]>(this.apiUrl).pipe(
-        tap((data) => this.restaurantsSubject.next(data))
-      );
-    }
+      tap((data) => this.restaurantsSubject.next(data))
+    );
+  }
 
   setSelectedRestaurant(restaurant: Restaurant): void {
     this.selectedRestaurant = restaurant;
@@ -49,11 +61,27 @@ export class RestaurantService {
   }
 
 
-  createRestaurant(data: {restaurantName : string}){
+  createRestaurant(data: { restaurantName: string }) {
     return this.http.post<Restaurant>(this.apiUrl, data).pipe(
       tap(() => {
         this.getRestaurants();
       })
     );
+  }
+  getDish(restaurantId: string, dishIdOrName: string): Observable<Dish | undefined> {
+    return this.getDishesByRestaurantId(restaurantId).pipe(
+      map(dishes => dishes.find(d => d.id === dishIdOrName || d.name === dishIdOrName))
+    );
+  }
+
+  createDish(restaurantId: string, dish: Dish): Observable<Dish> {
+    const url = `${this.apiUrl}/${restaurantId}/dishes`;
+    return this.http.post<Dish>(url, dish);
+  }
+
+  updateDish(restaurantId: string, dish: Dish): Observable<Dish> {
+    const identifier = dish.id || dish.name;
+    const url = `${this.apiUrl}/${restaurantId}/dishes/${identifier}`;
+    return this.http.put<Dish>(url, dish);
   }
 }
