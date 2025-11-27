@@ -19,5 +19,6 @@ public class ApiGateWayServer {
         System.out.println("Gateway is now routing:");
         System.out.println(" - http://localhost:8080/api/restaurants -> RestaurantService (Port 8081)");
         System.out.println(" - http://localhost:8080/api/accounts   -> StudentAccountService (Port 8082)");
+        System.out.println(" - http://localhost:8083/api/orders   -> OrderService (Port 8083)");
     }
 }

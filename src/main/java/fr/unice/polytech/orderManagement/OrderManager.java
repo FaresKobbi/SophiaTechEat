@@ -51,7 +51,7 @@ public class OrderManager {
             throw new IllegalArgumentException("Payment method must be provided");
         }
         /*
-        * */
+         * */
         //Creattion du processeur de paiement via la factory
         IPaymentProcessor processor = paymentProcessorFactory.createProcessor(order, paymentMethod);
 
@@ -110,6 +110,12 @@ public class OrderManager {
     public List<Order> getRegisteredOrders() {
         return allOrders.values().stream()
                 .filter(order -> order.getOrderStatus() == OrderStatus.VALIDATED)
+                .collect(Collectors.toList());
+    }
+    public List<Order> getValidatedOrdersForRestaurant(String restaurantId) {
+        return allOrders.values().stream()
+                .filter(order -> order.getOrderStatus() == OrderStatus.VALIDATED)
+                .filter(order -> order.getRestaurantId().equals(restaurantId))
                 .collect(Collectors.toList());
     }
 

@@ -8,6 +8,9 @@ import {ManageDishComponent} from './pages/manage-dish/manage-dish.component';
 import {StudentHomePageComponent} from './pages/student-home-page/student-home-page.component';
 import {StudentAccountPageComponent} from './pages/student-account-page/student-account-page.component';
 import {StudentOrderPageComponent} from './pages/student-order-page/student-order-page.component';
+import {CreateDishPageComponent} from './pages/create-dish-page/create-dish-page.component';
+import {UpdateDishPageComponent} from './pages/update-dish-page/update-dish-page.component';
+import {OrderListPageComponent} from './pages/order-list-page/order-list-page.component';
 
 export const routes: Routes = [
   {
@@ -23,4 +26,9 @@ export const routes: Routes = [
   { path: 'student/homepage', component: StudentHomePageComponent },
   { path: 'student/account', component: StudentAccountPageComponent },
   { path: 'student/orders', component: StudentOrderPageComponent },
+  { path: 'manager/dish/create/:restaurantId', component: CreateDishPageComponent },
+  { path: 'manager/dish/update/:restaurantId/:dishId', component: UpdateDishPageComponent },
+  { path: 'manager/orders/:restaurantId', component: OrderListPageComponent },
+
+
 ];

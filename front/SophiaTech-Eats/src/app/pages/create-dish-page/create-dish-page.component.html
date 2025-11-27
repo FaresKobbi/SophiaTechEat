@@ -1,0 +1,11 @@
+<div class="page-container">
+  <div class="header">
+    <h1>CREATE NEW DISH</h1>
+    <button class="btn-back" [routerLink]="['/manager/dish', restaurantId]">BACK</button>
+  </div>
+
+  <app-dish-form
+    submitLabel="CREATE DISH"
+    (formSubmit)="handleCreate($event)">
+  </app-dish-form>
+</div>

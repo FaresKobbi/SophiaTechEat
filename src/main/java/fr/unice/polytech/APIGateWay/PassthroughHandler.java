@@ -24,6 +24,7 @@ public class PassthroughHandler implements HttpHandler {
 
     private static final String RESTAURANT_SERVICE_URL = "http://localhost:8081";
     private static final String ACCOUNT_SERVICE_URL = "http://localhost:8082";
+    private static final String ORDER_SERVICE_URL = "http://localhost:8083";
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -46,7 +47,11 @@ public class PassthroughHandler implements HttpHandler {
         } else if (path.startsWith("/api/accounts")) {
             targetBaseUrl = ACCOUNT_SERVICE_URL;
             path = path.substring(4);
+        } else if (path.startsWith("/api/orders")) {
+            targetBaseUrl = ORDER_SERVICE_URL;
+            path = path.substring(4);
         } else {
+
             sendResponse(exchange, 404, "{\"error\":\"Gateway Route Not Found\"}".getBytes("UTF-8"));
             return;
         }
