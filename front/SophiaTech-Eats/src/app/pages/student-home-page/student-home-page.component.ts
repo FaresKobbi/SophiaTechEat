@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {RestaurantFilterComponent} from '../../components/restaurant-filter/restaurant-filter.component';
 import {StudentAccount, StudentAccountService} from '../../services/student/student-account-service.service';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {ListComponent} from '../../components/item-list/item-list.component';
 import {Restaurant, RestaurantService} from '../../services/restaurant/restaurant.service';
 import {StudentHomePageNavComponent} from '../../components/student-home-page-nav/student-home-page-nav.component';
@@ -26,10 +26,7 @@ export class StudentHomePageComponent implements OnInit{
   cuisineTypes: string[] = []
   restaurantList : Restaurant[] = []
 
-  selectedCuisine: string | undefined;
-  selectedLabels: string[] = [];
-
-  constructor(private studentService: StudentAccountService, private restaurantService: RestaurantService){
+  constructor(private studentService: StudentAccountService, private restaurantService: RestaurantService, private router: Router) {
 
   }
 
@@ -77,4 +74,9 @@ export class StudentHomePageComponent implements OnInit{
     this.loadRestaurants();
   }
 
+  onRestaurantClick(restaurant: any): void {
+    if (restaurant && restaurant.restaurantId) {
+      this.router.navigate(['/student/restaurant', restaurant.restaurantId, 'menu']);
+    }
+  }
 }
