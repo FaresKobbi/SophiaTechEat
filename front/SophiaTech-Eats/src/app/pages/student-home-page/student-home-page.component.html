@@ -23,6 +23,7 @@
         [title]="'Restaurants'"
         [items]="restaurantList"
         [displayKey]="'restaurantName'"
+        (itemClicked)="onRestaurantClick($event)">
       ></app-item-list>
     </div>
   </main>

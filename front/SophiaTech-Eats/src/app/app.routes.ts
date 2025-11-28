@@ -11,6 +11,7 @@ import {StudentOrderPageComponent} from './pages/student-order-page/student-orde
 import {CreateDishPageComponent} from './pages/create-dish-page/create-dish-page.component';
 import {UpdateDishPageComponent} from './pages/update-dish-page/update-dish-page.component';
 import {OrderListPageComponent} from './pages/order-list-page/order-list-page.component';
+import {RestaurantMenuPageComponent} from './pages/restaurant-menu-page/restaurant-menu-page.component';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'manager/dish/create/:restaurantId', component: CreateDishPageComponent },
   { path: 'manager/dish/update/:restaurantId/:dishId', component: UpdateDishPageComponent },
   { path: 'manager/orders/:restaurantId', component: OrderListPageComponent },
+  { path: 'student/restaurant/:restaurantId/menu', component: RestaurantMenuPageComponent },
 
 
 ];
