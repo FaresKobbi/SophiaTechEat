@@ -1,0 +1,72 @@
+<div class="menu-page-body">
+
+  <nav class="nav-container">
+    <p>Hello {{studentName}} {{studentSurname}}</p>
+
+    <button class="home-page-button" style="font-size: 25px;height: 79px" routerLink="/student/homepage">HOME PAGE</button>
+  </nav>
+
+  <div class="menu-page-container">
+    <div class="content-layout">
+
+      <div class="menu-list">
+        <h2 class="section-title">MENU</h2>
+        <div *ngIf="menuDishes.length === 0" class="no-data">Loading menu...</div>
+
+        <div *ngFor="let dish of menuDishes" class="dish-card">
+          <div class="dish-info">
+            <h3>{{ dish.name }}</h3>
+            <p class="description">{{ dish.description }}</p>
+            <div class="tags">
+              <span *ngFor="let tag of dish.dietaryLabels" class="tag">{{ tag }}</span>
+            </div>
+            <p class="price">{{ dish.price | currency:'EUR' }}</p>
+          </div>
+          <button class="btn-add" (click)="openDishModal(dish)">ADD</button>
+        </div>
+      </div>
+
+      <div class="cart-panel">
+        <h2 class="cart-title">YOUR ORDER</h2>
+
+        <div class="cart-items">
+          <p *ngIf="cartItems.length === 0" class="empty-cart">Your cart is empty.</p>
+
+          <div *ngFor="let item of cartItems; let i = index" class="cart-item">
+            <div class="cart-item-header">
+              <span class="item-name">{{ item.quantity }}x {{ item.dish.name }}</span>
+              <span class="item-price">{{ item.totalPrice | currency:'EUR' }}</span>
+            </div>
+
+            <div *ngIf="item.selectedToppings.length > 0" class="item-toppings">
+              <span *ngFor="let t of item.selectedToppings">+ {{ t.name }}</span>
+            </div>
+
+            <button class="remove-link" (click)="removeItem(i)">Remove</button>
+          </div>
+        </div>
+
+        <div class="cart-footer">
+          <div class="total-row">
+            <span>TOTAL</span>
+            <span>{{ cartTotal | currency:'EUR' }}</span>
+          </div>
+          <button class="btn-checkout"
+                  [disabled]="cartItems.length === 0"
+                  (click)="proceedToCheckout()">
+            PROCEED TO CHECKOUT
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <app-dish-detail-modal
+    *ngIf="isModalOpen && selectedDishForModal"
+    [dish]="selectedDishForModal"
+    (close)="closeModal()"
+    (addToOrder)="onAddToCartFromModal($event)">
+  </app-dish-detail-modal>
+
+</div>

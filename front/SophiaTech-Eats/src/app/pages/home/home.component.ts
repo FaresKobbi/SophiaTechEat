@@ -6,6 +6,7 @@ import {Restaurant, RestaurantService} from '../../services/restaurant/restauran
 import {Subscription} from 'rxjs';
 
 import {StudentAccount, StudentAccountService} from '../../services/student/student-account-service.service';
+import {CartService} from '../../services/cart/cart.service';
 
 
 @Component({
@@ -27,7 +28,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private restaurantService: RestaurantService,
     private studentService: StudentAccountService,
-    private router: Router
+    private router: Router,
+    private cartService: CartService,
   ) {
   }
 
@@ -68,6 +70,7 @@ export class HomeComponent implements OnInit {
 
     this.studentService.setSelectedStudent(student);
 
+    this.cartService.setCurrentUser(student.studentID);
     this.router.navigate(['/student/homepage']);
   }
 
