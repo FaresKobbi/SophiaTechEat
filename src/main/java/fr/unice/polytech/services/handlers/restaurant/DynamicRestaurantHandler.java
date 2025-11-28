@@ -1,16 +1,21 @@
 package fr.unice.polytech.services.handlers.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import fr.unice.polytech.dishes.*;
+import fr.unice.polytech.restaurants.OpeningHours;
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.restaurants.RestaurantManager;
 
-import java.awt.*;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +28,9 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
     private static final Pattern DISHES_COLLECTION_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/?$");
     private static final Pattern DISH_ITEM_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/([^/]+)/?$");
+    private static final Pattern OPENING_HOURS_PATTERN = Pattern.compile("/restaurants/([^/]+)/opening-hours/?$");
+    private static final Pattern CAPACITIES_PATTERN = Pattern.compile("/restaurants/([^/]+)/capacities/?$");
+    private static final Pattern OPENING_HOURS_ITEM_PATTERN = Pattern.compile("/restaurants/([^/]+)/opening-hours/([^/]+)/?$");
 
     public DynamicRestaurantHandler(RestaurantManager restaurantManager, ObjectMapper objectMapper) {
         this.restaurantManager = restaurantManager;
@@ -37,6 +45,9 @@ public class DynamicRestaurantHandler implements HttpHandler {
         try {
             Matcher collectionMatcher = DISHES_COLLECTION_PATTERN.matcher(path);
             Matcher itemMatcher = DISH_ITEM_PATTERN.matcher(path);
+            Matcher openingHoursMatcher = OPENING_HOURS_PATTERN.matcher(path);
+            Matcher capacitiesMatcher = CAPACITIES_PATTERN.matcher(path);
+            Matcher openingHoursItemMatcher = OPENING_HOURS_ITEM_PATTERN.matcher(path);
 
             if (collectionMatcher.matches()) {
                 String restaurantId = collectionMatcher.group(1);
@@ -58,6 +69,22 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 } else {
                     sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
                 }
+            }
+            else if (openingHoursMatcher.matches()) {
+                handleOpeningHours(exchange, method, openingHoursMatcher.group(1));
+            }
+            else if (openingHoursItemMatcher.matches()) {
+                String restaurantId = openingHoursItemMatcher.group(1);
+                String day = openingHoursItemMatcher.group(2); // Capture "MONDAY"
+
+                if ("DELETE".equals(method)) {
+                    handleDeleteOpeningHour(exchange, restaurantId, day);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            }
+            else if (capacitiesMatcher.matches()) {
+                handleCapacities(exchange, method, capacitiesMatcher.group(1));
             }
             else {
                 sendResponse(exchange, 404, "{\"error\":\"Dynamic Route Not Found for: " + path + "\"}");
@@ -177,6 +204,86 @@ public class DynamicRestaurantHandler implements HttpHandler {
             sendResponse(exchange, 500, "{\"error\":\"Failed to process dish request\"}");
         }
     }
+
+    private void handleOpeningHours(HttpExchange exchange, String method, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isEmpty()) { sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}"); return; }
+        Restaurant restaurant = rOpt.get();
+
+        if ("GET".equals(method)) {
+            sendResponse(exchange, 200, objectMapper.writeValueAsString(restaurant.getOpeningHours()));
+        }
+        else if ("POST".equals(method)) {
+            InputStream requestBody = exchange.getRequestBody();
+            JsonNode body = objectMapper.readTree(requestBody);
+            try {
+                DayOfWeek day = DayOfWeek.valueOf(body.get("day").asText());
+                LocalTime start = LocalTime.parse(body.get("openingTime").asText());
+                LocalTime end = LocalTime.parse(body.get("closingTime").asText());
+
+                OpeningHours oh = new OpeningHours(day, start, end);
+                restaurant.addOpeningHours(oh);
+
+                sendResponse(exchange, 201, objectMapper.writeValueAsString(oh));
+            } catch (Exception e) {
+                sendResponse(exchange, 400, "{\"error\":\"Invalid Data: " + e.getMessage() + "\"}");
+            }
+        }
+
+    }
+
+    private void handleDeleteOpeningHour(HttpExchange exchange, String restaurantId, String dayStr) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
+
+        Restaurant restaurant = rOpt.get();
+
+        try {
+            DayOfWeek day = DayOfWeek.valueOf(dayStr.toUpperCase());
+
+            boolean removed = restaurant.getOpeningHours().removeIf(oh -> oh.getDay() == day);
+
+            if (removed) {
+                sendResponse(exchange, 204, "");
+            } else {
+                sendResponse(exchange, 404, "{\"error\":\"Opening hours not found for day: " + day + "\"}");
+            }
+
+        } catch (IllegalArgumentException e) {
+            sendResponse(exchange, 400, "{\"error\":\"Invalid day format: " + dayStr + "\"}");
+        } catch (Exception e) {
+            sendResponse(exchange, 500, "{\"error\":\"Delete failed: " + e.getMessage() + "\"}");
+        }
+    }
+
+    private void handleCapacities(HttpExchange exchange, String method, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isEmpty()) { sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}"); return; }
+        Restaurant restaurant = rOpt.get();
+
+        if ("PUT".equals(method)) {
+            InputStream requestBody = exchange.getRequestBody();
+            JsonNode body = objectMapper.readTree(requestBody);
+            try {
+                DayOfWeek day = DayOfWeek.valueOf(body.get("day").asText());
+                LocalTime start = LocalTime.parse(body.get("start").asText());
+                LocalTime end = LocalTime.parse(body.get("end").asText());
+                int newCapacity = body.get("capacity").asInt();
+
+                restaurant.updateSlotCapacity(day, start, end, newCapacity);
+
+                sendResponse(exchange, 200, "{\"status\":\"Updated\", \"capacity\":" + newCapacity + "}");
+            } catch (Exception e) {
+                sendResponse(exchange, 400, "{\"error\":\"Update failed: " + e.getMessage() + "\"}");
+            }
+        }
+    }
+
+
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         byte[] responseBytes = response.getBytes("UTF-8");

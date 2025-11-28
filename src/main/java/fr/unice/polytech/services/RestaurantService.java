@@ -3,6 +3,8 @@ package fr.unice.polytech.services;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.restaurants.RestaurantManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +24,10 @@ public class RestaurantService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) throws IOException {
+
+        objectMapper.registerModule(new JavaTimeModule());
+
+
         // MOCK
         restaurantManager.addRestaurant(new Restaurant("Pizza Palace"));
         restaurantManager.addRestaurant(new Restaurant("Sushi Shop"));

@@ -8,6 +8,8 @@ import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.users.UserAccount;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.*;
 
 
@@ -17,7 +19,6 @@ public class Restaurant extends UserAccount {
     private List<Dish> dishes;
     private List<String> orders;
     private List<OpeningHours> openingHours;
-    private Map<TimeSlot, Integer> capacityByTimeSlot;
     private CuisineType cuisineType;
     private Set<DietaryLabel> availableDietaryLabels = new HashSet<>();
     @JsonIgnore
@@ -26,7 +27,6 @@ public class Restaurant extends UserAccount {
 
 
 
-   //Simple initialisation
     public Restaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -35,7 +35,6 @@ public class Restaurant extends UserAccount {
         this.restaurantName = restaurantName;
         this.dishes = new ArrayList<>();
         orders = new ArrayList<>();
-        this.capacityByTimeSlot = new HashMap<>();
         this.openingHours = new ArrayList<>();
         this.cuisineType = CuisineType.GENERAL;
     }
@@ -48,7 +47,6 @@ public class Restaurant extends UserAccount {
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         orders = new ArrayList<>();
-        this.capacityByTimeSlot = new HashMap<>();
         this.openingHours = new ArrayList<>(builder.openingHours);
         this.cuisineType = builder.cuisineType != null ? builder.cuisineType : CuisineType.GENERAL;
     }
@@ -76,10 +74,12 @@ public class Restaurant extends UserAccount {
 
     public List<TimeSlot> getAvailableTimeSlots() {
         List<TimeSlot> availableSlots = new ArrayList<>();
-        for (Map.Entry<TimeSlot, Integer> entry : capacityByTimeSlot.entrySet()) {
-            if (entry.getValue() > 0) {
-                availableSlots.add(entry.getKey());
-            }
+        for (OpeningHours oh : openingHours) {
+            oh.getSlots().forEach((slot, capacity) -> {
+                if (capacity > 0) {
+                    availableSlots.add(slot);
+                }
+            });
         }
         return availableSlots;
     }
@@ -94,25 +94,25 @@ public class Restaurant extends UserAccount {
     }
 
 
-     //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
-    public void blockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        decreaseCapacity(slot);
-    }
-
-    public void unblockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        increaseCapacity(slot);
-    }
-
-
-    //======= Capacity by slot =====
-
-    public void setCapacity(TimeSlot slot, int capacity) {
-        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
-        capacityByTimeSlot.put(slot, capacity);
-    }
+//     //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
+//    public void blockTimeSlot(TimeSlot slot){
+//        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+//        decreaseCapacity(slot);
+//    }
+//
+//    public void unblockTimeSlot(TimeSlot slot){
+//        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+//        increaseCapacity(slot);
+//    }
+//
+//
+//    //======= Capacity by slot =====
+//
+//    public void setCapacity(TimeSlot slot, int capacity) {
+//        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+//        if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
+//        capacityByTimeSlot.put(slot, capacity);
+//    }
 
     public void setOpeningHours(List<OpeningHours> openingHours) {
         if (openingHours == null) {
@@ -121,18 +121,15 @@ public class Restaurant extends UserAccount {
         this.openingHours = new ArrayList<>(openingHours);
     }
 
-    public void addOpeningHours(OpeningHours newOpeningHours) {
-        if (newOpeningHours == null) {
-            throw new IllegalArgumentException("Opening hours cannot be null.");
-        }
-        for (OpeningHours existingHours : this.openingHours) {
-            if (existingHours.getDay() == newOpeningHours.getDay()) {
-                throw new IllegalArgumentException(
-                        "Opening hours for " + newOpeningHours.getDay() + " already exist."
-                );
+    public void addOpeningHours(OpeningHours oh) {
+        if (oh == null) throw new IllegalArgumentException("OpeningHours cannot be null");
+
+        for (OpeningHours existing : openingHours) {
+            if (existing.getDay() == oh.getDay() && existing.getOpeningTime().equals(oh.getOpeningTime())) {
+                throw new IllegalArgumentException("Duplicate opening hours for this day/time");
             }
         }
-        this.openingHours.add(newOpeningHours);
+        this.openingHours.add(oh);
     }
 
     public void updateOpeningHours(OpeningHours updatedOpeningHours) {
@@ -155,6 +152,31 @@ public class Restaurant extends UserAccount {
         this.openingHours.add(updatedOpeningHours);
     }
 
+    public void updateSlotCapacity(DayOfWeek day, LocalTime start, LocalTime end, int capacity) {
+        TimeSlot target = new TimeSlot(day, start, end);
+        boolean found = false;
+
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(target)) {
+                oh.setSlotCapacity(start, end, capacity);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Slot " + day + " " + start + "-" + end + " does not exist in any opening hours");
+        }
+    }
+
+    public Map<TimeSlot, Integer> getAllCapacities() {
+        Map<TimeSlot, Integer> globalRequest = new HashMap<>();
+        for (OpeningHours oh : openingHours) {
+            globalRequest.putAll(oh.getSlots());
+        }
+        return globalRequest;
+    }
+
     public void addDietaryLabel(DietaryLabel label) {
         if (label == null) {
             throw new IllegalArgumentException("Dietary label cannot be null");
@@ -163,28 +185,61 @@ public class Restaurant extends UserAccount {
     }
 
 
+
+//    public Map<TimeSlot, Integer> getAllCapacities() {
+//        return new HashMap<>(capacityByTimeSlot);
+//    }
+//
+    // =================================================================
+    // METHODES DELEGUEES (Compatibilité avec les tests existants)
+    // =================================================================
+
     public int getCapacity(TimeSlot slot) {
-        return capacityByTimeSlot.getOrDefault(slot, 0);
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                return oh.getSlots().get(slot);
+            }
+        }
+        return 0;
     }
 
-    public Map<TimeSlot, Integer> getAllCapacities() {
-        return new HashMap<>(capacityByTimeSlot);
+    public void blockTimeSlot(TimeSlot slot){
+        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        decreaseCapacity(slot);
+    }
+
+    public void unblockTimeSlot(TimeSlot slot){
+        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
+        increaseCapacity(slot);
     }
 
     public void decreaseCapacity(TimeSlot slot) {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        if (!capacityByTimeSlot.containsKey(slot)) return;
-        int capacity= capacityByTimeSlot.get(slot);
-        if (capacity > 0) { // Prevent negative capacity
-            capacityByTimeSlot.put(slot, capacity - 1);
-        } else {
-            System.out.println(" No capacity left for slot " + slot);
+
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                int currentCapacity = oh.getSlots().get(slot);
+
+                if (currentCapacity > 0) {
+                    oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), currentCapacity - 1);
+                } else {
+                    System.out.println("No capacity left for slot " + slot);
+                }
+                return;
+            }
         }
     }
 
     public void increaseCapacity(TimeSlot slot) {
         if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 0) + 1);
+
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                int currentCapacity = oh.getSlots().get(slot);
+                oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), currentCapacity + 1);
+                return;
+            }
+        }
     }
 
 
@@ -264,9 +319,9 @@ public class Restaurant extends UserAccount {
         this.orders = orders;
     }
 
-    public void setCapacityByTimeSlot(Map<TimeSlot, Integer> capacityByTimeSlot) {
-        this.capacityByTimeSlot = capacityByTimeSlot;
-    }
+//    public void setCapacityByTimeSlot(Map<TimeSlot, Integer> capacityByTimeSlot) {
+//        this.capacityByTimeSlot = capacityByTimeSlot;
+//    }
 
     public void setCuisineType(CuisineType cuisineType) {
         this.cuisineType = cuisineType;
@@ -276,9 +331,6 @@ public class Restaurant extends UserAccount {
         return orders;
     }
 
-    public Map<TimeSlot, Integer> getCapacityByTimeSlot() {
-        return capacityByTimeSlot;
-    }
 
     public CuisineType getCuisineType() {
         return cuisineType;
