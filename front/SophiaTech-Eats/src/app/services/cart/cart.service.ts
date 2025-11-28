@@ -6,15 +6,21 @@ export interface CartItem {
   dish: Dish;
   selectedToppings: Topping[];
   quantity: number;
-  totalPrice: number; // (Base Price + Toppings) * Quantity
+  totalPrice: number;
+}
+
+// Internal interface to track state per user
+interface UserCartState {
+  items: CartItem[];
+  restaurantId: string | null;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private cartItems: CartItem[] = [];
-  private restaurantId: string | null = null;
+  private carts = new Map<string, UserCartState>();
+  private currentUserId: string | null = null;
 
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
   public cart$ = this.cartSubject.asObservable();
@@ -24,12 +30,31 @@ export class CartService {
 
   constructor() {}
 
+
+  setCurrentUser(userId: string): void {
+    this.currentUserId = userId;
+
+    if (!this.carts.has(userId)) {
+      this.carts.set(userId, { items: [], restaurantId: null });
+    }
+
+    this.updateState();
+  }
+
   addToCart(dish: Dish, toppings: Topping[], restaurantId: string): boolean {
-    if (this.restaurantId && this.restaurantId !== restaurantId) {
+    if (!this.currentUserId) {
+      console.error("No student logged in!");
       return false;
     }
 
-    this.restaurantId = restaurantId;
+    const userCart = this.carts.get(this.currentUserId)!;
+
+    // Check restaurant conflict
+    if (userCart.restaurantId && userCart.restaurantId !== restaurantId) {
+      return false;
+    }
+
+    userCart.restaurantId = restaurantId;
 
     const toppingsCost = toppings.reduce((sum, t) => sum + t.price, 0);
     const unitPrice = dish.price + toppingsCost;
@@ -41,35 +66,46 @@ export class CartService {
       totalPrice: unitPrice
     };
 
-    this.cartItems.push(newItem);
+    userCart.items.push(newItem);
     this.updateState();
     return true;
   }
 
   removeFromCart(index: number): void {
-    this.cartItems.splice(index, 1);
-    if (this.cartItems.length === 0) {
-      this.restaurantId = null;
+    if (!this.currentUserId) return;
+    const userCart = this.carts.get(this.currentUserId)!;
+
+    userCart.items.splice(index, 1);
+    if (userCart.items.length === 0) {
+      userCart.restaurantId = null;
     }
     this.updateState();
   }
 
   clearCart(): void {
-    this.cartItems = [];
-    this.restaurantId = null;
+    if (!this.currentUserId) return;
+    const userCart = this.carts.get(this.currentUserId)!;
+
+    userCart.items = [];
+    userCart.restaurantId = null;
     this.updateState();
   }
 
-  getCartItems(): CartItem[] {
-    return this.cartItems;
-  }
   getRestaurantId(): string | null {
-    return this.restaurantId;
+    if (!this.currentUserId) return null;
+    return this.carts.get(this.currentUserId)?.restaurantId || null;
   }
 
   private updateState(): void {
-    this.cartSubject.next([...this.cartItems]);
-    const total = this.cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    if (!this.currentUserId) {
+      this.cartSubject.next([]);
+      this.totalSubject.next(0);
+      return;
+    }
+
+    const userCart = this.carts.get(this.currentUserId)!;
+    this.cartSubject.next([...userCart.items]);
+    const total = userCart.items.reduce((sum, item) => sum + item.totalPrice, 0);
     this.totalSubject.next(total);
   }
 }
