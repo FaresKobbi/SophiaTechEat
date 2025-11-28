@@ -8,12 +8,12 @@
         label="Cuisine Type"
         [options]="cuisineTypes"
         [multiple]="false"
-        (selectionChange)="onItemChange($event)"> </app-restaurant-filter>
+        (selectionChange)="onCuisineChange($event)"> </app-restaurant-filter>
 
       <app-restaurant-filter
         label="Dietary Label"
         [options]="dietaryLabels"
-        (selectionChange)="onItemChange($event)">
+        (selectionChange)="onDietaryChange($event)">
       </app-restaurant-filter>
     </div>
 

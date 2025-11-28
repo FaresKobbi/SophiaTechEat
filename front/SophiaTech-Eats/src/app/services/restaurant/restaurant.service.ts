@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, map, Observable, of, tap} from 'rxjs';
 import {StudentAccount} from '../student/student-account-service.service';
 
@@ -79,8 +79,20 @@ export class RestaurantService {
     );
   }
 
-  getRestaurants(): Observable<Restaurant[]> {
-    return this.http.get<Restaurant[]>(this.apiUrl).pipe(
+  getRestaurants(cuisine?: string, labels: string[] = []): Observable<Restaurant[]> {
+    let params = new HttpParams();
+
+    if (cuisine) {
+      params = params.set('cuisine', cuisine);
+    }
+
+    if (labels.length > 0) {
+      labels.forEach(label => {
+        params = params.append('label', label);
+      });
+    }
+
+    return this.http.get<Restaurant[]>(this.apiUrl, { params }).pipe(
       tap((data) => this.restaurantsSubject.next(data))
     );
   }

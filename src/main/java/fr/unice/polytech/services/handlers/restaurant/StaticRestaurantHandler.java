@@ -12,8 +12,7 @@ import fr.unice.polytech.restaurants.RestaurantManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class StaticRestaurantHandler implements HttpHandler {
     private final RestaurantManager restaurantManager;
@@ -31,18 +30,21 @@ public class StaticRestaurantHandler implements HttpHandler {
             String path = exchange.getRequestURI().getPath();
 
             if ("GET".equals(method)) {
-                if (path.equals("/restaurants") || path.equals("/restaurants/")){
-                    List<Restaurant> restaurants = restaurantManager.getAllRestaurants();
-                    String jsonResponse = objectMapper.writeValueAsString(restaurants);
-                    sendResponse(exchange, 200, jsonResponse);
-                } else if (path.equals("/restaurants/dishes/dietarylabels") || path.equals("/restaurants/dishes/dietarylabels/")) {
-                    List<DietaryLabel> labels = Arrays.asList(DietaryLabel.values());
-                    String jsonResponse = objectMapper.writeValueAsString(labels);
-                    sendResponse(exchange, 200, jsonResponse);
-                } else if (path.equals("/restaurants/dishes/cuisinetypes") || path.equals("/restaurants/dishes/cuisinetypes/")) {
-                    List<CuisineType> cuisineTypes = Arrays.asList(CuisineType.values());
-                    String jsonResponse = objectMapper.writeValueAsString(cuisineTypes);
-                    sendResponse(exchange, 200, jsonResponse);
+                switch (path) {
+                    case "/restaurants", "/restaurants/" -> {
+                        String query = exchange.getRequestURI().getQuery();
+                        handleGetRestaurants(exchange, query);
+                    }
+                    case "/restaurants/dishes/dietarylabels", "/restaurants/dishes/dietarylabels/" -> {
+                        List<DietaryLabel> labels = Arrays.asList(DietaryLabel.values());
+                        String jsonResponse = objectMapper.writeValueAsString(labels);
+                        sendResponse(exchange, 200, jsonResponse);
+                    }
+                    case "/restaurants/dishes/cuisinetypes", "/restaurants/dishes/cuisinetypes/" -> {
+                        List<CuisineType> cuisineTypes = Arrays.asList(CuisineType.values());
+                        String jsonResponse = objectMapper.writeValueAsString(cuisineTypes);
+                        sendResponse(exchange, 200, jsonResponse);
+                    }
                 }
             } else if ("POST".equals(method)) {
                 createRestaurant(exchange);
@@ -54,6 +56,48 @@ public class StaticRestaurantHandler implements HttpHandler {
         }
     }
 
+    private void handleGetRestaurants(HttpExchange exchange, String query) throws IOException {
+        Map<String, List<String>> params = parseQuery(query);
+
+        CuisineType cuisine = null;
+        List<DietaryLabel> labels = new ArrayList<>();
+
+        try {
+            if (params.containsKey("cuisine") && !params.get("cuisine").isEmpty()) {
+                String cuisineStr = params.get("cuisine").get(0);
+                cuisine = CuisineType.valueOf(cuisineStr.toUpperCase());
+            }
+
+            if (params.containsKey("label")) {
+                for (String labelStr : params.get("label")) {
+                    labels.add(DietaryLabel.valueOf(labelStr.toUpperCase()));
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            sendResponse(exchange, 400, "{\"error\":\"Invalid filter value\"}");
+            return;
+        }
+
+        List<Restaurant> restaurants = restaurantManager.search(cuisine, labels);
+        String jsonResponse = objectMapper.writeValueAsString(restaurants);
+        sendResponse(exchange, 200, jsonResponse);
+    }
+
+    private Map<String, List<String>> parseQuery(String query) {
+        Map<String, List<String>> result = new HashMap<>();
+        if (query == null || query.isEmpty()) {
+            return result;
+        }
+        for (String param : query.split("&")) {
+            String[] entry = param.split("=");
+            if (entry.length > 1) {
+                String key = entry[0];
+                String value = entry[1];
+                result.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+            }
+        }
+        return result;
+    }
 
     private void createRestaurant(HttpExchange exchange) throws IOException {
         InputStream requestBody = exchange.getRequestBody();

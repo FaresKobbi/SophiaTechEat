@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -616,7 +617,7 @@ class RestaurantManagerTest {
         @DisplayName("Should filter by both Cuisine AND Dietary Label")
         void shouldFilterByBothCuisineAndLabel() {
             // Italian + Vegetarian (Both Luigi's and Healthy Spot have veg options, but only Luigi is Italian)
-            List<Restaurant> results = manager.search(CuisineType.ITALIAN, DietaryLabel.VEGETARIAN);
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN, List.of(DietaryLabel.VEGETARIAN));
 
             assertEquals(1, results.size());
             assertTrue(results.contains(italianRest));
@@ -626,7 +627,7 @@ class RestaurantManagerTest {
         @DisplayName("Should return empty if cuisine matches but label does not")
         void shouldReturnEmptyIfCuisineMatchesButLabelDoesNot() {
             // Italian restaurant exists, but assumes no VEGAN dish in Luigi's
-            List<Restaurant> results = manager.search(CuisineType.ITALIAN, DietaryLabel.VEGAN);
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN,List.of(DietaryLabel.VEGAN));
             assertTrue(results.isEmpty());
         }
 
@@ -634,7 +635,7 @@ class RestaurantManagerTest {
         @DisplayName("Should return empty if label matches but cuisine does not")
         void shouldReturnEmptyIfLabelMatchesButCuisineDoesNot() {
             // Japanese restaurant exists, but assumes Sushi is not VEGAN
-            List<Restaurant> results = manager.search(CuisineType.JAPANESE, DietaryLabel.VEGAN);
+            List<Restaurant> results = manager.search(CuisineType.JAPANESE, List.of(DietaryLabel.VEGAN));
             assertTrue(results.isEmpty());
         }
 
@@ -650,7 +651,7 @@ class RestaurantManagerTest {
         @DisplayName("Should default to label search if cuisine is null")
         void shouldDefaultToLabelSearchIfCuisineIsNull() {
             // Vegetarian matches Italian and Mixed
-            List<Restaurant> results = manager.search(null, DietaryLabel.VEGETARIAN);
+            List<Restaurant> results = manager.search(null, List.of(DietaryLabel.VEGETARIAN));
             assertEquals(2, results.size());
             assertTrue(results.contains(italianRest));
             assertTrue(results.contains(mixedRest));

@@ -26,17 +26,22 @@ export class StudentHomePageComponent implements OnInit{
   cuisineTypes: string[] = []
   restaurantList : Restaurant[] = []
 
+  selectedCuisine: string | undefined;
+  selectedLabels: string[] = [];
+
   constructor(private studentService: StudentAccountService, private restaurantService: RestaurantService){
 
   }
 
 
   ngOnInit(): void {
+    this.loadRestaurants()
+
 
     this.restaurantService.restaurants$.subscribe({
       next: (data)=>{
         this.restaurantList = data;
-    }
+      }
     })
 
     this.restaurantService.getDietaryLabels().subscribe(data => {
@@ -54,7 +59,22 @@ export class StudentHomePageComponent implements OnInit{
     this.studentSurname = this.selectedStudent ? this.selectedStudent.surname : this.studentSurname
   }
 
-  onItemChange(selectedItems: string[]) {
-    console.log('Item chosen:', selectedItems);
+  loadRestaurants() {
+    this.restaurantService.getRestaurants(this.selectedCuisine, this.selectedLabels).subscribe();
   }
+
+  onCuisineChange(selection: string[]) {
+    this.selectedCuisine = selection.length > 0 ? selection[0] : undefined;
+
+    console.log("Cuisine sélectionnée:", this.selectedCuisine);
+    this.loadRestaurants();
+  }
+
+  onDietaryChange(selection: string[]) {
+    this.selectedLabels = selection;
+
+    console.log("Labels sélectionnés:", this.selectedLabels);
+    this.loadRestaurants();
+  }
+
 }
