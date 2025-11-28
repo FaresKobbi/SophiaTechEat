@@ -22,6 +22,8 @@ export class StudentHomePageComponent implements OnInit{
   studentName : string = "X"
   studentSurname : string = "Y"
 
+  dietaryLabels: string[] = [];
+  cuisineTypes: string[] = []
   restaurantList : Restaurant[] = []
 
   constructor(private studentService: StudentAccountService, private restaurantService: RestaurantService){
@@ -36,6 +38,15 @@ export class StudentHomePageComponent implements OnInit{
         this.restaurantList = data;
     }
     })
+
+    this.restaurantService.getDietaryLabels().subscribe(data => {
+      this.dietaryLabels = data;
+      console.log("Labels reçus dans le component :", this.dietaryLabels);
+    });
+
+    this.restaurantService.getCuisineTypes().subscribe(data => {
+      this.cuisineTypes = data;
+    });
 
     this.selectedStudent = this.studentService.getSelectedStudent();
     this.studentId = this.selectedStudent ? this.selectedStudent.studentID : this.studentId

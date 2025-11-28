@@ -35,11 +35,15 @@ public class RestaurantService {
 
         registry.register("GET", "/restaurants", new StaticRestaurantHandler(restaurantManager, objectMapper));
         registry.register("POST", "/restaurants", new StaticRestaurantHandler(restaurantManager, objectMapper));
+        registry.register("GET", "/restaurants/dishes/dietarylabels", new StaticRestaurantHandler(restaurantManager,objectMapper));
+        registry.register("GET", "/restaurants/dishes/cuisinetypes", new StaticRestaurantHandler(restaurantManager,objectMapper));
 
         registry.registerFallback(new DynamicRestaurantHandler(restaurantManager,objectMapper));
         server.start(registry);
         System.out.println("RestaurantService started on port " + port);
         System.out.println("Serving STATIC routes:  GET /restaurants");
+        System.out.println("Serving STATIC routes:  GET /restaurants/dishes/dietarylabels");
+        System.out.println("Serving STATIC routes:  GET /restaurants/dishes/cuisinetypes");
         System.out.println("Now serving exact route: POST /restaurants");
         System.out.println("Serving DYNAMIC routes: GET /restaurants/{restaurantId}/dishes");
         System.out.println("Sushi ID:"+restaurantManager.getRestaurant("Sushi Shop").getRestaurantId());

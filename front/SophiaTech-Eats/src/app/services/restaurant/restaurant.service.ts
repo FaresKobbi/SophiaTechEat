@@ -31,12 +31,52 @@ export interface Dish {
 export class RestaurantService {
   private apiUrl = 'http://localhost:8080/api/restaurants';
   private cache: Restaurant[] | null = null;
-  private restaurantsSubject = new BehaviorSubject<Restaurant[]>([])
-  public restaurants$ = this.restaurantsSubject.asObservable();
   private selectedRestaurant: Restaurant | null = null;
 
+  private restaurantsSubject = new BehaviorSubject<Restaurant[]>([])
+  public restaurants$ = this.restaurantsSubject.asObservable();
+
+  private dietaryLabelsSubject = new BehaviorSubject<string[]>([]);
+  public dietaryLabels$ = this.dietaryLabelsSubject.asObservable();
+  private dietaryLoaded = false
+
+  private cuisineTypeSubject = new BehaviorSubject<string[]>([]);
+  public cuisineType$ = this.cuisineTypeSubject.asObservable();
+  private cuisineTypeLoaded = false
 
   constructor(private http: HttpClient) {
+  }
+
+  getCuisineTypes(): Observable<string[]> {
+    if (this.cuisineTypeLoaded) {
+      return of(this.cuisineTypeSubject.value);
+    }
+
+    // 2. Sinon, on fait l'appel HTTP
+    return this.http.get<string[]>(`${this.apiUrl}/dishes/cuisinetypes`).pipe(
+      map(data => data.map(label => this.formatLabel(label))),
+
+      tap(formattedData => {
+        console.log('Cuisines chargées:', formattedData);
+        this.cuisineTypeSubject.next(formattedData);
+        this.cuisineTypeLoaded = true;
+      })
+    );
+  }
+
+  getDietaryLabels(): Observable<string[]> {
+    if (this.dietaryLoaded) {
+      return of(this.dietaryLabelsSubject.value);
+    }
+
+    return this.http.get<string[]>(`${this.apiUrl}/dishes/dietarylabels`).pipe(
+      map(data => data.map(label => this.formatLabel(label))),
+      tap(formattedData => {
+        console.log('Labels chargées:', formattedData);
+        this.dietaryLabelsSubject.next(formattedData);
+        this.dietaryLoaded = true;
+      })
+    );
   }
 
   getRestaurants(): Observable<Restaurant[]> {
@@ -83,5 +123,11 @@ export class RestaurantService {
     const identifier = dish.id || dish.name;
     const url = `${this.apiUrl}/${restaurantId}/dishes/${identifier}`;
     return this.http.put<Dish>(url, dish);
+  }
+
+  private formatLabel(label: string): string {
+    if (!label) return '';
+    const text = label.replace(/_/g, ' ').toLowerCase();
+    return text.charAt(0).toUpperCase() + text.slice(1);
   }
 }

@@ -4,18 +4,17 @@
 
   <main class="student-home-page-main">
     <div class="restaurant-filters-container">
+      <app-restaurant-filter
+        label="Cuisine Type"
+        [options]="cuisineTypes"
+        [multiple]="false"
+        (selectionChange)="onItemChange($event)"> </app-restaurant-filter>
 
-        <app-restaurant-filter
-          label="Cuisine Type"
-          [options]="['Italian','American','Japanese','French','Chinese','Indian','Mexican','General']"
-          (selectionChange)="onItemChange($event)">
-        </app-restaurant-filter>
-
-        <app-restaurant-filter
-          label="Diatery Label"
-          [options]="['Gluten Free','Frozen Product','Vegetarian','Vegan','Halal']"
-          (selectionChange)="onItemChange($event)">
-        </app-restaurant-filter>
+      <app-restaurant-filter
+        label="Dietary Label"
+        [options]="dietaryLabels"
+        (selectionChange)="onItemChange($event)">
+      </app-restaurant-filter>
     </div>
 
     <div class="restaurant-list-container">

@@ -13,12 +13,12 @@ import {NgForOf, NgIf} from '@angular/common';
 export class RestaurantFilterComponent {
   @Input() label: string = 'Filtre';
   @Input() options: string[] = [];
+  @Input() multiple: boolean = true;
 
-  // On renvoie la liste au parent quand ça change
   @Output() selectionChange = new EventEmitter<string[]>();
 
   isOpen = false;
-  selectedOptions: string[] = []; // Tableau pour stocker plusieurs choix
+  selectedOptions: string[] = [];
 
   constructor(private eRef: ElementRef) {}
 
@@ -27,17 +27,25 @@ export class RestaurantFilterComponent {
   }
 
   toggleOption(option: string, event: Event) {
-    // IMPORTANT : Empêche le menu de se fermer quand on clique sur une case
     event.stopPropagation();
 
-    const index = this.selectedOptions.indexOf(option);
+    const isAlreadySelected = this.isSelected(option);
 
-    if (index === -1) {
-      this.selectedOptions.push(option);
+    if (this.multiple) {
+      if (isAlreadySelected) {
+        this.selectedOptions = this.selectedOptions.filter(o => o !== option);
+      } else {
+        this.selectedOptions.push(option);
+      }
     } else {
-      this.selectedOptions.splice(index, 1);
+      if (isAlreadySelected) {
+        this.selectedOptions = [];
+      } else {
+        this.selectedOptions = [option];
+      }
     }
 
+    // On émet la nouvelle liste (qui peut être vide [])
     this.selectionChange.emit(this.selectedOptions);
   }
 
@@ -48,6 +56,9 @@ export class RestaurantFilterComponent {
   get buttonLabel(): string {
     if (this.selectedOptions.length === 0) {
       return this.label;
+    }
+    if (!this.multiple && this.selectedOptions.length === 1) {
+      return `${this.label}: ${this.selectedOptions[0]}`;
     }
     return `${this.label} (${this.selectedOptions.length})`;
   }

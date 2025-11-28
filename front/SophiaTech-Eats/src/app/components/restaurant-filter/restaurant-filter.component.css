@@ -43,7 +43,7 @@
 
 .label {
   padding: 0 12px;
-  font-size: 25px;
+  font-size: 20px;
   color: #333;
   font-weight: 500;
 }
@@ -89,6 +89,7 @@ li {
   cursor: pointer;
   width: 16px;
   height: 16px;
+  pointer-events: none;
 }
 
 .option-text {
