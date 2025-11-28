@@ -1,0 +1,42 @@
+<div class="student-home-page-body">
+
+  <app-student-home-page-nav [studentName]="studentName" [studentSurname]="studentSurname"></app-student-home-page-nav>
+
+  <main class="main-account-container">
+    <div class="info-boxes-row">
+
+      <app-student-info-box title="Personal Info">
+        <p><strong>John Doe</strong></p>
+        <p>john.doe&#64;gmail.com</p>
+        <p>+33 6 12 34 56 78</p>
+      </app-student-info-box>
+
+      <app-student-info-box title="Bank Info">
+        <div style="margin-top: 20px;">
+          <p>VISA ending in **** 4242</p>
+          <p class="faded">Expires 12/28</p>
+        </div>
+      </app-student-info-box>
+
+      <app-student-info-box title="Delivery Location">
+        <address style="font-style: normal;">
+          123 Rue de la République<br>
+          75001 Paris<br>
+          France
+        </address>
+      </app-student-info-box>
+
+    </div>
+
+    <div class="action-buttons-row">
+      <button class="grey-action-btn">
+        Modify Bank Info
+      </button>
+
+      <button class="grey-action-btn">
+        Add Delivery Location
+      </button>
+    </div>
+  </main>
+
+</div>

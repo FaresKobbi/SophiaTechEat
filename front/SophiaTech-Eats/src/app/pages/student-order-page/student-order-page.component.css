@@ -1,0 +1,17 @@
+.main-account-container {
+  background-color: #e0e0e0;
+  padding: 50px;
+  min-height: 100vh;
+}
+
+.info-boxes-row {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+app-item-list, app-student-info-box {
+  display: block;
+}

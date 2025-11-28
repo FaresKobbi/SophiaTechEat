@@ -6,3 +6,18 @@ html, body{
   overflow: hidden;
   font-family: Arial, serif;
 }
+
+.home-page-button{
+  padding: 10px 20px;
+  border: 1px solid #007bff;
+  background-color: #055eb6;
+  color: #ffffff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+
+  &:hover{
+    background-color: #007bff;
+  }
+}

@@ -1,0 +1,23 @@
+<div class="dropdown-container" [class.active]="isOpen">
+
+  <button class="filter-btn" (click)="toggleDropdown()">
+    <span class="label">{{ buttonLabel }}</span>
+    <span class="separator"></span>
+    <span class="arrow">▼</span>
+  </button>
+
+  <div class="dropdown-menu" *ngIf="isOpen">
+    <ul>
+      <li *ngFor="let option of options"
+          (click)="toggleOption(option, $event)"
+          [class.selected]="isSelected(option)">
+
+        <input type="checkbox"
+               [checked]="isSelected(option)"
+               class="option-checkbox">
+
+        <span class="option-text">{{ option }}</span>
+      </li>
+    </ul>
+  </div>
+</div>

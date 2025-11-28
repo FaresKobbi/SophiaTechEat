@@ -1,0 +1,19 @@
+<nav class="nav-container">
+
+  <p>Hello {{studentName}} {{studentSurname}}</p>
+
+  <div>
+    <button *ngFor="let link of navLinks"
+            [routerLink]="link.path"
+            routerLinkActive="active-state"
+            #rla="routerLinkActive"
+            [disabled]="rla.isActive"
+            class="nav-btn">
+      {{ link.label }}
+    </button>
+  </div>
+
+
+  <button class="home-page-button" style="font-size: 25px;" routerLink='/'>HOME PAGE</button>
+
+</nav>
