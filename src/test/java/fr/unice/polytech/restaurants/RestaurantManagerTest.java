@@ -6,12 +6,15 @@ package fr.unice.polytech.restaurants;
 
 import fr.unice.polytech.dishes.DietaryLabel;
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.dishes.DishCategory;
+import fr.unice.polytech.dishes.DishType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -500,53 +503,60 @@ class RestaurantManagerTest {
 
         @BeforeEach
         void setUpSearchData() {
-            // 1. Setup Italian Restaurant (Italian Cuisine)
+            // --- 1. Setup Italian Restaurant (Italian Cuisine) ---
             italianRest = new Restaurant("Luigi's");
             italianRest.setCuisineType(CuisineType.ITALIAN);
 
-            glutenFreePasta = new Dish("GF Pasta", 12.0);
-            glutenFreePasta.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE, DietaryLabel.VEGETARIAN));
+            // Plat 1 : Pâtes (Gluten Free + Végétarien)
+            italianRest.addDish("GF Pasta", "Corn pasta", 12.0);
+            Dish pasta = italianRest.findDishByName("GF Pasta");
+            if (pasta != null) {
+                pasta.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE, DietaryLabel.VEGETARIAN));
+                // IMPORTANT : On applique la logique d'ajout au restaurant
+                italianRest.addDietaryLabel(DietaryLabel.GLUTEN_FREE);
+                italianRest.addDietaryLabel(DietaryLabel.VEGETARIAN);
+            }
 
-            normalPizza = new Dish("Pizza", 10.0);
-            normalPizza.setDietaryLabels(List.of(DietaryLabel.VEGETARIAN)); // No GF label
-
-            italianRest.addDish(glutenFreePasta.getName(), "Desc", glutenFreePasta.getPrice());
-            italianRest.addDish(normalPizza.getName(), "Desc", normalPizza.getPrice());
-
-            // Manually setting labels because addDish(name, desc, price) creates a generic Dish inside Restaurant
-            // We need to update the created dishes with our specific labels
-            italianRest.getDishes().stream()
-                    .filter(d -> d.getName().equals("GF Pasta"))
-                    .findFirst().ifPresent(d -> d.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE, DietaryLabel.VEGETARIAN)));
-
-            italianRest.getDishes().stream()
-                    .filter(d -> d.getName().equals("Pizza"))
-                    .findFirst().ifPresent(d -> d.setDietaryLabels(List.of(DietaryLabel.VEGETARIAN)));
+            // Plat 2 : Pizza (Végétarien seulement)
+            italianRest.addDish("Pizza", "Cheese and tomato", 10.0);
+            Dish pizza = italianRest.findDishByName("Pizza");
+            if (pizza != null) {
+                pizza.setDietaryLabels(List.of(DietaryLabel.VEGETARIAN));
+                // IMPORTANT : On ajoute le label au restaurant
+                italianRest.addDietaryLabel(DietaryLabel.VEGETARIAN);
+            }
 
 
-            // 2. Setup Japanese Restaurant (Japanese Cuisine)
+            // --- 2. Setup Japanese Restaurant (Japanese Cuisine) ---
             japaneseRest = new Restaurant("Sushi Zen");
             japaneseRest.setCuisineType(CuisineType.JAPANESE);
 
-            sushi = new Dish("Sushi Set", 15.0);
-            sushi.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE)); // GF but not Vegetarian/Vegan explicitly here
+            // Plat : Sushi (Gluten Free uniquement)
+            japaneseRest.addDish("Sushi Set", "Fresh fish", 15.0);
+            Dish sushi = japaneseRest.findDishByName("Sushi Set");
+            if (sushi != null) {
+                sushi.setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE));
+                // IMPORTANT : On ajoute le label au restaurant
+                japaneseRest.addDietaryLabel(DietaryLabel.GLUTEN_FREE);
+            }
 
-            japaneseRest.addDish(sushi.getName(), "Desc", sushi.getPrice());
-            japaneseRest.getDishes().get(0).setDietaryLabels(List.of(DietaryLabel.GLUTEN_FREE));
 
-
-            // 3. Setup Mixed/General Restaurant (General Cuisine)
+            // --- 3. Setup Mixed/General Restaurant (General Cuisine) ---
             mixedRest = new Restaurant("Healthy Spot");
             mixedRest.setCuisineType(CuisineType.GENERAL);
 
-            veganSalad = new Dish("Super Salad", 9.0);
-            veganSalad.setDietaryLabels(List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
+            // Plat : Salade (Vegan + Végétarien + Gluten Free)
+            mixedRest.addDish("Super Salad", "Lettuce and tofu", 9.0);
+            Dish salad = mixedRest.findDishByName("Super Salad");
+            if (salad != null) {
+                List<DietaryLabel> labels = List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE);
+                salad.setDietaryLabels(labels);
+                // IMPORTANT : On ajoute tous les labels au restaurant
+                labels.forEach(mixedRest::addDietaryLabel);
+            }
 
-            mixedRest.addDish(veganSalad.getName(), "Desc", veganSalad.getPrice());
-            mixedRest.getDishes().get(0).setDietaryLabels(List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
 
-
-            // Add all to manager
+            // --- Ajout au Manager ---
             manager.addRestaurant(italianRest);
             manager.addRestaurant(japaneseRest);
             manager.addRestaurant(mixedRest);
@@ -616,7 +626,7 @@ class RestaurantManagerTest {
         @DisplayName("Should filter by both Cuisine AND Dietary Label")
         void shouldFilterByBothCuisineAndLabel() {
             // Italian + Vegetarian (Both Luigi's and Healthy Spot have veg options, but only Luigi is Italian)
-            List<Restaurant> results = manager.search(CuisineType.ITALIAN, DietaryLabel.VEGETARIAN);
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN, List.of(DietaryLabel.VEGETARIAN));
 
             assertEquals(1, results.size());
             assertTrue(results.contains(italianRest));
@@ -626,7 +636,7 @@ class RestaurantManagerTest {
         @DisplayName("Should return empty if cuisine matches but label does not")
         void shouldReturnEmptyIfCuisineMatchesButLabelDoesNot() {
             // Italian restaurant exists, but assumes no VEGAN dish in Luigi's
-            List<Restaurant> results = manager.search(CuisineType.ITALIAN, DietaryLabel.VEGAN);
+            List<Restaurant> results = manager.search(CuisineType.ITALIAN,List.of(DietaryLabel.VEGAN));
             assertTrue(results.isEmpty());
         }
 
@@ -634,7 +644,7 @@ class RestaurantManagerTest {
         @DisplayName("Should return empty if label matches but cuisine does not")
         void shouldReturnEmptyIfLabelMatchesButCuisineDoesNot() {
             // Japanese restaurant exists, but assumes Sushi is not VEGAN
-            List<Restaurant> results = manager.search(CuisineType.JAPANESE, DietaryLabel.VEGAN);
+            List<Restaurant> results = manager.search(CuisineType.JAPANESE, List.of(DietaryLabel.VEGAN));
             assertTrue(results.isEmpty());
         }
 
@@ -649,8 +659,7 @@ class RestaurantManagerTest {
         @Test
         @DisplayName("Should default to label search if cuisine is null")
         void shouldDefaultToLabelSearchIfCuisineIsNull() {
-            // Vegetarian matches Italian and Mixed
-            List<Restaurant> results = manager.search(null, DietaryLabel.VEGETARIAN);
+            List<Restaurant> results = manager.search(null, List.of(DietaryLabel.VEGETARIAN));
             assertEquals(2, results.size());
             assertTrue(results.contains(italianRest));
             assertTrue(results.contains(mixedRest));
@@ -664,4 +673,6 @@ class RestaurantManagerTest {
             assertEquals(3, results.size());
         }
     }
+
+
 }

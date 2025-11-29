@@ -12,7 +12,7 @@
           (click)="toggleOption(option, $event)"
           [class.selected]="isSelected(option)">
 
-        <input type="checkbox"
+        <input [type]="multiple ? 'checkbox' : 'radio'"
                [checked]="isSelected(option)"
                class="option-checkbox">
 

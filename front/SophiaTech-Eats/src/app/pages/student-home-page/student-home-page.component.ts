@@ -22,7 +22,12 @@ export class StudentHomePageComponent implements OnInit{
   studentName : string = "X"
   studentSurname : string = "Y"
 
+  dietaryLabels: string[] = [];
+  cuisineTypes: string[] = []
   restaurantList : Restaurant[] = []
+
+  selectedCuisine: string | undefined;
+  selectedLabels: string[] = [];
 
   constructor(private studentService: StudentAccountService, private restaurantService: RestaurantService, private router: Router) {
 
@@ -30,12 +35,23 @@ export class StudentHomePageComponent implements OnInit{
 
 
   ngOnInit(): void {
+    this.loadRestaurants()
+
 
     this.restaurantService.restaurants$.subscribe({
       next: (data)=>{
         this.restaurantList = data;
-    }
+      }
     })
+
+    this.restaurantService.getDietaryLabels().subscribe(data => {
+      this.dietaryLabels = data;
+      console.log("Labels reçus dans le component :", this.dietaryLabels);
+    });
+
+    this.restaurantService.getCuisineTypes().subscribe(data => {
+      this.cuisineTypes = data;
+    });
 
     this.selectedStudent = this.studentService.getSelectedStudent();
     this.studentId = this.selectedStudent ? this.selectedStudent.studentID : this.studentId
@@ -43,9 +59,24 @@ export class StudentHomePageComponent implements OnInit{
     this.studentSurname = this.selectedStudent ? this.selectedStudent.surname : this.studentSurname
   }
 
-  onItemChange(selectedItems: string[]) {
-    console.log('Item chosen:', selectedItems);
+  loadRestaurants() {
+    this.restaurantService.getRestaurants(this.selectedCuisine, this.selectedLabels).subscribe();
   }
+
+  onCuisineChange(selection: string[]) {
+    this.selectedCuisine = selection.length > 0 ? selection[0] : undefined;
+
+    console.log("Cuisine sélectionnée:", this.selectedCuisine);
+    this.loadRestaurants();
+  }
+
+  onDietaryChange(selection: string[]) {
+    this.selectedLabels = selection;
+
+    console.log("Labels sélectionnés:", this.selectedLabels);
+    this.loadRestaurants();
+  }
+
   onRestaurantClick(restaurant: any): void {
     if (restaurant && restaurant.restaurantId) {
       this.router.navigate(['/student/restaurant', restaurant.restaurantId, 'menu']);

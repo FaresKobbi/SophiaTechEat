@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, map, Observable, of, tap} from 'rxjs';
 import {StudentAccount} from '../student/student-account-service.service';
 
@@ -31,16 +31,70 @@ export interface Dish {
 export class RestaurantService {
   private apiUrl = 'http://localhost:8080/api/restaurants';
   private cache: Restaurant[] | null = null;
-  private restaurantsSubject = new BehaviorSubject<Restaurant[]>([])
-  public restaurants$ = this.restaurantsSubject.asObservable();
   private selectedRestaurant: Restaurant | null = null;
 
+  private restaurantsSubject = new BehaviorSubject<Restaurant[]>([])
+  public restaurants$ = this.restaurantsSubject.asObservable();
+
+  private dietaryLabelsSubject = new BehaviorSubject<string[]>([]);
+  public dietaryLabels$ = this.dietaryLabelsSubject.asObservable();
+  private dietaryLoaded = false
+
+  private cuisineTypeSubject = new BehaviorSubject<string[]>([]);
+  public cuisineType$ = this.cuisineTypeSubject.asObservable();
+  private cuisineTypeLoaded = false
 
   constructor(private http: HttpClient) {
   }
 
-  getRestaurants(): Observable<Restaurant[]> {
-    return this.http.get<Restaurant[]>(this.apiUrl).pipe(
+  getCuisineTypes(): Observable<string[]> {
+    if (this.cuisineTypeLoaded) {
+      return of(this.cuisineTypeSubject.value);
+    }
+
+    // 2. Sinon, on fait l'appel HTTP
+    return this.http.get<string[]>(`${this.apiUrl}/dishes/cuisinetypes`).pipe(
+      map(data => data.map(label => this.formatLabel(label))),
+
+      tap(formattedData => {
+        console.log('Cuisines chargées:', formattedData);
+        this.cuisineTypeSubject.next(formattedData);
+        this.cuisineTypeLoaded = true;
+      })
+    );
+  }
+
+  getDietaryLabels(): Observable<string[]> {
+    if (this.dietaryLoaded) {
+      return of(this.dietaryLabelsSubject.value);
+    }
+
+    return this.http.get<string[]>(`${this.apiUrl}/dishes/dietarylabels`).pipe(
+      map(data => data.map(label => this.formatLabel(label))),
+      tap(formattedData => {
+        console.log('Labels chargées:', formattedData);
+        this.dietaryLabelsSubject.next(formattedData);
+        this.dietaryLoaded = true;
+      })
+    );
+  }
+
+  getRestaurants(cuisine?: string, labels: string[] = []): Observable<Restaurant[]> {
+    let params = new HttpParams();
+
+    if (cuisine) {
+      params = params.set('cuisine', cuisine.toUpperCase());
+    }
+
+    if (labels.length > 0) {
+      labels.forEach(label => {
+        const formattedLabel = label.toUpperCase().replace(/ /g, '_');
+
+        params = params.append('label', formattedLabel);
+      });
+    }
+
+    return this.http.get<Restaurant[]>(this.apiUrl, { params }).pipe(
       tap((data) => this.restaurantsSubject.next(data))
     );
   }
@@ -83,5 +137,11 @@ export class RestaurantService {
     const identifier = dish.id || dish.name;
     const url = `${this.apiUrl}/${restaurantId}/dishes/${identifier}`;
     return this.http.put<Dish>(url, dish);
+  }
+
+  private formatLabel(label: string): string {
+    if (!label) return '';
+    const text = label.replace(/_/g, ' ').toLowerCase();
+    return text.charAt(0).toUpperCase() + text.slice(1);
   }
 }

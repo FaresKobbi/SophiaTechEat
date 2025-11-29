@@ -109,26 +109,25 @@ public class RestaurantManager {
     }
 
 
-    public List<Restaurant> search(CuisineType cuisine, DietaryLabel label) {
+    public List<Restaurant> search(CuisineType cuisine, List<DietaryLabel> labels) {
+        // On part de tous les restaurants
+        List<Restaurant> result = new ArrayList<>(restaurants.values());
 
-        if (cuisine == null && label == null) {
-            return getAllRestaurants();
+        // 1. Filtrage par Cuisine (UNIQUE)
+        if (cuisine != null) {
+            result.removeIf(r -> r.getCuisineType() != cuisine);
         }
 
-        if (label == null) {
-            return searchByCuisine(cuisine);
+        // 2. Filtrage par Labels (MULTIPLE)
+        // Le restaurant doit posséder TOUS les labels demandés (dans ses availableDietaryLabels)
+        if (labels != null && !labels.isEmpty()) {
+            for (DietaryLabel label : labels) {
+                result.removeIf(r -> !r.getAvailableDietaryLabels().contains(label));
+            }
         }
 
-        if (cuisine == null) {
-            return searchByDietaryLabel(label);
-        }
-
-        return restaurants.values().stream()
-                .filter(r -> r.getCuisineType() == cuisine)
-                .filter(r -> r.getDishes().stream()
-                        .anyMatch(dish -> dish.getDietaryLabels().contains(label)))
-                .collect(Collectors.toList());
+        return result;
     }
-
-
 }
+
+
