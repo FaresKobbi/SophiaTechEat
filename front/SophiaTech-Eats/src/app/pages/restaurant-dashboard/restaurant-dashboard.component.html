@@ -14,7 +14,11 @@
     </div>
 
     <div class="button-group bottom-row">
-      <button class="btn large-btn manage-workflow">MANAGE WORKFLOW</button>
+      <button
+        class="btn large-btn manage-workflow"
+        routerLink="/manager/opening-hours/{{ restaurantId }}">
+        MANAGE WORKFLOW
+      </button>
       <button class="btn large-btn see-order" [routerLink]="['/manager/orders', restaurantId]">SEE ORDER</button>
     </div>
   </div>

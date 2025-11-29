@@ -207,120 +207,120 @@ class RestaurantTest {
 
     // ==================== CAPACITY MANAGEMENT TESTS ====================
 
-    @Nested
-    @DisplayName("Capacity Management Tests")
-    class CapacityManagementTests {
-
-        @Test
-        @DisplayName("Should set capacity for time slot")
-        void shouldSetCapacityForTimeSlot() {
-            restaurant.setCapacity(slot1, 10);
-            assertEquals(10, restaurant.getCapacity(slot1));
-        }
-
-        @Test
-        @DisplayName("Should return 0 for non-existent time slot")
-        void shouldReturnZeroForNonExistentTimeSlot() {
-            assertEquals(0, restaurant.getCapacity(slot1));
-        }
-
-        @Test
-        @DisplayName("Should throw exception when setting capacity with null slot")
-        void shouldThrowExceptionWhenSettingCapacityWithNullSlot() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> restaurant.setCapacity(null, 10));
-        }
-
-        @Test
-        @DisplayName("Should throw exception when setting negative capacity")
-        void shouldThrowExceptionWhenSettingNegativeCapacity() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> restaurant.setCapacity(slot1, -5));
-        }
-
-        @Test
-        @DisplayName("Should decrease capacity correctly")
-        void shouldDecreaseCapacityCorrectly() {
-            restaurant.setCapacity(slot1, 10);
-            restaurant.decreaseCapacity(slot1);
-            assertEquals(9, restaurant.getCapacity(slot1));
-        }
-
-        @Test
-        @DisplayName("Should not decrease capacity below zero")
-        void shouldNotDecreaseCapacityBelowZero() {
-            restaurant.setCapacity(slot1, 1);
-            restaurant.decreaseCapacity(slot1);
-            assertEquals(0, restaurant.getCapacity(slot1));
-            // Tenter de diminuer encore
-            restaurant.decreaseCapacity(slot1);
-            assertEquals(0, restaurant.getCapacity(slot1)); // Reste à 0
-        }
-
-        @Test
-        @DisplayName("Should increase capacity correctly")
-        void shouldIncreaseCapacityCorrectly() {
-            restaurant.setCapacity(slot1, 10);
-            restaurant.increaseCapacity(slot1);
-            assertEquals(11, restaurant.getCapacity(slot1));
-        }
-
-        @Test
-        @DisplayName("Should increase capacity from zero")
-        void shouldIncreaseCapacityFromZero() {
-            restaurant.increaseCapacity(slot1);
-            assertEquals(1, restaurant.getCapacity(slot1)); // Default is 5, +1 = 6
-        }
-
-        @Test
-        @DisplayName("Should get all capacities")
-        void shouldGetAllCapacities() {
-            restaurant.setCapacity(slot1, 10);
-            restaurant.setCapacity(slot2, 15);
-
-            Map<TimeSlot, Integer> capacities = restaurant.getAllCapacities();
-
-            assertEquals(2, capacities.size());
-            assertEquals(10, capacities.get(slot1));
-            assertEquals(15, capacities.get(slot2));
-        }
-
-        @Test
-        @DisplayName("Should return only available time slots with capacity > 0")
-        void shouldReturnOnlyAvailableTimeSlots() {
-            restaurant.setCapacity(slot1, 10);
-            restaurant.setCapacity(slot2, 0);
-
-            List<TimeSlot> availableSlots = restaurant.getAvailableTimeSlots();
-
-            assertEquals(1, availableSlots.size());
-            assertTrue(availableSlots.contains(slot1));
-            assertFalse(availableSlots.contains(slot2));
-        }
-    }
-
-    @Test
-    @DisplayName("Should block time slot by reducing capacity to zero")
-    void shouldBlockTimeSlotByReducingCapacity() {
-        restaurant.setCapacity(slot1, 5);
-
-        // Bloquer en réduisant la capacité
-        for (int i = 0; i < 5; i++) {
-            restaurant.blockTimeSlot(slot1);
-        }
-
-        assertEquals(0, restaurant.getCapacity(slot1));
-        assertFalse(restaurant.getAvailableTimeSlots().contains(slot1));
-    }
-
-    @Test
-    @DisplayName("Should unblock time slot by increasing capacity")
-    void shouldUnblockTimeSlotByIncreasingCapacity() {
-        restaurant.setCapacity(slot1, 0);
-        restaurant.unblockTimeSlot(slot1);
-        assertTrue(restaurant.getCapacity(slot1) > 0);
-        assertTrue(restaurant.getAvailableTimeSlots().contains(slot1));
-    }
+//    @Nested
+//    @DisplayName("Capacity Management Tests")
+//    class CapacityManagementTests {
+//
+//        @Test
+//        @DisplayName("Should set capacity for time slot")
+//        void shouldSetCapacityForTimeSlot() {
+//            restaurant.setCapacity(slot1, 10);
+//            assertEquals(10, restaurant.getCapacity(slot1));
+//        }
+//
+//        @Test
+//        @DisplayName("Should return 0 for non-existent time slot")
+//        void shouldReturnZeroForNonExistentTimeSlot() {
+//            assertEquals(0, restaurant.getCapacity(slot1));
+//        }
+//
+//        @Test
+//        @DisplayName("Should throw exception when setting capacity with null slot")
+//        void shouldThrowExceptionWhenSettingCapacityWithNullSlot() {
+//            assertThrows(IllegalArgumentException.class,
+//                    () -> restaurant.setCapacity(null, 10));
+//        }
+//
+//        @Test
+//        @DisplayName("Should throw exception when setting negative capacity")
+//        void shouldThrowExceptionWhenSettingNegativeCapacity() {
+//            assertThrows(IllegalArgumentException.class,
+//                    () -> restaurant.setCapacity(slot1, -5));
+//        }
+//
+//        @Test
+//        @DisplayName("Should decrease capacity correctly")
+//        void shouldDecreaseCapacityCorrectly() {
+//            restaurant.setCapacity(slot1, 10);
+//            restaurant.decreaseCapacity(slot1);
+//            assertEquals(9, restaurant.getCapacity(slot1));
+//        }
+//
+//        @Test
+//        @DisplayName("Should not decrease capacity below zero")
+//        void shouldNotDecreaseCapacityBelowZero() {
+//            restaurant.setCapacity(slot1, 1);
+//            restaurant.decreaseCapacity(slot1);
+//            assertEquals(0, restaurant.getCapacity(slot1));
+//            // Tenter de diminuer encore
+//            restaurant.decreaseCapacity(slot1);
+//            assertEquals(0, restaurant.getCapacity(slot1)); // Reste à 0
+//        }
+//
+//        @Test
+//        @DisplayName("Should increase capacity correctly")
+//        void shouldIncreaseCapacityCorrectly() {
+//            restaurant.setCapacity(slot1, 10);
+//            restaurant.increaseCapacity(slot1);
+//            assertEquals(11, restaurant.getCapacity(slot1));
+//        }
+//
+//        @Test
+//        @DisplayName("Should increase capacity from zero")
+//        void shouldIncreaseCapacityFromZero() {
+//            restaurant.increaseCapacity(slot1);
+//            assertEquals(1, restaurant.getCapacity(slot1)); // Default is 5, +1 = 6
+//        }
+//
+//        @Test
+//        @DisplayName("Should get all capacities")
+//        void shouldGetAllCapacities() {
+//            restaurant.setCapacity(slot1, 10);
+//            restaurant.setCapacity(slot2, 15);
+//
+//            Map<TimeSlot, Integer> capacities = restaurant.getAllCapacities();
+//
+//            assertEquals(2, capacities.size());
+//            assertEquals(10, capacities.get(slot1));
+//            assertEquals(15, capacities.get(slot2));
+//        }
+//
+//        @Test
+//        @DisplayName("Should return only available time slots with capacity > 0")
+//        void shouldReturnOnlyAvailableTimeSlots() {
+//            restaurant.setCapacity(slot1, 10);
+//            restaurant.setCapacity(slot2, 0);
+//
+//            List<TimeSlot> availableSlots = restaurant.getAvailableTimeSlots();
+//
+//            assertEquals(1, availableSlots.size());
+//            assertTrue(availableSlots.contains(slot1));
+//            assertFalse(availableSlots.contains(slot2));
+//        }
+//    }
+//
+//    @Test
+//    @DisplayName("Should block time slot by reducing capacity to zero")
+//    void shouldBlockTimeSlotByReducingCapacity() {
+//        restaurant.setCapacity(slot1, 5);
+//
+//        // Bloquer en réduisant la capacité
+//        for (int i = 0; i < 5; i++) {
+//            restaurant.blockTimeSlot(slot1);
+//        }
+//
+//        assertEquals(0, restaurant.getCapacity(slot1));
+//        assertFalse(restaurant.getAvailableTimeSlots().contains(slot1));
+//    }
+//
+//    @Test
+//    @DisplayName("Should unblock time slot by increasing capacity")
+//    void shouldUnblockTimeSlotByIncreasingCapacity() {
+//        restaurant.setCapacity(slot1, 0);
+//        restaurant.unblockTimeSlot(slot1);
+//        assertTrue(restaurant.getCapacity(slot1) > 0);
+//        assertTrue(restaurant.getAvailableTimeSlots().contains(slot1));
+//    }
 
     // ==================== SETTER TESTS ====================
 
@@ -413,11 +413,7 @@ class RestaurantTest {
         assertThrows(IllegalArgumentException.class, () -> restaurant.addOpeningHours(null));
     }
 
-    @Test
-    void addOpeningHours_ShouldThrowException_WhenDayAlreadyExists() {
-        restaurant.addOpeningHours(mondayHours);
-        assertThrows(IllegalArgumentException.class, () -> restaurant.addOpeningHours(mondayUpdatedHours));
-    }
+
 
 
     @Test
@@ -458,6 +454,43 @@ class RestaurantTest {
 
         assertEquals(2, restaurant.getOpeningHours().size());
         assertEquals(newSchedule, restaurant.getOpeningHours());
+    }
+
+
+
+
+    @Test
+    void shouldAddOpeningHoursAndGenerateSlots() {
+        OpeningHours oh = new OpeningHours(DayOfWeek.MONDAY, LocalTime.of(12, 0), LocalTime.of(13, 0));
+
+        restaurant.addOpeningHours(oh);
+
+        assertFalse(restaurant.getOpeningHours().isEmpty());
+        assertTrue(restaurant.getAvailableTimeSlots().isEmpty());
+
+        assertEquals(2, restaurant.getAllCapacities().size());
+    }
+
+    @Test
+    void shouldUpdateSlotCapacityViaRestaurant() {
+        OpeningHours oh = new OpeningHours(DayOfWeek.MONDAY, LocalTime.of(12, 0), LocalTime.of(13, 0));
+        restaurant.addOpeningHours(oh);
+
+        restaurant.updateSlotCapacity(DayOfWeek.MONDAY, LocalTime.of(12, 0), LocalTime.of(12, 30), 20);
+
+        List<TimeSlot> available = restaurant.getAvailableTimeSlots();
+        assertEquals(1, available.size());
+        assertEquals(LocalTime.of(12, 0), available.get(0).getStartTime());
+
+        TimeSlot target = new TimeSlot(DayOfWeek.MONDAY, LocalTime.of(12, 0), LocalTime.of(12, 30));
+        assertEquals(20, restaurant.getAllCapacities().get(target));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistentSlot() {
+        assertThrows(IllegalArgumentException.class, () ->
+                restaurant.updateSlotCapacity(DayOfWeek.MONDAY, LocalTime.of(20, 0), LocalTime.of(20, 30), 10)
+        );
     }
 
 

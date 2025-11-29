@@ -12,6 +12,7 @@ import {CreateDishPageComponent} from './pages/create-dish-page/create-dish-page
 import {UpdateDishPageComponent} from './pages/update-dish-page/update-dish-page.component';
 import {OrderListPageComponent} from './pages/order-list-page/order-list-page.component';
 import {RestaurantMenuPageComponent} from './pages/restaurant-menu-page/restaurant-menu-page.component';
+import { OpeningHoursComponent } from './pages/opening-hours-component/opening-hours-component.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,5 @@ export const routes: Routes = [
   { path: 'manager/dish/update/:restaurantId/:dishId', component: UpdateDishPageComponent },
   { path: 'manager/orders/:restaurantId', component: OrderListPageComponent },
   { path: 'student/restaurant/:restaurantId/menu', component: RestaurantMenuPageComponent },
-
-
+  { path: 'manager/opening-hours/:restaurantId', component: OpeningHoursComponent },
 ];

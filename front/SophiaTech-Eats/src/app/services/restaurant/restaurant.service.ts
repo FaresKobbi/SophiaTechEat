@@ -25,6 +25,35 @@ export interface Dish {
   toppings?: Topping[];
 }
 
+
+export interface TimeSlot {
+  startTime: string;
+  endTime: string;
+  capacity: number;
+}
+
+export interface OpeningHoursDTO {
+  id: string;
+  day: string;
+  openingTime: string;
+  closingTime: string;
+  slots: { [key: string]: number };
+}
+
+export interface OpeningHours {
+  id: string;
+  day: string;
+  openingTime: string;
+  closingTime: string;
+  slots: TimeSlot[];
+}
+
+export interface OpeningHourCreation {
+  day: string;
+  openingTime: string;
+  closingTime: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -144,4 +173,63 @@ export class RestaurantService {
     const text = label.replace(/_/g, ' ').toLowerCase();
     return text.charAt(0).toUpperCase() + text.slice(1);
   }
+
+
+
+
+  getOpeningHours(restaurantId: string): Observable<OpeningHours[]> {
+    const url = `${this.apiUrl}/${restaurantId}/opening-hours`;
+    return this.http.get<any[]>(url).pipe(
+      map(dtos => dtos.map(dto => {
+        const slotsArray: TimeSlot[] = [];
+
+        if (dto.slots) {
+          Object.keys(dto.slots).forEach(key => {
+            const parts = key.split(' - ');
+            if (parts.length === 2) {
+              slotsArray.push({
+                startTime: parts[0].trim(),
+                endTime: parts[1].trim(),
+                capacity: dto.slots[key]
+              });
+            }
+          });
+          slotsArray.sort((a, b) => a.startTime.localeCompare(b.startTime));
+        }
+
+        return {
+          id: dto.id,
+          day: dto.day,
+          openingTime: dto.openingTime,
+          closingTime: dto.closingTime,
+          slots: slotsArray
+        };
+      }))
+    );
+  }
+
+  addOpeningHour(restaurantId: string, data: OpeningHourCreation): Observable<OpeningHours> {
+    const url = `${this.apiUrl}/${restaurantId}/opening-hours`;
+    return this.http.post<any>(url, data);
+  }
+
+  deleteOpeningHour(restaurantId: string, openingHourId: string): Observable<void> {
+    const url = `${this.apiUrl}/${restaurantId}/opening-hours/${openingHourId}`;
+    return this.http.delete<void>(url);
+  }
+
+  updateSlotCapacity(restaurantId: string, day: string, start: string, end: string, capacity: number): Observable<any> {
+    const url = `${this.apiUrl}/${restaurantId}/capacities`;
+    const payload = {
+      day: day,
+      start: start,
+      end: end,
+      capacity: capacity
+    };
+    return this.http.put(url, payload);
+  }
+
+
+
+
 }

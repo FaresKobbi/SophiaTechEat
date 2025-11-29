@@ -8,6 +8,8 @@ import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.dishes.DishCategory;
 import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.restaurants.CuisineType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.restaurants.RestaurantManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +31,15 @@ public class RestaurantService {
     public static void main(String[] args) throws IOException {
 
         populateMockData();
+
+        objectMapper.registerModule(new JavaTimeModule());
+
+
+        // MOCK
+        restaurantManager.addRestaurant(new Restaurant("Pizza Palace"));
+        restaurantManager.addRestaurant(new Restaurant("Sushi Shop"));
+        restaurantManager.getRestaurant("Sushi Shop").addDish("California Roll", "Fresh sushi roll with crab, avocado, and cucumber", 8.99);
+        restaurantManager.getRestaurant("Pizza Palace").addDish("Margherita Pizza", "Classic pizza with tomato sauce, mozzarella, and basil", 12.50);
 
         int port = 8081;
         SimpleServer server = new SimpleServer(port);
