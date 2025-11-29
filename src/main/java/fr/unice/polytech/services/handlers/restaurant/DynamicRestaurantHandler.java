@@ -232,7 +232,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
     }
 
-    private void handleDeleteOpeningHour(HttpExchange exchange, String restaurantId, String dayStr) throws IOException {
+    private void handleDeleteOpeningHour(HttpExchange exchange, String restaurantId, String openingHourId) throws IOException {
         Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
 
         if (rOpt.isEmpty()) {
@@ -242,21 +242,12 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
         Restaurant restaurant = rOpt.get();
 
-        try {
-            DayOfWeek day = DayOfWeek.valueOf(dayStr.toUpperCase());
+        boolean removed = restaurant.getOpeningHours().removeIf(oh -> oh.getId().equals(openingHourId));
 
-            boolean removed = restaurant.getOpeningHours().removeIf(oh -> oh.getDay() == day);
-
-            if (removed) {
-                sendResponse(exchange, 204, "");
-            } else {
-                sendResponse(exchange, 404, "{\"error\":\"Opening hours not found for day: " + day + "\"}");
-            }
-
-        } catch (IllegalArgumentException e) {
-            sendResponse(exchange, 400, "{\"error\":\"Invalid day format: " + dayStr + "\"}");
-        } catch (Exception e) {
-            sendResponse(exchange, 500, "{\"error\":\"Delete failed: " + e.getMessage() + "\"}");
+        if (removed) {
+            sendResponse(exchange, 204, ""); // Succès
+        } else {
+            sendResponse(exchange, 404, "{\"error\":\"Opening hour not found with ID: " + openingHourId + "\"}");
         }
     }
 

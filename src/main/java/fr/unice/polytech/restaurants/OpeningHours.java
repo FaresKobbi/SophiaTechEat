@@ -6,8 +6,10 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class OpeningHours {
+    private String id;
     private DayOfWeek day;
     private LocalTime openingTime;
     private LocalTime closingTime;
@@ -17,12 +19,17 @@ public class OpeningHours {
         if (openingTime.isAfter(closingTime)) {
             throw new IllegalArgumentException("Opening time cannot be after closing time");
         }
+        this.id = UUID.randomUUID().toString();
         this.day = day;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.slots = new HashMap<>();
 
         generateSlots();
+    }
+
+    public String getId() {
+        return id;
     }
 
     private void generateSlots() {

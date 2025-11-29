@@ -1,63 +1,60 @@
 <div class="main-container">
 
+
   <div class="left-panel">
-
     <div class="add-box">
-      <h4>Ajouter un horaire</h4>
-
+      <h4>Add Schedule</h4>
       <div class="form-group">
-        <label>Jour</label>
+        <label>Day</label>
         <select [(ngModel)]="newHour.day">
           <option *ngFor="let d of daysOfWeek" [value]="d">{{ d }}</option>
         </select>
       </div>
-
       <div class="form-group">
-        <label>Plage</label>
+        <label>Time Range</label>
         <div class="time-inputs">
           <input type="time" [(ngModel)]="newHour.openingTime">
-          <span>à</span>
+          <span>to</span>
           <input type="time" [(ngModel)]="newHour.closingTime">
         </div>
       </div>
-
-      <button class="btn-add" (click)="addHour()">+ Ajouter</button>
+      <button class="btn-add" (click)="addHour()">+ Add</button>
     </div>
 
     <div class="list-container">
       <app-item-list
-        [title]="'Plages Définies'"
+        [title]="'Scheduled Hours'"
         [items]="formattedHoursList"
         [displayKey]="'displayLabel'"
         (itemClicked)="onHourSelect($event)">
       </app-item-list>
     </div>
-
+    <button class="btn back" routerLink="/manager/dashboard/{{ restaurantId }}">
+      ⬅ BACK
+    </button>
   </div>
 
-  <div class="right-panel">
 
+  <div class="right-panel">
     <div *ngIf="!selectedHour" class="empty-state">
       <div class="empty-icon">⬅️</div>
-      <p>Sélectionnez une plage horaire à gauche pour voir et modifier les créneaux (slots).</p>
+      <p>Select a schedule on the left to manage time slots.</p>
     </div>
 
     <div *ngIf="selectedHour" class="details-container">
-
       <div class="details-header">
         <div class="header-info">
           <h2>{{ selectedHour.day }}</h2>
-          <span class="badge">{{ selectedHour.openingTime }} - {{ selectedHour.closingTime }}</span>
+          <span class="badge">{{ selectedHour.startDisplay }} - {{ selectedHour.endDisplay }}</span>
         </div>
         <button class="btn-delete" (click)="deleteSelectedHour()">
-          🗑️ Supprimer cette plage
+          🗑️ Delete this schedule
         </button>
       </div>
 
       <hr class="divider">
-
-      <h4>Gestion des créneaux (30 min)</h4>
-      <p class="subtitle">Modifiez la capacité pour ouvrir un créneau à la réservation.</p>
+      <h4>Slot Management (30 min)</h4>
+      <p class="subtitle">Set capacity to open a slot for booking.</p>
 
       <div class="slots-grid">
         <div *ngFor="let slot of selectedHour.slots"
@@ -65,24 +62,21 @@
              [class.open]="slot.capacity > 0">
 
           <div class="slot-time">
-            {{ slot.startTime }} <span class="arrow">➝</span> {{ slot.endTime }}
+            {{ getSlotDisplay(slot.startTime) }} <span class="arrow">➝</span> {{ getSlotDisplay(slot.endTime) }}
           </div>
 
           <div class="capacity-control">
-            <label>Capacité</label>
+            <label>Capacity</label>
             <input type="number" min="0"
                    [(ngModel)]="slot.capacity"
                    (change)="updateCapacity(slot)">
           </div>
 
           <div class="status-indicator">
-            {{ slot.capacity > 0 ? '🟢 OUVERT' : '🔴 FERMÉ' }}
+            {{ slot.capacity > 0 ? '🟢 OPEN' : '🔴 CLOSED' }}
           </div>
-
         </div>
       </div>
-
     </div>
   </div>
-
 </div>

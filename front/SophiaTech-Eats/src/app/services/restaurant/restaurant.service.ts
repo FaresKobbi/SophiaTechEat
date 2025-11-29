@@ -33,6 +33,7 @@ export interface TimeSlot {
 }
 
 export interface OpeningHoursDTO {
+  id: string;
   day: string;
   openingTime: string;
   closingTime: string;
@@ -40,6 +41,7 @@ export interface OpeningHoursDTO {
 }
 
 export interface OpeningHours {
+  id: string;
   day: string;
   openingTime: string;
   closingTime: string;
@@ -117,7 +119,7 @@ export class RestaurantService {
 
   getOpeningHours(restaurantId: string): Observable<OpeningHours[]> {
     const url = `${this.apiUrl}/${restaurantId}/opening-hours`;
-    return this.http.get<OpeningHoursDTO[]>(url).pipe(
+    return this.http.get<any[]>(url).pipe(
       map(dtos => dtos.map(dto => {
         const slotsArray: TimeSlot[] = [];
 
@@ -132,11 +134,11 @@ export class RestaurantService {
               });
             }
           });
-
           slotsArray.sort((a, b) => a.startTime.localeCompare(b.startTime));
         }
 
         return {
+          id: dto.id,
           day: dto.day,
           openingTime: dto.openingTime,
           closingTime: dto.closingTime,
@@ -151,8 +153,8 @@ export class RestaurantService {
     return this.http.post<any>(url, data);
   }
 
-  deleteOpeningHour(restaurantId: string, day: string): Observable<void> {
-    const url = `${this.apiUrl}/${restaurantId}/opening-hours/${day}`; // ou ?day=MONDAY
+  deleteOpeningHour(restaurantId: string, openingHourId: string): Observable<void> {
+    const url = `${this.apiUrl}/${restaurantId}/opening-hours/${openingHourId}`;
     return this.http.delete<void>(url);
   }
 
@@ -166,6 +168,7 @@ export class RestaurantService {
     };
     return this.http.put(url, payload);
   }
+
 
 
 
