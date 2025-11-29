@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, map, Observable, of, tap} from 'rxjs';
-import {StudentAccount} from '../student/student-account-service.service';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
+import { StudentAccount } from '../student/student-account-service.service';
 
 export interface Restaurant {
   restaurantName: string;
@@ -232,4 +232,9 @@ export class RestaurantService {
 
 
 
+  getSuggestions(keyword: string): Observable<Dish[]> {
+    const url = `http://localhost:8080/api/suggestions`;
+    const params = new HttpParams().set('keyword', keyword);
+    return this.http.get<Dish[]>(url, { params });
+  }
 }

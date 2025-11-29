@@ -38,7 +38,7 @@ public class PassthroughHandler implements HttpHandler {
         }
         String path = exchange.getRequestURI().getPath();
         String query = exchange.getRequestURI().getRawQuery();
-        //String query = exchange.getRequestURI().getQuery();
+        // String query = exchange.getRequestURI().getQuery();
         String method = exchange.getRequestMethod();
         String targetBaseUrl = null;
 
@@ -50,6 +50,9 @@ public class PassthroughHandler implements HttpHandler {
             path = path.substring(4);
         } else if (path.startsWith("/api/orders")) {
             targetBaseUrl = ORDER_SERVICE_URL;
+            path = path.substring(4);
+        } else if (path.startsWith("/api/suggestions")) {
+            targetBaseUrl = RESTAURANT_SERVICE_URL;
             path = path.substring(4);
         } else {
 
@@ -84,13 +87,14 @@ public class PassthroughHandler implements HttpHandler {
                 if (!key.equalsIgnoreCase("Access-Control-Allow-Origin") &&
                         !key.equalsIgnoreCase("Content-Length")) {
                     values.forEach(value -> exchange.getResponseHeaders().add(key, value));
-                }            });
+                }
+            });
 
             HttpRequest request = requestBuilder.build();
             HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
 
             response.headers().map().forEach((key, values) -> {
-                if (!key.equalsIgnoreCase("Content-Length")) {
+                if (!key.equalsIgnoreCase("Content-Length") && !key.toLowerCase().startsWith("access-control-allow-")) {
                     values.forEach(value -> exchange.getResponseHeaders().add(key, value));
                 }
             });
