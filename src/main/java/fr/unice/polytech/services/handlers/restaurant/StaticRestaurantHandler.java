@@ -12,6 +12,8 @@ import fr.unice.polytech.restaurants.RestaurantManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class StaticRestaurantHandler implements HttpHandler {
@@ -32,7 +34,7 @@ public class StaticRestaurantHandler implements HttpHandler {
             if ("GET".equals(method)) {
                 switch (path) {
                     case "/restaurants", "/restaurants/" -> {
-                        String query = exchange.getRequestURI().getQuery();
+                        String query = exchange.getRequestURI().getRawQuery();
                         handleGetRestaurants(exchange, query);
                     }
                     case "/restaurants/dishes/dietarylabels", "/restaurants/dishes/dietarylabels/" -> {
@@ -64,13 +66,13 @@ public class StaticRestaurantHandler implements HttpHandler {
 
         try {
             if (params.containsKey("cuisine") && !params.get("cuisine").isEmpty()) {
-                String cuisineStr = params.get("cuisine").get(0);
-                cuisine = CuisineType.valueOf(cuisineStr.toUpperCase());
+                cuisine = CuisineType.valueOf(params.get("cuisine").get(0));
             }
 
+            // Labels
             if (params.containsKey("label")) {
                 for (String labelStr : params.get("label")) {
-                    labels.add(DietaryLabel.valueOf(labelStr.toUpperCase()));
+                    labels.add(DietaryLabel.valueOf(labelStr));
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -91,9 +93,7 @@ public class StaticRestaurantHandler implements HttpHandler {
         for (String param : query.split("&")) {
             String[] entry = param.split("=");
             if (entry.length > 1) {
-                String key = entry[0];
-                String value = entry[1];
-                result.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+                result.computeIfAbsent(entry[0], k -> new ArrayList<>()).add(entry[1]);
             }
         }
         return result;

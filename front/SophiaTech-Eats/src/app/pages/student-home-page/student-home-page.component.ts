@@ -26,6 +26,9 @@ export class StudentHomePageComponent implements OnInit{
   cuisineTypes: string[] = []
   restaurantList : Restaurant[] = []
 
+  selectedCuisine: string | undefined;
+  selectedLabels: string[] = [];
+
   constructor(private studentService: StudentAccountService, private restaurantService: RestaurantService, private router: Router) {
 
   }

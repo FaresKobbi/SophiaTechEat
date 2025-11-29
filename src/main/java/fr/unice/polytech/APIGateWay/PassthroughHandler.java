@@ -37,7 +37,8 @@ public class PassthroughHandler implements HttpHandler {
             return;
         }
         String path = exchange.getRequestURI().getPath();
-        String query = exchange.getRequestURI().getQuery();
+        String query = exchange.getRequestURI().getRawQuery();
+        //String query = exchange.getRequestURI().getQuery();
         String method = exchange.getRequestMethod();
         String targetBaseUrl = null;
 

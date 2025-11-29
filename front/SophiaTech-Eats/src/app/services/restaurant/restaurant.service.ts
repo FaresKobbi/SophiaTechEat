@@ -83,12 +83,14 @@ export class RestaurantService {
     let params = new HttpParams();
 
     if (cuisine) {
-      params = params.set('cuisine', cuisine);
+      params = params.set('cuisine', cuisine.toUpperCase());
     }
 
     if (labels.length > 0) {
       labels.forEach(label => {
-        params = params.append('label', label);
+        const formattedLabel = label.toUpperCase().replace(/ /g, '_');
+
+        params = params.append('label', formattedLabel);
       });
     }
 
