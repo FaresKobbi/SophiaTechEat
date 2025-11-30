@@ -24,6 +24,7 @@ public class MockedExternalPaymentSystem {
             return false;
         }
 
-        return random.nextDouble() < 0.8;
+        //return random.nextDouble() < 0.8;
+        return true;
     }
 }

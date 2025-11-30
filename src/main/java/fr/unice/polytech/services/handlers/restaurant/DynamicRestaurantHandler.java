@@ -9,7 +9,7 @@ import fr.unice.polytech.dishes.*;
 import fr.unice.polytech.restaurants.OpeningHours;
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.restaurants.RestaurantManager;
-import fr.unice.polytech.suggestion.HybridSuggestionService;
+import fr.unice.polytech.suggestion.HybridSuggestionService;import fr.unice.polytech.restaurants.TimeSlot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +31,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
     private static final Pattern OPENING_HOURS_PATTERN = Pattern.compile("/restaurants/([^/]+)/opening-hours/?$");
     private static final Pattern CAPACITIES_PATTERN = Pattern.compile("/restaurants/([^/]+)/capacities/?$");
     private static final Pattern OPENING_HOURS_ITEM_PATTERN = Pattern
+            
             .compile("/restaurants/([^/]+)/opening-hours/([^/]+)/?$");
 
     private final HybridSuggestionService suggestionService;
@@ -86,6 +87,20 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 }
             } else if (capacitiesMatcher.matches()) {
                 handleCapacities(exchange, method, capacitiesMatcher.group(1));
+            } else if (path.matches("/restaurants/[^/]+/slots/reserve/?")) {
+                String restaurantId = path.split("/")[2];
+                if ("POST".equals(method)) {
+                    handleReserveSlot(exchange, restaurantId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            } else if (path.matches("/restaurants/[^/]+/slots/release/?")) {
+                String restaurantId = path.split("/")[2];
+                if ("POST".equals(method)) {
+                    handleReleaseSlot(exchange, restaurantId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
             } else {
                 sendResponse(exchange, 404, "{\"error\":\"Dynamic Route Not Found for: " + path + "\"}");
             }
@@ -348,5 +363,71 @@ public class DynamicRestaurantHandler implements HttpHandler {
     private static class ToppingRequest {
         public String name;
         public Double price;
+    }
+
+    private void handleReserveSlot(HttpExchange exchange, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
+        Restaurant restaurant = rOpt.get();
+
+        try {
+            InputStream requestBody = exchange.getRequestBody();
+            JsonNode body = objectMapper.readTree(requestBody);
+
+            DayOfWeek day = DayOfWeek.valueOf(body.get("day").asText());
+            LocalTime start = LocalTime.parse(body.get("startTime").asText());
+            LocalTime end = LocalTime.parse(body.get("endTime").asText());
+
+            TimeSlot slot = new TimeSlot(day, start, end);
+
+            // DEBUG LOGS
+            System.out.println("--- RESERVE SLOT DEBUG ---");
+            System.out.println(
+                    "Target Slot: " + slot.getDayOfWeek() + " " + slot.getStartTime() + " - " + slot.getEndTime());
+            System.out.println("Target HashCode: " + slot.hashCode());
+
+            int currentCapacity = restaurant.getCapacity(slot);
+            System.out.println("Capacity Found: " + currentCapacity);
+
+            if (currentCapacity > 0) {
+                restaurant.decreaseCapacity(slot);
+                sendResponse(exchange, 200,
+                        "{\"status\":\"Reserved\", \"remainingCapacity\":" + (currentCapacity - 1) + "}");
+            } else {
+                sendResponse(exchange, 409, "{\"error\":\"Slot Full\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse(exchange, 400, "{\"error\":\"Reservation failed: " + e.getMessage() + "\"}");
+        }
+    }
+
+    private void handleReleaseSlot(HttpExchange exchange, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
+        Restaurant restaurant = rOpt.get();
+
+        try {
+            InputStream requestBody = exchange.getRequestBody();
+            JsonNode body = objectMapper.readTree(requestBody);
+
+            DayOfWeek day = DayOfWeek.valueOf(body.get("day").asText());
+            LocalTime start = LocalTime.parse(body.get("startTime").asText());
+            LocalTime end = LocalTime.parse(body.get("endTime").asText());
+
+            TimeSlot slot = new TimeSlot(day, start, end);
+
+            restaurant.increaseCapacity(slot);
+            sendResponse(exchange, 200, "{\"status\":\"Released\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse(exchange, 400, "{\"error\":\"Release failed: " + e.getMessage() + "\"}");
+        }
     }
 }

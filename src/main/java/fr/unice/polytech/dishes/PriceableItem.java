@@ -5,6 +5,10 @@ public class PriceableItem {
     private String id;
     private double price;
 
+    // NEW: Default constructor for Jackson deserialization
+    public PriceableItem() {
+        this.id = java.util.UUID.randomUUID().toString();
+    }
 
     public PriceableItem(String name) {
         id = java.util.UUID.randomUUID().toString();

@@ -9,6 +9,13 @@ export interface StudentAccount {
   surname: string;
 }
 
+export interface DeliveryLocation {
+  name: string;
+  address: string;
+  city: string;
+  zipCode: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,10 +31,10 @@ export class StudentAccountService {
 
 
 
-  getSelectedStudent () : StudentAccount | null{
+  getSelectedStudent(): StudentAccount | null {
     return this.selectedStudent
   }
-  public setSelectedStudent (student : StudentAccount){
+  public setSelectedStudent(student: StudentAccount) {
     this.selectedStudent = student
   }
 
@@ -44,7 +51,7 @@ export class StudentAccountService {
     ).subscribe();
   }
 
-  createStudent(data: {name: string, surname: string, email: string}): Observable<StudentAccount> {
+  createStudent(data: { name: string, surname: string, email: string }): Observable<StudentAccount> {
     return this.http.post<StudentAccount>(this.apiUrl, data).pipe(
       tap(() => {
         this.refreshStudents();
@@ -55,5 +62,9 @@ export class StudentAccountService {
 
   public refreshStudents(): void {
     this.loadStudents();
+  }
+
+  getDeliveryLocations(studentId: string): Observable<DeliveryLocation[]> {
+    return this.http.get<DeliveryLocation[]>(`${this.apiUrl}/${studentId}/locations`);
   }
 }

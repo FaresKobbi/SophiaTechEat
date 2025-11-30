@@ -1,6 +1,9 @@
 package fr.unice.polytech.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.orderManagement.OrderManager;
@@ -24,6 +27,8 @@ public class OrderService {
 
         OrderManager orderManager = new OrderManager(httpClient);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         Dish pizza = new Dish("Margherita", "Cheese and Tomato", 12.50);
 
