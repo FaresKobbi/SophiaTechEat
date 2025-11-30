@@ -10,7 +10,7 @@ import fr.unice.polytech.services.handlers.student.StaticAccountsHandler;
 import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
 import fr.unice.polytech.users.StudentAccountManager;
-
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 
 public class StudentAccountService {
@@ -30,8 +30,10 @@ public class StudentAccountService {
                 new StudentAccount.Builder("Bob", "Martin")
                         .email("bob.martin@etu.unice.fr")
                         .addDeliveryLocation(new DeliveryLocation("Dorm", "50 Avenue Jean Medecin", "Nice", "06000"))
+                        .bankInfo("1234567890123456", 123, 12, 2025)
                         .build()
         );
+        objectMapper.registerModule(new JavaTimeModule());
         int port = 8082;
         SimpleServer server = new SimpleServer(port);
 

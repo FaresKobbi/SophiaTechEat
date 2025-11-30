@@ -11,10 +11,24 @@
         <p>+33 6 12 34 56 78</p>
       </app-student-info-box>
 
-      <app-student-info-box title="Bank Info">
+     <app-student-info-box title="Bank Info">
         <div style="margin-top: 20px;">
-          <p>VISA ending in **** 4242</p>
-          <p class="faded">Expires 12/28</p>
+          
+          <div *ngIf="bankInfo; else noBankInfo">
+            <p><strong>Card:</strong> VISA ending in **** {{ bankInfo.cardNumber | slice:-4 }}</p>
+            <p class="faded">Expires: {{ bankInfo.month }}/{{ bankInfo.year }}</p>
+          </div>
+
+          <ng-template #noBankInfo>
+            <p class="faded" style="font-style: italic;">No bank card registered.</p>
+          </ng-template>
+
+        </div>
+
+        <div class="action-buttons-row" style="margin-top: 15px; justify-content: flex-end;">
+          <button class="grey-action-btn" (click)="openBankModal()">
+            {{ bankInfo ? 'Edit Bank Card' : 'Add Bank Card' }}
+          </button>
         </div>
       </app-student-info-box>
 
@@ -68,6 +82,92 @@
         <div class="modal-actions">
           <button type="button" class="cancel-btn" (click)="closeAddLocationModal()">Cancel</button>
           <button type="submit" class="submit-btn">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<div class="modal-overlay" *ngIf="isBankModalOpen">
+    <div class="modal-content">
+      <h2>{{ bankInfo ? 'Edit' : 'Add' }} Bank Card</h2>
+      
+      <form (ngSubmit)="submitBankInfo()">
+        
+        <div class="form-group">
+            <label>Card Number (16 digits):</label>
+            <input type="text" 
+                   [(ngModel)]="bankFormData.cardNumber" 
+                   name="cardNumber" 
+                   placeholder="xxxx xxxx xxxx xxxx" 
+                   required
+                   minlength="16"
+                   maxlength="16"
+                   #cardNumInput="ngModel"> <div *ngIf="cardNumInput.invalid && (cardNumInput.dirty || cardNumInput.touched)" style="color: red; font-size: 0.8em; margin-top: 2px;">
+                <div *ngIf="cardNumInput.errors?.['required']">Card number is required.</div>
+                <div *ngIf="cardNumInput.errors?.['minlength']">Must be exactly 16 digits.</div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+          <label>CVV (3 digits):</label>
+          <input type="text" 
+                 [(ngModel)]="bankFormData.cvv" 
+                 name="cvv" 
+                 placeholder="123" 
+                 required
+                 minlength="3"
+                 maxlength="3"
+                 #cvvInput="ngModel">
+
+          <div *ngIf="cvvInput.invalid && (cvvInput.dirty || cvvInput.touched)" style="color: red; font-size: 0.8em; margin-top: 2px;">
+             <div *ngIf="cvvInput.errors?.['required']">CVV is required.</div>
+             <div *ngIf="cvvInput.errors?.['minlength']">Must be exactly 3 digits.</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Month (MM):</label>
+                <input type="number" 
+                       [(ngModel)]="bankFormData.month" 
+                       name="month" 
+                       placeholder="MM"
+                       min="1" 
+                       max="12" 
+                       required
+                       #monthInput="ngModel">
+                
+                <div *ngIf="monthInput.invalid && (monthInput.dirty || monthInput.touched)" style="color: red; font-size: 0.8em; margin-top: 2px;">
+                    <div *ngIf="monthInput.errors?.['required']">Required.</div>
+                    <div *ngIf="monthInput.errors?.['min'] || monthInput.errors?.['max']">1-12 only.</div>
+                </div>
+            </div>
+
+            <div class="form-group" style="flex: 1;">
+                <label>Year (YYYY):</label>
+                <input type="number" 
+                       [(ngModel)]="bankFormData.year" 
+                       name="year" 
+                       placeholder="YYYY"
+                       [min]="currentYear" 
+                       max="9999"
+                       required
+                       #yearInput="ngModel">
+                
+                <div *ngIf="yearInput.invalid && (yearInput.dirty || yearInput.touched)" style="color: red; font-size: 0.8em; margin-top: 2px;">
+                    <div *ngIf="yearInput.errors?.['required']">Required.</div>
+                    <div *ngIf="yearInput.errors?.['min']">Min {{currentYear}}.</div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="cancel-btn" (click)="closeBankModal()">Cancel</button>
+            
+            <button type="submit" class="submit-btn" 
+            [disabled]="cardNumInput.invalid || cvvInput.invalid || monthInput.invalid || yearInput.invalid">
+                Save Card
+            </button>
         </div>
       </form>
     </div>

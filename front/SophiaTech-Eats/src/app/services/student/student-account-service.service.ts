@@ -17,6 +17,13 @@ export interface DeliveryLocation {
   zipCode: string;
 }
 
+export interface BankInfo {
+  cardNumber: string;
+  cvv: number;
+  month: number;
+  year: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -78,4 +85,11 @@ export class StudentAccountService {
     return this.http.delete<void>(`${this.apiUrl}/${studentId}/locations/${locationId}`);
   }
 
+  getBankInfo(studentId: string): Observable<BankInfo | null> {
+    return this.http.get<BankInfo | null>(`${this.apiUrl}/${studentId}/bankinfo`);
+  }
+
+  updateBankInfo(studentId: string, info: BankInfo): Observable<BankInfo> {
+    return this.http.put<BankInfo>(`${this.apiUrl}/${studentId}/bankinfo`, info);
+  }
 }

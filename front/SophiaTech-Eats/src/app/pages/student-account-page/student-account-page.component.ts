@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ListComponent } from '../../components/item-list/item-list.component';
 import { StudentHomePageNavComponent } from '../../components/student-home-page-nav/student-home-page-nav.component';
-import { DeliveryLocation, StudentAccount, StudentAccountService } from '../../services/student/student-account-service.service';
+import { BankInfo, DeliveryLocation, StudentAccount, StudentAccountService } from '../../services/student/student-account-service.service';
 import { StudentInfoBoxComponent } from '../../components/student-info-box/student-info-box.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -18,6 +18,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './student-account-page.component.css'
 })
 export class StudentAccountPageComponent implements OnInit {
+  currentYear: number = new Date().getFullYear();
   private selectedStudent: StudentAccount | null = null;
   private studentId: string | null = null
   studentName: string = "X"
@@ -36,6 +37,16 @@ export class StudentAccountPageComponent implements OnInit {
     zipCode: ''
   };
 
+  bankInfo: BankInfo | null = null;
+  isBankModalOpen: boolean = false;
+
+  bankFormData = {
+    cardNumber: '',
+    cvv: '',
+    month: '',
+    year: ''
+  };
+
   constructor(private studentService: StudentAccountService) {
 
   }
@@ -49,6 +60,7 @@ export class StudentAccountPageComponent implements OnInit {
 
     if (this.studentId) {
       this.loadLocations();
+      this.loadBankInfo(); 
     }
   }
 
@@ -70,12 +82,10 @@ export class StudentAccountPageComponent implements OnInit {
     this.selectedLocation = location;
   }
 
-  // Ouvre le popup
   openAddLocationModal() {
     this.isModalOpen = true;
   }
 
-  // Ferme le popup et réinitialise le formulaire
   closeAddLocationModal() {
     this.isModalOpen = false;
     this.resetForm();
@@ -131,4 +141,103 @@ export class StudentAccountPageComponent implements OnInit {
     }
   }
 
+loadBankInfo() {
+    if (this.studentId) {
+      this.studentService.getBankInfo(this.studentId).subscribe({
+        next: (data) => {
+          this.bankInfo = data; 
+        },
+        error: (err) => console.error("Error loading bank info", err)
+      });
+    }
+  }
+
+  openBankModal() {
+    if (this.bankInfo) {
+      this.bankFormData = {
+        cardNumber: this.bankInfo.cardNumber,
+        cvv: this.bankInfo.cvv.toString(),
+        month: this.bankInfo.month.toString(),
+        year: this.bankInfo.year.toString()
+      };
+    } else {
+      this.bankFormData = { cardNumber: '', cvv: '', month: '', year: '' };
+    }
+    this.isBankModalOpen = true;
+  }
+
+  closeBankModal() {
+    this.isBankModalOpen = false;
+  }
+
+  submitBankInfo() {
+    if (!this.studentId) return;
+
+    // 1. Validation de présence
+    if (!this.bankFormData.cardNumber || !this.bankFormData.cvv || !this.bankFormData.month || !this.bankFormData.year) {
+      alert("Please fill all bank fields");
+      return;
+    }
+
+    // 2. Validation Card (16 chiffres)
+    const cardRegex = /^\d{16}$/;
+    if (!cardRegex.test(this.bankFormData.cardNumber)) {
+        alert("Card number must contain exactly 16 digits.");
+        return;
+    }
+
+    // 3. Validation CVV (3 chiffres)
+    const cvvString = this.bankFormData.cvv.toString();
+    const cvvRegex = /^\d{3}$/;
+    if (!cvvRegex.test(cvvString)) {
+        alert("CVV must contain exactly 3 digits.");
+        return;
+    }
+
+    // --- 4. Validation MONTH (1 ou 2 chiffres, valeur 1-12) ---
+    const monthVal = parseInt(this.bankFormData.month);
+    // Vérifie si c'est un nombre, entre 1 et 12
+    if (isNaN(monthVal) || monthVal < 1 || monthVal > 12) {
+        alert("Month must be between 1 and 12.");
+        return;
+    }
+
+    // --- 5. Validation YEAR (4 chiffres, >= année actuelle) ---
+    const yearVal = parseInt(this.bankFormData.year);
+    const yearString = this.bankFormData.year.toString();
+    
+    // Regex pour s'assurer que c'est bien 4 chiffres (ex: évite "24" pour "2024")
+    const yearRegex = /^\d{4}$/; 
+
+    if (!yearRegex.test(yearString)) {
+        alert("Year must be exactly 4 digits (e.g., 2025).");
+        return;
+    }
+
+    if (yearVal < this.currentYear) {
+        alert(`Year cannot be in the past (minimum ${this.currentYear}).`);
+        return;
+    }
+
+    const currentMonth = new Date().getMonth() + 1;
+    if (yearVal === this.currentYear && monthVal < currentMonth) {
+       alert("Card has already expired.");
+       return;
+    }
+
+    const newInfo: BankInfo = {
+      cardNumber: this.bankFormData.cardNumber,
+      cvv: parseInt(this.bankFormData.cvv),
+      month: monthVal,
+      year: yearVal
+    };
+
+    this.studentService.updateBankInfo(this.studentId, newInfo).subscribe({
+      next: () => {
+        this.loadBankInfo();
+        this.closeBankModal();
+      },
+      error: (err) => console.error("Error updating bank info", err)
+    });
+  }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import fr.unice.polytech.paymentProcessing.BankInfo;
 import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
 import fr.unice.polytech.users.StudentAccountManager;
@@ -14,6 +15,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,16 +67,16 @@ public class DynamicAccountsHandler implements HttpHandler {
                 handleRemoveLocation(exchange, studentId, locationId);
             }
             // --- GESTION DES BANK INFO ---
-            //else if (bankInfoMatcher.matches()) {
-                //String studentId = bankInfoMatcher.group(1);
-                //if ("GET".equals(method)) {
-                    //handleGetBankInfo(exchange, studentId);
-                //} else if ("PUT".equals(method)) {
-                    //handleUpdateBankInfo(exchange, studentId);
-                //} else {
-                    //sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
-                //}
-            //}
+            else if (bankInfoMatcher.matches()) {
+                String studentId = bankInfoMatcher.group(1);
+                if ("GET".equals(method)) {
+                    handleGetBankInfo(exchange, studentId);
+                } else if ("PUT".equals(method)) {
+                    handleUpdateBankInfo(exchange, studentId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            }
             else {
                 sendResponse(exchange, 404, "{\"error\":\"Route Not Found\"}");
             }
@@ -134,6 +137,52 @@ public class DynamicAccountsHandler implements HttpHandler {
         }
         account.get().removeDeliveryLocation(locationId);
         sendResponse(exchange, 204, ""); // No Content
+    }
+
+    private void handleGetBankInfo(HttpExchange exchange, String studentId) throws IOException {
+        Optional<StudentAccount> account = accountManager.findAccountById(studentId);
+        
+        if (account.isPresent()) {
+            BankInfo info = account.get().getBankInfo();
+            if (info != null) {
+                // On crée une map pour faciliter la sérialisation JSON propre (séparation mois/année)
+                Map<String, Object> responseMap = new HashMap<>();
+                responseMap.put("cardNumber", info.getCardNumber());
+                responseMap.put("cvv", info.getCVV());
+                // Extraction mois/année depuis YearMonth
+                responseMap.put("month", info.getExpirationDate().getMonthValue());
+                responseMap.put("year", info.getExpirationDate().getYear());
+                
+                String json = objectMapper.writeValueAsString(responseMap);
+                sendResponse(exchange, 200, json);
+            } else {
+                // Pas d'info bancaire, on renvoie un objet vide ou null
+                sendResponse(exchange, 200, "null");
+            }
+        } else {
+            sendResponse(exchange, 404, "{\"error\":\"Student Not Found\"}");
+        }
+    }
+
+    private void handleUpdateBankInfo(HttpExchange exchange, String studentId) throws IOException {
+        Optional<StudentAccount> account = accountManager.findAccountById(studentId);
+        if (account.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Student Not Found\"}");
+            return;
+        }
+
+        InputStream requestBody = exchange.getRequestBody();
+        JsonNode body = objectMapper.readTree(requestBody);
+
+        String cardNumber = body.get("cardNumber").asText();
+        int cvv = body.get("cvv").asInt();
+        int month = body.get("month").asInt();
+        int year = body.get("year").asInt();
+
+        BankInfo newBankInfo = new BankInfo(cardNumber, cvv, month, year);
+        account.get().setBankInfo(newBankInfo);
+
+        sendResponse(exchange, 200, objectMapper.writeValueAsString(body));
     }
 
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {

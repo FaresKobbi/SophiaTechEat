@@ -31,15 +31,19 @@ public class StudentAccount extends UserAccount {
         return deliveryLocation != null && prerecordedLocations.contains(deliveryLocation);
     }
 
-    public void removeDeliveryLocation(String locationId) {
-        if (locationId == null) return;
-        this.prerecordedLocations.removeIf(loc -> loc.getId().equals(locationId));
+    public void removeDeliveryLocation(String locationName) {
+        if (locationName == null) return;
+        this.prerecordedLocations.removeIf(loc -> loc.getId().equals(locationName));
     }
 
     public void addDeliveryLocation(DeliveryLocation deliveryLocation) {
         if (deliveryLocation != null && !prerecordedLocations.contains(deliveryLocation)) {
             prerecordedLocations.add(deliveryLocation);
         }
+    }
+
+    public void setBankInfo(BankInfo bankInfo) {
+        this.bankInfo = bankInfo;
     }
     
     public String getStudentID() {
