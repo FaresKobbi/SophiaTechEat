@@ -9,7 +9,7 @@ import fr.unice.polytech.dishes.*;
 import fr.unice.polytech.restaurants.OpeningHours;
 import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.restaurants.RestaurantManager;
-
+import fr.unice.polytech.restaurants.TimeSlot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +30,8 @@ public class DynamicRestaurantHandler implements HttpHandler {
     private static final Pattern DISH_ITEM_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/([^/]+)/?$");
     private static final Pattern OPENING_HOURS_PATTERN = Pattern.compile("/restaurants/([^/]+)/opening-hours/?$");
     private static final Pattern CAPACITIES_PATTERN = Pattern.compile("/restaurants/([^/]+)/capacities/?$");
-    private static final Pattern OPENING_HOURS_ITEM_PATTERN = Pattern.compile("/restaurants/([^/]+)/opening-hours/([^/]+)/?$");
+    private static final Pattern OPENING_HOURS_ITEM_PATTERN = Pattern
+            .compile("/restaurants/([^/]+)/opening-hours/([^/]+)/?$");
 
     public DynamicRestaurantHandler(RestaurantManager restaurantManager, ObjectMapper objectMapper) {
         this.restaurantManager = restaurantManager;
@@ -59,8 +60,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 } else {
                     sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
                 }
-            }
-            else if (itemMatcher.matches()) {
+            } else if (itemMatcher.matches()) {
                 String restaurantId = itemMatcher.group(1);
                 String dishId = itemMatcher.group(2);
 
@@ -69,11 +69,9 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 } else {
                     sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
                 }
-            }
-            else if (openingHoursMatcher.matches()) {
+            } else if (openingHoursMatcher.matches()) {
                 handleOpeningHours(exchange, method, openingHoursMatcher.group(1));
-            }
-            else if (openingHoursItemMatcher.matches()) {
+            } else if (openingHoursItemMatcher.matches()) {
                 String restaurantId = openingHoursItemMatcher.group(1);
                 String day = openingHoursItemMatcher.group(2); // Capture "MONDAY"
 
@@ -82,11 +80,23 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 } else {
                     sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
                 }
-            }
-            else if (capacitiesMatcher.matches()) {
+            } else if (capacitiesMatcher.matches()) {
                 handleCapacities(exchange, method, capacitiesMatcher.group(1));
-            }
-            else {
+            } else if (path.matches("/restaurants/[^/]+/slots/reserve/?")) {
+                String restaurantId = path.split("/")[2];
+                if ("POST".equals(method)) {
+                    handleReserveSlot(exchange, restaurantId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            } else if (path.matches("/restaurants/[^/]+/slots/release/?")) {
+                String restaurantId = path.split("/")[2];
+                if ("POST".equals(method)) {
+                    handleReleaseSlot(exchange, restaurantId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            } else {
                 sendResponse(exchange, 404, "{\"error\":\"Dynamic Route Not Found for: " + path + "\"}");
             }
         } catch (Exception e) {
@@ -128,8 +138,8 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 dish.setPrice(dishRequest.price);
             }
 
-            updateDishCommonFields(dish,dishRequest);
-            //TODO handle dietary labels properly (add/remove instead of just adding)
+            updateDishCommonFields(dish, dishRequest);
+            // TODO handle dietary labels properly (add/remove instead of just adding)
             dishRequest.dietaryLabels.forEach(label -> {
                 restaurant.addDietaryLabel(DietaryLabel.valueOf(label.toUpperCase()));
             });
@@ -142,6 +152,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
             sendResponse(exchange, 400, "{\"error\":\"Invalid JSON format\"}");
         }
     }
+
     private void handlePostDish(HttpExchange exchange, String restaurantId) throws IOException {
         Optional<Restaurant> restaurantOptional = getRestaurantById(restaurantId);
 
@@ -152,8 +163,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
         Restaurant restaurant = restaurantOptional.get();
 
-
-        try{
+        try {
             DishRequest dishRequest = objectMapper.readValue(exchange.getRequestBody(), DishRequest.class);
             if (!dishRequest.isValid()) {
                 sendResponse(exchange, 400, "{\"error\":\"Missing required fields: name, description, price\"}");
@@ -161,22 +171,19 @@ public class DynamicRestaurantHandler implements HttpHandler {
             }
             restaurant.addDish(dishRequest.name, dishRequest.description, dishRequest.price);
 
-            Dish createdDish =restaurant.findDishByName(dishRequest.name);
+            Dish createdDish = restaurant.findDishByName(dishRequest.name);
 
-            updateDishCommonFields(createdDish,dishRequest);
+            updateDishCommonFields(createdDish, dishRequest);
             dishRequest.dietaryLabels.forEach(label -> {
                 restaurant.addDietaryLabel(DietaryLabel.valueOf(label.toUpperCase()));
             });
 
-
             String jsonResponse = objectMapper.writeValueAsString(createdDish);
-            sendResponse(exchange,201,jsonResponse);
-        }catch (Exception e){
+            sendResponse(exchange, 201, jsonResponse);
+        } catch (Exception e) {
             e.printStackTrace();
             sendResponse(exchange, 400, "{\"error\":\"Invalid JSON format\"}");
         }
-
-
 
     }
 
@@ -185,6 +192,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 .filter(r -> r.getRestaurantId().equals(restaurantId))
                 .findFirst();
     }
+
     private void handleGetDishes(HttpExchange exchange, String restaurantId) throws IOException {
         try {
             Optional<Restaurant> restaurantOptional = getRestaurantById(restaurantId);
@@ -207,13 +215,15 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
     private void handleOpeningHours(HttpExchange exchange, String method, String restaurantId) throws IOException {
         Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
-        if (rOpt.isEmpty()) { sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}"); return; }
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
         Restaurant restaurant = rOpt.get();
 
         if ("GET".equals(method)) {
             sendResponse(exchange, 200, objectMapper.writeValueAsString(restaurant.getOpeningHours()));
-        }
-        else if ("POST".equals(method)) {
+        } else if ("POST".equals(method)) {
             InputStream requestBody = exchange.getRequestBody();
             JsonNode body = objectMapper.readTree(requestBody);
             try {
@@ -232,7 +242,8 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
     }
 
-    private void handleDeleteOpeningHour(HttpExchange exchange, String restaurantId, String openingHourId) throws IOException {
+    private void handleDeleteOpeningHour(HttpExchange exchange, String restaurantId, String openingHourId)
+            throws IOException {
         Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
 
         if (rOpt.isEmpty()) {
@@ -253,7 +264,10 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
     private void handleCapacities(HttpExchange exchange, String method, String restaurantId) throws IOException {
         Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
-        if (rOpt.isEmpty()) { sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}"); return; }
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
         Restaurant restaurant = rOpt.get();
 
         if ("PUT".equals(method)) {
@@ -274,7 +288,6 @@ public class DynamicRestaurantHandler implements HttpHandler {
         }
     }
 
-
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         byte[] responseBytes = response.getBytes("UTF-8");
@@ -283,17 +296,20 @@ public class DynamicRestaurantHandler implements HttpHandler {
             os.write(responseBytes);
         }
     }
+
     private void updateDishCommonFields(Dish dish, DishRequest request) {
         if (request.category != null && !request.category.isBlank()) {
             try {
                 dish.setCategory(DishCategory.valueOf(request.category.toUpperCase()));
-            } catch (IllegalArgumentException e) { /* Ignore invalid categories */ }
+            } catch (IllegalArgumentException e) {
+                /* Ignore invalid categories */ }
         }
 
         if (request.dishType != null && !request.dishType.isBlank()) {
             try {
                 dish.setDishType(DishType.valueOf(request.dishType.toUpperCase()));
-            } catch (IllegalArgumentException e) { /* Ignore invalid types */ }
+            } catch (IllegalArgumentException e) {
+                /* Ignore invalid types */ }
         }
 
         if (request.dietaryLabels != null) {
@@ -301,7 +317,8 @@ public class DynamicRestaurantHandler implements HttpHandler {
             for (String label : request.dietaryLabels) {
                 try {
                     labels.add(DietaryLabel.valueOf(label.toUpperCase()));
-                } catch (IllegalArgumentException e) { /* Ignore invalid labels */ }
+                } catch (IllegalArgumentException e) {
+                    /* Ignore invalid labels */ }
             }
             dish.setDietaryLabels(labels);
         }
@@ -315,7 +332,6 @@ public class DynamicRestaurantHandler implements HttpHandler {
             }
         }
     }
-
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class DishRequest {
@@ -339,5 +355,71 @@ public class DynamicRestaurantHandler implements HttpHandler {
     private static class ToppingRequest {
         public String name;
         public Double price;
+    }
+
+    private void handleReserveSlot(HttpExchange exchange, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
+        Restaurant restaurant = rOpt.get();
+
+        try {
+            InputStream requestBody = exchange.getRequestBody();
+            JsonNode body = objectMapper.readTree(requestBody);
+
+            DayOfWeek day = DayOfWeek.valueOf(body.get("day").asText());
+            LocalTime start = LocalTime.parse(body.get("startTime").asText());
+            LocalTime end = LocalTime.parse(body.get("endTime").asText());
+
+            TimeSlot slot = new TimeSlot(day, start, end);
+
+            // DEBUG LOGS
+            System.out.println("--- RESERVE SLOT DEBUG ---");
+            System.out.println(
+                    "Target Slot: " + slot.getDayOfWeek() + " " + slot.getStartTime() + " - " + slot.getEndTime());
+            System.out.println("Target HashCode: " + slot.hashCode());
+
+            int currentCapacity = restaurant.getCapacity(slot);
+            System.out.println("Capacity Found: " + currentCapacity);
+
+            if (currentCapacity > 0) {
+                restaurant.decreaseCapacity(slot);
+                sendResponse(exchange, 200,
+                        "{\"status\":\"Reserved\", \"remainingCapacity\":" + (currentCapacity - 1) + "}");
+            } else {
+                sendResponse(exchange, 409, "{\"error\":\"Slot Full\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse(exchange, 400, "{\"error\":\"Reservation failed: " + e.getMessage() + "\"}");
+        }
+    }
+
+    private void handleReleaseSlot(HttpExchange exchange, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
+            return;
+        }
+        Restaurant restaurant = rOpt.get();
+
+        try {
+            InputStream requestBody = exchange.getRequestBody();
+            JsonNode body = objectMapper.readTree(requestBody);
+
+            DayOfWeek day = DayOfWeek.valueOf(body.get("day").asText());
+            LocalTime start = LocalTime.parse(body.get("startTime").asText());
+            LocalTime end = LocalTime.parse(body.get("endTime").asText());
+
+            TimeSlot slot = new TimeSlot(day, start, end);
+
+            restaurant.increaseCapacity(slot);
+            sendResponse(exchange, 200, "{\"status\":\"Released\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse(exchange, 400, "{\"error\":\"Release failed: " + e.getMessage() + "\"}");
+        }
     }
 }

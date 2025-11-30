@@ -1,6 +1,8 @@
 package fr.unice.polytech.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import fr.unice.polytech.server.ApiRegistry;
 import fr.unice.polytech.server.SimpleServer;
 import fr.unice.polytech.services.handlers.student.DynamicAccountsHandler;
@@ -27,6 +29,7 @@ public class StudentAccountService {
                         .build()
         );
 
+        objectMapper.registerModule(new JavaTimeModule());
         int port = 8082;
         SimpleServer server = new SimpleServer(port);
 

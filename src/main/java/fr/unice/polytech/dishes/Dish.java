@@ -11,6 +11,13 @@ public class Dish extends PriceableItem {
     private List<Topping> toppings;
     private List<DietaryLabel> dietaryLabels;
 
+    // NEW: Default constructor for Jackson
+    public Dish() {
+        super();
+        this.toppings = new ArrayList<>();
+        this.dietaryLabels = new ArrayList<>();
+    }
+
     public Dish(String name, double price) {
         super(name, price);
     }

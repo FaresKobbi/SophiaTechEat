@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {Dish} from '../restaurant/restaurant.service';
+import { Dish } from '../restaurant/restaurant.service';
 
 //TODO REMOVE THIS INTERFACE WHEN THE STUDENT-SERVICE IS DONE
 export interface DeliveryLocation {
@@ -28,7 +28,11 @@ export interface Order {
 export class OrderService {
   private apiUrl = 'http://localhost:8080/api/orders';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  createOrder(orderPayload: any): Observable<Order> {
+    return this.http.post<Order>(this.apiUrl, orderPayload);
+  }
 
   getOrdersByRestaurant(restaurantId: string): Observable<Order[]> {
     const url = `${this.apiUrl}/restaurant/${restaurantId}`;

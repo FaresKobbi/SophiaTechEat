@@ -1,14 +1,17 @@
-package fr.unice.polytech.users; // Assuming this package
+package fr.unice.polytech.users;
 
 import java.util.Objects;
 
 public class DeliveryLocation {
     
-    // Attributes from Class Diagram:
     private String name;
     private String address;
     private String city;
     private String zipCode;
+
+    // NEW: Default constructor for Jackson deserialization
+    public DeliveryLocation() {
+    }
 
     /**
      * Constructor for DeliveryLocation.
@@ -21,38 +24,16 @@ public class DeliveryLocation {
     }
     
     // Getters
-    public String getName() {
-        return name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
+    public String getName() { return name; }
+    public String getAddress() { return address; }
+    public String getCity() { return city; }
+    public String getZipCode() { return zipCode; }
     
     // Setters
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
+    public void setName(String name) { this.name = name; }
+    public void setAddress(String address) { this.address = address; }
+    public void setCity(String city) { this.city = city; }
+    public void setZipCode(String zipCode) { this.zipCode = zipCode; }
 
     @Override
     public boolean equals(Object o) {

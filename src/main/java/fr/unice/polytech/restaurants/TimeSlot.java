@@ -63,7 +63,7 @@ public class TimeSlot {
 
     @Override
     public int hashCode() {
-        return startTime.hashCode() + endTime.hashCode();
+        return Objects.hash(dayOfWeek, startTime, endTime);
     }
 }
 
