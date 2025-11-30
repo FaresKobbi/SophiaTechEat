@@ -10,7 +10,7 @@
 
 .header {
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px; /* Increased to match content */
   position: relative;       /* Establish positioning context */
   display: flex;
   justify-content: center;  /* Center the H1 horizontally */
@@ -42,4 +42,21 @@ h1 {
 
 .btn-back:hover {
   background-color: #999999;
+}
+
+.content-container {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  max-width: 1000px;
+  align-items: flex-start;
+}
+
+.form-section {
+  flex: 1;
+}
+
+.suggestion-section {
+  width: 300px;
+  flex-shrink: 0;
 }

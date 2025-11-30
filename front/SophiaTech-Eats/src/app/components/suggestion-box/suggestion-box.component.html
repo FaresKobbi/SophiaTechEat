@@ -1,0 +1,18 @@
+<div class="suggestion-container">
+    <h3>Dish Suggestions</h3>
+    <div class="input-group">
+        <input type="text" [(ngModel)]="keyword" (ngModelChange)="onSearch($event)"
+            placeholder="Type to search (e.g. Pizza)..." class="suggestion-input" />
+    </div>
+
+    <div class="suggestions-list" *ngIf="suggestions.length > 0">
+        <div *ngFor="let dish of suggestions" class="suggestion-item" (click)="selectDish(dish)">
+            <div class="suggestion-name">{{ dish.name }}</div>
+            <div class="suggestion-desc">{{ dish.description }}</div>
+        </div>
+    </div>
+
+    <div *ngIf="keyword && suggestions.length === 0" class="no-suggestions">
+        No suggestions found.
+    </div>
+</div>
