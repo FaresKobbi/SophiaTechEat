@@ -1,6 +1,6 @@
 <div class="checkout-container">
   <h2>Checkout</h2>
-  
+
   <div class="cart-summary">
     <h3>Your Order</h3>
     <div *ngFor="let item of cartItems" class="cart-item">
@@ -10,6 +10,16 @@
     <div class="total">
       <strong>Total: {{ totalAmount | currency:'EUR' }}</strong>
     </div>
+  </div>
+
+  <div class="location-selection">
+    <h3>Select Delivery Location</h3>
+    <select [(ngModel)]="selectedLocation">
+      <option [ngValue]="null">-- Select a Location --</option>
+      <option *ngFor="let loc of deliveryLocations" [ngValue]="loc">
+        {{ loc.name }} ({{ loc.address }}, {{ loc.city }})
+      </option>
+    </select>
   </div>
 
   <div class="slot-selection">
@@ -24,13 +34,13 @@
 
   <div class="payment-selection">
     <h3>Payment Method</h3>
-    
+
     <div class="payment-options">
       <label class="payment-option">
         <input type="radio" name="paymentMethod" value="EXTERNAL" [(ngModel)]="paymentMethod">
         <span>External Bank Card</span>
       </label>
-      
+
       <label class="payment-option">
         <input type="radio" name="paymentMethod" value="INTERNAL" [(ngModel)]="paymentMethod">
         <span>Internal Student Balance</span>
@@ -38,9 +48,8 @@
     </div>
   </div>
 
-  <button class="btn-submit" 
-          [disabled]="!selectedSlot || cartItems.length === 0"
-          (click)="placeOrder()">
+  <button class="btn-submit" [disabled]="!selectedSlot || !selectedLocation || cartItems.length === 0"
+    (click)="placeOrder()">
     PAY & ORDER
   </button>
 </div>

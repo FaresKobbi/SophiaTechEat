@@ -9,17 +9,20 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class PaymentService implements IPaymentService{
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+public class PaymentService implements IPaymentService {
     private final MockedExternalPaymentSystem externalPaymentSystem;
     private final HttpClient httpClient; // NEW
-    private final ObjectMapper objectMapper = new ObjectMapper(); // NEW
+    private final ObjectMapper objectMapper; // NEW
     private static final String API_GATEWAY = "http://localhost:8080/api/accounts/"; // NEW
 
-    public PaymentService(HttpClient httpClient){
+    public PaymentService(HttpClient httpClient) {
         this.externalPaymentSystem = new MockedExternalPaymentSystem();
         this.httpClient = httpClient;
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
-
 
     @Override
     public boolean processExternalPayment(Order order) {
@@ -35,7 +38,7 @@ public class PaymentService implements IPaymentService{
         }
     }
 
-    //TODO NOT TESTED
+    // TODO NOT TESTED
     private BankInfo fetchBankInfo(String studentId) throws IOException, InterruptedException {
         String targetUrl = API_GATEWAY + studentId + "/bankinfo";
         System.out.println("PaymentService: Calling StudentAccountService at " + targetUrl);

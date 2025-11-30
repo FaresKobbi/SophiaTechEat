@@ -9,7 +9,6 @@ public class DeliveryLocation {
     private String city;
     private String zipCode;
 
-    // NEW: Default constructor for Jackson deserialization
     public DeliveryLocation() {
     }
 

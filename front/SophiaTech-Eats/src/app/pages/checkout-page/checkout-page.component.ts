@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../../services/cart/cart.service';
 import { RestaurantService, OpeningHours, TimeSlot } from '../../services/restaurant/restaurant.service';
 import { OrderService } from '../../services/order/order.service';
-import { StudentAccountService } from '../../services/student/student-account-service.service';
+import { StudentAccountService, DeliveryLocation } from '../../services/student/student-account-service.service';
 
 @Component({
     selector: 'app-checkout-page',
@@ -22,6 +22,9 @@ export class CheckoutPageComponent implements OnInit {
     openingHours: OpeningHours[] = [];
     availableSlots: { day: string, slot: TimeSlot }[] = [];
     selectedSlot: { day: string, slot: TimeSlot } | null = null;
+
+    deliveryLocations: DeliveryLocation[] = [];
+    selectedLocation: DeliveryLocation | null = null;
 
     // UPDATED: Default to 'EXTERNAL' to match backend Enum
     paymentMethod: string = 'EXTERNAL';
@@ -44,6 +47,16 @@ export class CheckoutPageComponent implements OnInit {
         } else {
             this.router.navigate(['/student/homepage']);
         }
+
+        const student = this.studentService.getSelectedStudent();
+        if (student) {
+            this.studentService.getDeliveryLocations(student.studentID).subscribe(locations => {
+                this.deliveryLocations = locations;
+                if (this.deliveryLocations.length > 0) {
+                    this.selectedLocation = this.deliveryLocations[0];
+                }
+            });
+        }
     }
 
     loadOpeningHours(restaurantId: string): void {
@@ -65,7 +78,7 @@ export class CheckoutPageComponent implements OnInit {
     }
 
     placeOrder(): void {
-        if (!this.selectedSlot || !this.restaurantId) return;
+        if (!this.selectedSlot || !this.restaurantId || !this.selectedLocation) return;
 
         const student = this.studentService.getSelectedStudent();
         if (!student) {
@@ -76,12 +89,7 @@ export class CheckoutPageComponent implements OnInit {
         const orderPayload = {
             dishes: this.cartItems.map(item => item.dish),
             studentId: student.studentID,
-            deliveryLocation: { 
-                name: "Campus Sophia", 
-                address: "930 Route des Colles", 
-                city: "Biot", 
-                zipCode: "06410" 
-            }, 
+            deliveryLocation: this.selectedLocation,
             restaurantId: this.restaurantId,
             timeSlot: {
                 day: this.selectedSlot.day,

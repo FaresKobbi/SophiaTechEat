@@ -19,10 +19,7 @@ import fr.unice.polytech.services.handlers.restaurant.DynamicRestaurantHandler;
 import fr.unice.polytech.services.handlers.restaurant.StaticRestaurantHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public class RestaurantService {
     private static final RestaurantManager restaurantManager = new RestaurantManager();

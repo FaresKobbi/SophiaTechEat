@@ -14,6 +14,9 @@ public class BankInfo {
         this.expirationDate = YearMonth.of(year, month);
     }
 
+    public BankInfo() {
+    }
+
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
     }
@@ -40,9 +43,11 @@ public class BankInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
         BankInfo bankInfo = (BankInfo) o;
-        return CVV == bankInfo.CVV && Objects.equals(cardNumber, bankInfo.cardNumber) && Objects.equals(expirationDate, bankInfo.expirationDate);
+        return CVV == bankInfo.CVV && Objects.equals(cardNumber, bankInfo.cardNumber)
+                && Objects.equals(expirationDate, bankInfo.expirationDate);
     }
 
     @Override

@@ -7,27 +7,31 @@ import fr.unice.polytech.server.ApiRegistry;
 import fr.unice.polytech.server.SimpleServer;
 import fr.unice.polytech.services.handlers.student.DynamicAccountsHandler;
 import fr.unice.polytech.services.handlers.student.StaticAccountsHandler;
+import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
 import fr.unice.polytech.users.StudentAccountManager;
 
 import java.io.IOException;
+import java.util.List;
 
 public class StudentAccountService {
     private static final StudentAccountManager accountManager = new StudentAccountManager();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) throws IOException {
-        //MOCK
+        // MOCK
         accountManager.addAccount(
                 new StudentAccount.Builder("Alice", "Smith")
                         .email("alice.smith@etu.unice.fr")
-                        .build()
-        );
+                        .build());
         accountManager.addAccount(
                 new StudentAccount.Builder("Bob", "Martin")
+                        .deliveryLocations(List.of(
+                                new DeliveryLocation("Home", "123 Main St", "Nice", "06000"),
+                                new DeliveryLocation("Work", "456 Elm St", "Nice", "06000")))
+                        .bankInfo("1234567890123456", 123, 12, 2026)
                         .email("bob.martin@etu.unice.fr")
-                        .build()
-        );
+                        .build());
 
         objectMapper.registerModule(new JavaTimeModule());
         int port = 8082;
