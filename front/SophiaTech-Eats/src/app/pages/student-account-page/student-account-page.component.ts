@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
 })
 export class StudentAccountPageComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
-  private selectedStudent: StudentAccount | null = null;
+  public selectedStudent: StudentAccount | null = null;
   private studentId: string | null = null
   studentName: string = "X"
   studentSurname: string = "Y"
@@ -47,6 +47,13 @@ export class StudentAccountPageComponent implements OnInit {
     year: ''
   };
 
+  isPersonalInfoModalOpen: boolean = false;
+  personalInfoFormData = {
+    name: '',
+    surname: '',
+    email: ''
+  };
+
   constructor(private studentService: StudentAccountService) {
 
   }
@@ -60,7 +67,7 @@ export class StudentAccountPageComponent implements OnInit {
 
     if (this.studentId) {
       this.loadLocations();
-      this.loadBankInfo(); 
+      this.loadBankInfo();
     }
   }
 
@@ -95,9 +102,9 @@ export class StudentAccountPageComponent implements OnInit {
     this.newLocationData = { name: '', address: '', city: '', zipCode: '' };
   }
 
-  
+
   submitNewLocation() {
-    
+
     if (!this.newLocationData.name || !this.newLocationData.address || !this.newLocationData.city || !this.newLocationData.zipCode) {
       alert("Please fill in Name, Address, City and Zip Code");
       return;
@@ -112,7 +119,7 @@ export class StudentAccountPageComponent implements OnInit {
   }
 
   addLocation(name: string, address: string, city: string, zipCode: string) {
-    const newLoc: DeliveryLocation = {name: name, address: address, city: city, zipCode: zipCode };
+    const newLoc: DeliveryLocation = { name: name, address: address, city: city, zipCode: zipCode };
 
     this.studentService.addDeliveryLocation(this.studentId!, newLoc).subscribe({
       next: () => {
@@ -134,18 +141,18 @@ export class StudentAccountPageComponent implements OnInit {
         .subscribe({
           next: () => {
             this.loadLocations();
-            this.selectedLocation = null; 
+            this.selectedLocation = null;
           },
           error: (err) => console.error("Error deleting", err)
         });
     }
   }
 
-loadBankInfo() {
+  loadBankInfo() {
     if (this.studentId) {
       this.studentService.getBankInfo(this.studentId).subscribe({
         next: (data) => {
-          this.bankInfo = data; 
+          this.bankInfo = data;
         },
         error: (err) => console.error("Error loading bank info", err)
       });
@@ -182,47 +189,47 @@ loadBankInfo() {
     // 2. Validation Card (16 chiffres)
     const cardRegex = /^\d{16}$/;
     if (!cardRegex.test(this.bankFormData.cardNumber)) {
-        alert("Card number must contain exactly 16 digits.");
-        return;
+      alert("Card number must contain exactly 16 digits.");
+      return;
     }
 
     // 3. Validation CVV (3 chiffres)
     const cvvString = this.bankFormData.cvv.toString();
     const cvvRegex = /^\d{3}$/;
     if (!cvvRegex.test(cvvString)) {
-        alert("CVV must contain exactly 3 digits.");
-        return;
+      alert("CVV must contain exactly 3 digits.");
+      return;
     }
 
     // --- 4. Validation MONTH (1 ou 2 chiffres, valeur 1-12) ---
     const monthVal = parseInt(this.bankFormData.month);
     // Vérifie si c'est un nombre, entre 1 et 12
     if (isNaN(monthVal) || monthVal < 1 || monthVal > 12) {
-        alert("Month must be between 1 and 12.");
-        return;
+      alert("Month must be between 1 and 12.");
+      return;
     }
 
     // --- 5. Validation YEAR (4 chiffres, >= année actuelle) ---
     const yearVal = parseInt(this.bankFormData.year);
     const yearString = this.bankFormData.year.toString();
-    
+
     // Regex pour s'assurer que c'est bien 4 chiffres (ex: évite "24" pour "2024")
-    const yearRegex = /^\d{4}$/; 
+    const yearRegex = /^\d{4}$/;
 
     if (!yearRegex.test(yearString)) {
-        alert("Year must be exactly 4 digits (e.g., 2025).");
-        return;
+      alert("Year must be exactly 4 digits (e.g., 2025).");
+      return;
     }
 
     if (yearVal < this.currentYear) {
-        alert(`Year cannot be in the past (minimum ${this.currentYear}).`);
-        return;
+      alert(`Year cannot be in the past (minimum ${this.currentYear}).`);
+      return;
     }
 
     const currentMonth = new Date().getMonth() + 1;
     if (yearVal === this.currentYear && monthVal < currentMonth) {
-       alert("Card has already expired.");
-       return;
+      alert("Card has already expired.");
+      return;
     }
 
     const newInfo: BankInfo = {
@@ -238,6 +245,40 @@ loadBankInfo() {
         this.closeBankModal();
       },
       error: (err) => console.error("Error updating bank info", err)
+    });
+  }
+
+  openPersonalInfoModal() {
+    if (this.selectedStudent) {
+      this.personalInfoFormData = {
+        name: this.selectedStudent.name,
+        surname: this.selectedStudent.surname,
+        email: this.selectedStudent.email || ''
+      };
+    }
+    this.isPersonalInfoModalOpen = true;
+  }
+
+  closePersonalInfoModal() {
+    this.isPersonalInfoModalOpen = false;
+  }
+
+  submitPersonalInfo() {
+    if (!this.studentId) return;
+
+    this.studentService.updateStudentPersonalInfo(this.studentId, this.personalInfoFormData).subscribe({
+      next: (updated) => {
+        if (this.selectedStudent) {
+          this.selectedStudent.name = this.personalInfoFormData.name;
+          this.selectedStudent.surname = this.personalInfoFormData.surname;
+          this.selectedStudent.email = this.personalInfoFormData.email;
+
+          this.studentName = this.selectedStudent.name;
+          this.studentSurname = this.selectedStudent.surname;
+        }
+        this.closePersonalInfoModal();
+      },
+      error: (err) => console.error("Error updating personal info", err)
     });
   }
 }

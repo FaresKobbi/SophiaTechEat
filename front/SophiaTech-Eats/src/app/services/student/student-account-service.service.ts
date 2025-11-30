@@ -7,6 +7,8 @@ export interface StudentAccount {
   studentID: string;
   name: string;
   surname: string;
+  email: string;
+  balance: number;
 }
 
 export interface DeliveryLocation {
@@ -39,10 +41,10 @@ export class StudentAccountService {
 
 
 
-  getSelectedStudent () : StudentAccount | null{
+  getSelectedStudent(): StudentAccount | null {
     return this.selectedStudent
   }
-  public setSelectedStudent (student : StudentAccount){
+  public setSelectedStudent(student: StudentAccount) {
     this.selectedStudent = student
   }
 
@@ -59,12 +61,16 @@ export class StudentAccountService {
     ).subscribe();
   }
 
-  createStudent(data: {name: string, surname: string, email: string}): Observable<StudentAccount> {
+  createStudent(data: { name: string, surname: string, email: string }): Observable<StudentAccount> {
     return this.http.post<StudentAccount>(this.apiUrl, data).pipe(
       tap(() => {
         this.refreshStudents();
       })
     );
+  }
+
+  updateStudentPersonalInfo(studentId: string, info: { name: string, surname: string, email: string}): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${studentId}/personal-info`, info);
   }
 
   public refreshStudents(): void {

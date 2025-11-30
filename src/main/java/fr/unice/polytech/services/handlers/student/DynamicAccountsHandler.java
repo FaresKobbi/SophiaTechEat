@@ -35,7 +35,7 @@ public class DynamicAccountsHandler implements HttpHandler {
     private static final Pattern LOCATIONS_PATTERN = Pattern.compile("/accounts/([^/]+)/locations/?$");
     private static final Pattern LOCATION_ITEM_PATTERN = Pattern.compile("/accounts/([^/]+)/locations/([^/]+)/?$");
     private static final Pattern BANK_INFO_PATTERN = Pattern.compile("/accounts/([^/]+)/bankinfo/?$");
-
+    private static final Pattern PERSONAL_INFO_PATTERN = Pattern.compile("/accounts/([^/]+)/personal-info/?$");
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
@@ -46,11 +46,18 @@ public class DynamicAccountsHandler implements HttpHandler {
             Matcher locationsMatcher = LOCATIONS_PATTERN.matcher(path);
             Matcher locationItemMatcher = LOCATION_ITEM_PATTERN.matcher(path);
             Matcher bankInfoMatcher = BANK_INFO_PATTERN.matcher(path);
+            Matcher personalInfoMatcher = PERSONAL_INFO_PATTERN.matcher(path);
 
-            if (nameMatcher.matches() && "GET".equals(method)) {
-                String studentId = nameMatcher.group(1);
-                handleGetAccountNameById(exchange, studentId);
-            } 
+            if (personalInfoMatcher.matches()) {
+                String studentId = personalInfoMatcher.group(1);
+                if ("GET".equals(method)) {
+                    handleGetAccountNameById(exchange, studentId);
+                } else if ("PUT".equals(method)) {
+                    handleUpdatePersonalInfo(exchange, studentId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            }
             else if (locationsMatcher.matches()) {
                 String studentId = locationsMatcher.group(1);
                 if ("GET".equals(method)) {
@@ -97,6 +104,25 @@ public class DynamicAccountsHandler implements HttpHandler {
         } else {
             sendResponse(exchange, 404, "{\"error\":\"Student Not Found\"}");
         }
+    }
+
+    private void handleUpdatePersonalInfo(HttpExchange exchange, String studentId) throws IOException {
+        Optional<StudentAccount> account = accountManager.findAccountById(studentId);
+        if (account.isEmpty()) {
+            sendResponse(exchange, 404, "{\"error\":\"Student Not Found\"}");
+            return;
+        }
+
+        InputStream requestBody = exchange.getRequestBody();
+        JsonNode body = objectMapper.readTree(requestBody);
+
+        // Mise à jour des champs
+        StudentAccount s = account.get();
+        if (body.has("name")) s.setName(body.get("name").asText());
+        if (body.has("surname")) s.setSurname(body.get("surname").asText());
+        if (body.has("email")) s.setEmail(body.get("email").asText());
+
+        sendResponse(exchange, 200, objectMapper.writeValueAsString(body));
     }
 
     private void handleGetLocations(HttpExchange exchange, String studentId) throws IOException {
