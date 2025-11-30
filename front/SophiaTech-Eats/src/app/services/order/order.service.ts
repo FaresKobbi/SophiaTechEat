@@ -2,14 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {Dish} from '../restaurant/restaurant.service';
+import { DeliveryLocation } from '../student/student-account-service.service';
 
-//TODO REMOVE THIS INTERFACE WHEN THE STUDENT-SERVICE IS DONE
-export interface DeliveryLocation {
-  name: string;
-  address: string;
-  city: string;
-  zipCode: string;
-}
 
 
 

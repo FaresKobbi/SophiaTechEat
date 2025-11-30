@@ -1,21 +1,23 @@
 <div class="home-body">
-<div class="container">
-  <div class="card">
-    <button class="btn" routerLink="/create-student-page">CREATE STUDENT</button>
-    <app-item-list [title]="'Students'" [items]="students"
-                   (itemClicked)="onStudentSelect($event)">
-    </app-item-list>
-  </div>
+  <div class="container">
+    <div class="card">
+      <button class="btn" routerLink="/create-student-page">CREATE STUDENT</button>
+      <app-item-list 
+          [title]="'Students'" 
+          [items]="students"
+          [displayKey]="['name', 'surname']" 
+          (itemClicked)="onStudentSelect($event)">
+      </app-item-list>
+    </div>
 
-  <div class="card">
-    <button class="btn" routerLink="/create-restaurant-page">CREATE RESTAURANT</button>
-    <app-item-list
-      [title]="'Restaurants'"
-      [items]="restaurantsForList"
-      [displayKey]="'restaurantName'"
-      (itemClicked)="onRestaurantSelect($event)">
-    </app-item-list>
+    <div class="card">
+      <button class="btn" routerLink="/create-restaurant-page">CREATE RESTAURANT</button>
+      <app-item-list
+          [title]="'Restaurants'"
+          [items]="restaurantsForList"
+          [displayKey]="'restaurantName'"
+          (itemClicked)="onRestaurantSelect($event)">
+      </app-item-list>
+    </div>
   </div>
 </div>
-</div>
-

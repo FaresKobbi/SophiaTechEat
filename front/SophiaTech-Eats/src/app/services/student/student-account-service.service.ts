@@ -9,6 +9,14 @@ export interface StudentAccount {
   surname: string;
 }
 
+export interface DeliveryLocation {
+  id?: string;
+  name: string;
+  address: string;
+  city: string;
+  zipCode: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -52,8 +60,22 @@ export class StudentAccountService {
     );
   }
 
-
   public refreshStudents(): void {
     this.loadStudents();
   }
+
+  // --- GESTION DELIVERY LOCATIONS ---
+
+  getDeliveryLocations(studentId: string): Observable<DeliveryLocation[]> {
+    return this.http.get<DeliveryLocation[]>(`${this.apiUrl}/${studentId}/locations`);
+  }
+
+  addDeliveryLocation(studentId: string, location: DeliveryLocation): Observable<DeliveryLocation> {
+    return this.http.post<DeliveryLocation>(`${this.apiUrl}/${studentId}/locations`, location);
+  }
+
+  removeDeliveryLocation(studentId: string, locationId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${studentId}/locations/${locationId}`);
+  }
+
 }
