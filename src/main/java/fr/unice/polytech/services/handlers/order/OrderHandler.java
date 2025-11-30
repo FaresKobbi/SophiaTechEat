@@ -79,7 +79,7 @@ public class OrderHandler implements HttpHandler {
     }
 
     private String fetchStudentName(String studentId) {
-        String url = API_GATEWAY_ACCOUNT_URL + "name/" + studentId;
+        String url = API_GATEWAY_ACCOUNT_URL + studentId + "/name";
         System.out.println("DEBUG: OrderHandler fetching student name from: " + url);
 
         try {

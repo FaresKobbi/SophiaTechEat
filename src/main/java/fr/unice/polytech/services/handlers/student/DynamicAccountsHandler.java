@@ -24,7 +24,7 @@ public class DynamicAccountsHandler implements HttpHandler {
     }
 
     private static final Pattern ACCOUNT_ID_PATTERN = Pattern.compile("/accounts/([^/]+)/?$");
-    private static final Pattern ACCOUNT_NAME_ID_PATTERN = Pattern.compile("/accounts/name/([^/]+)/?$");
+    private static final Pattern ACCOUNT_NAME_ID_PATTERN = Pattern.compile("/accounts/([^/]+)/name/?$");
 
     private static final Pattern BANK_INFO_PATTERN = Pattern.compile("/accounts/([^/]+)/bankinfo/?$");
     private static final Pattern DEBIT_PATTERN = Pattern.compile("/accounts/([^/]+)/debit/?$");

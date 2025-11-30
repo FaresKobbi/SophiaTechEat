@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class DynamicAccountsHandlerTest {
@@ -82,5 +83,26 @@ class DynamicAccountsHandlerTest {
         handler.handle(exchange);
 
         verify(exchange).sendResponseHeaders(eq(404), anyLong());
+    }
+
+    @Test
+    void testGetAccountNameById() throws IOException {
+        String studentId = "student123";
+        when(exchange.getRequestMethod()).thenReturn("GET");
+        when(exchange.getRequestURI()).thenReturn(URI.create("/accounts/" + studentId + "/name"));
+        when(accountManager.findAccountById(studentId)).thenReturn(Optional.of(studentAccount));
+        when(studentAccount.getName()).thenReturn("John");
+        when(studentAccount.getSurname()).thenReturn("Doe");
+
+        Headers headers = new Headers();
+        when(exchange.getResponseHeaders()).thenReturn(headers);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        when(exchange.getResponseBody()).thenReturn(outputStream);
+
+        handler.handle(exchange);
+
+        verify(exchange).sendResponseHeaders(eq(200), anyLong());
+        String response = outputStream.toString();
+        assertTrue(response.contains("John Doe"));
     }
 }
