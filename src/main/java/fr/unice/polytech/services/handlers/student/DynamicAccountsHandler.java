@@ -105,7 +105,7 @@ public class DynamicAccountsHandler implements HttpHandler {
     private void  handleGetStudent(HttpExchange exchange, String studentId) throws IOException {
         Optional<StudentAccount> account = accountManager.findAccountById(studentId);
         if (account.isPresent()){
-            String jsonResponse = objectMapper.writeValueAsString(account);
+            String jsonResponse = objectMapper.writeValueAsString(account.get());
             sendResponse(exchange, 200, jsonResponse);
         }else {
             sendResponse(exchange, 404,"{\"error\":\"Student Not Found\"}");

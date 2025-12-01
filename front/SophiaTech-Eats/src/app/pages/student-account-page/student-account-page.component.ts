@@ -68,6 +68,11 @@ export class StudentAccountPageComponent implements OnInit {
     if (this.studentId) {
       this.loadLocations();
       this.loadBankInfo();
+      this.studentService.refreshStudent(this.studentId);
+      this.selectedStudent = this.studentService.getSelectedStudent();
+      this.studentId = this.selectedStudent ? this.selectedStudent.studentID : this.studentId
+      this.studentName = this.selectedStudent ? this.selectedStudent.name : this.studentName
+      this.studentSurname = this.selectedStudent ? this.selectedStudent.surname : this.studentSurname
     }
   }
 

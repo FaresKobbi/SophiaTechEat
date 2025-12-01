@@ -1,6 +1,7 @@
 package fr.unice.polytech.orderManagement;
 
 import fr.unice.polytech.dishes.Dish;
+import fr.unice.polytech.dishes.Topping;
 import fr.unice.polytech.paymentProcessing.*;
 import fr.unice.polytech.users.DeliveryLocation;
 
@@ -85,7 +86,14 @@ public class OrderManager {
      */
 
     private double calculateTotalAmount(List<Dish> dishes) {
-        return dishes.stream().mapToDouble(Dish::getPrice).sum();
+        int sum = 0;
+        for (Dish dish:dishes){
+            sum+=dish.getPrice();
+            for (Topping topping:dish.getToppings()){
+                sum+=topping.getPrice();
+            }
+        }
+        return sum;
     }
 
     public Order getOrder(String orderId) {
