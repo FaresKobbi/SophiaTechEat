@@ -86,7 +86,7 @@ public class OrderManager {
      */
 
     private double calculateTotalAmount(List<Dish> dishes) {
-        int sum = 0;
+        double sum = 0;
         for (Dish dish:dishes){
             sum+=dish.getPrice();
             for (Topping topping:dish.getToppings()){

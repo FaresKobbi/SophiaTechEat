@@ -36,7 +36,7 @@ class PaymentServiceTest {
         when(mockOrder.getStudentId()).thenReturn("12345");
 
         // Mock HttpClient response
-        String jsonBankInfo = "{\"cardNumber\":\"1234567890123456\",\"cvv\":123,\"expirationDate\":\"2025-12\"}";
+        String jsonBankInfo = "{\"cardNumber\":\"1234567890123456\",\"cvv\":123,\"month\":12,\"year\":2026}";
         when(mockResponse.statusCode()).thenReturn(200);
         when(mockResponse.body()).thenReturn(jsonBankInfo);
         when(mockHttpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()))
