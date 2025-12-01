@@ -10,7 +10,7 @@ import fr.unice.polytech.services.handlers.student.StaticAccountsHandler;
 import fr.unice.polytech.users.DeliveryLocation;
 import fr.unice.polytech.users.StudentAccount;
 import fr.unice.polytech.users.StudentAccountManager;
-
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,11 +19,14 @@ public class StudentAccountService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) throws IOException {
-        // MOCK
+        //MOCK
         accountManager.addAccount(
                 new StudentAccount.Builder("Alice", "Smith")
                         .email("alice.smith@etu.unice.fr")
-                        .build());
+                        .addDeliveryLocation(new DeliveryLocation("Home", "10 Rue de France", "Nice", "06000"))
+                        .addDeliveryLocation(new DeliveryLocation("University", "930 Route des Colles", "Biot", "06410"))
+                        .build()
+        );
         accountManager.addAccount(
                 new StudentAccount.Builder("Bob", "Martin")
                         .deliveryLocations(List.of(
@@ -31,8 +34,10 @@ public class StudentAccountService {
                                 new DeliveryLocation("Work", "456 Elm St", "Nice", "06000")))
                         .bankInfo("1234567890123456", 123, 12, 2026)
                         .email("bob.martin@etu.unice.fr")
-                        .build());
-
+                        .addDeliveryLocation(new DeliveryLocation("Dorm", "50 Avenue Jean Medecin", "Nice", "06000"))
+                        .bankInfo("1234567890123456", 123, 12, 2025)
+                        .build()
+        );
         objectMapper.registerModule(new JavaTimeModule());
         int port = 8082;
         SimpleServer server = new SimpleServer(port);

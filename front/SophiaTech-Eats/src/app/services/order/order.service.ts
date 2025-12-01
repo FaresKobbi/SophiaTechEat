@@ -23,7 +23,7 @@ export interface Order {
 export class OrderService {
   private apiUrl = 'http://localhost:8080/api/orders';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createOrder(orderPayload: any): Observable<Order> {
     return this.http.post<Order>(this.apiUrl, orderPayload);

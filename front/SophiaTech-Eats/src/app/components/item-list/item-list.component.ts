@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 export class ListComponent {
   @Input() title: string = '';
   @Input() items: any[] = [];
-  @Input() displayKey: string = 'name';
+  @Input() displayKey: string | string[] = 'name'; 
   @Output() itemClicked = new EventEmitter<any>();
 
   onItemClick(item: any): void {
@@ -19,5 +19,12 @@ export class ListComponent {
   }
 
   getDisplayValue(item: any): string {
+    if (Array.isArray(this.displayKey)) {
+      const values = this.displayKey.map(key => item[key]);
+      return values.filter(v => v !== null && v !== undefined).join(' ') || 'N/A';
+    }
+    
     return item[this.displayKey] || 'N/A';
-  }}
+  }
+
+}
