@@ -1,4 +1,4 @@
-/*
+
 package fr.unice.polytech.paymentProcessing;
 
 import fr.unice.polytech.orderManagement.Order;
@@ -10,31 +10,42 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Disabled
+import fr.unice.polytech.paymentProcessing.clients.StudentAccountClient;
+import static org.mockito.Mockito.*;
+
 public class InternalPaymentProcessorTest {
     InternalPaymentProcessor processor;
-        @Test
-        void testProcessPayment_Success() {
-            StudentAccount client = new StudentAccount.Builder("Alice", "Smith").balance(100.0).build();
-            Order order = new Order.Builder(client).amount(50.0).build();
-            processor = new InternalPaymentProcessor(order);
-            OrderStatus status = processor.processPayment(order);
-            assertEquals(100.0, client.getBalance() + order.getAmount());
-            System.out.println(order.getOrderStatus());
-            assertSame(OrderStatus.VALIDATED,status);
-            assertEquals(50.0, client.getBalance());
-        }
+    StudentAccountClient mockClient;
 
-        @Test
-        void testProcessPayment_Failure_InsufficientFunds() {
-            StudentAccount client = new StudentAccount.Builder("Bob", "Brown").balance(30.0).build();
-            Order order = new Order.Builder(client).amount(50.0).build();
-            InternalPaymentProcessor processor = new InternalPaymentProcessor(order);
-            assertSame(OrderStatus.CANCELED, processor.processPayment(order) );
-            assertEquals(30.0, client.getBalance());
-        }
+    @Test
+    void testProcessPayment_Success() {
+        StudentAccount client = new StudentAccount.Builder("Alice", "Smith").balance(100.0).studentId("student1")
+                .build();
+        Order order = new Order.Builder(client.getStudentID()).amount(50.0).build();
+
+        mockClient = mock(StudentAccountClient.class);
+        when(mockClient.debit("student1", 50.0)).thenReturn(true);
+
+        processor = new InternalPaymentProcessor(mockClient);
+        OrderStatus status = processor.processPayment(order);
+
+        assertEquals(OrderStatus.VALIDATED, status);
+        verify(mockClient).debit("student1", 50.0);
+    }
+
+    @Test
+    void testProcessPayment_Failure_InsufficientFunds() {
+        StudentAccount client = new StudentAccount.Builder("Bob", "Brown").balance(30.0).studentId("student2").build();
+        Order order = new Order.Builder(client.getStudentID()).amount(50.0).build();
+
+        mockClient = mock(StudentAccountClient.class);
+        when(mockClient.debit("student2", 50.0)).thenReturn(false);
+
+        processor = new InternalPaymentProcessor(mockClient);
+        OrderStatus status = processor.processPayment(order);
+
+        assertEquals(OrderStatus.CANCELED, status);
+        verify(mockClient).debit("student2", 50.0);
+    }
 
 }
-
-
- */

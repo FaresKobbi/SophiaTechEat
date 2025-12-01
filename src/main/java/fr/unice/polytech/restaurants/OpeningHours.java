@@ -1,7 +1,5 @@
 package fr.unice.polytech.restaurants;
 
-
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -36,7 +34,8 @@ public class OpeningHours {
         LocalTime current = openingTime;
         while (current.isBefore(closingTime)) {
             LocalTime next = current.plusMinutes(30);
-            if (next.isAfter(closingTime)) break;
+            if (next.isAfter(closingTime))
+                break;
 
             TimeSlot slot = new TimeSlot(day, current, next);
 
@@ -50,11 +49,19 @@ public class OpeningHours {
         TimeSlot target = new TimeSlot(day, start, end);
 
         if (slots.containsKey(target)) {
-            if (newCapacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
+            if (newCapacity < 0)
+                throw new IllegalArgumentException("Capacity cannot be negative");
             slots.put(target, newCapacity);
         } else {
-            throw new IllegalArgumentException("Time slot " + start + "-" + end + " not found in this opening schedule");
+            throw new IllegalArgumentException(
+                    "Time slot " + start + "-" + end + " not found in this opening schedule");
         }
+    }
+
+    public void addSlot(TimeSlot slot, int capacity) {
+        if (capacity < 0)
+            throw new IllegalArgumentException("Capacity cannot be negative");
+        slots.put(slot, capacity);
     }
 
     public boolean contains(TimeSlot slot) {
@@ -73,12 +80,13 @@ public class OpeningHours {
         return closingTime;
     }
 
-    public Map<TimeSlot, Integer> getSlots() { return new HashMap<>(slots); }
+    public Map<TimeSlot, Integer> getSlots() {
+        return new HashMap<>(slots);
+    }
 
     @Override
     public String toString() {
         return day + ": " + openingTime + " - " + closingTime;
     }
-
 
 }

@@ -14,35 +14,35 @@ class DeliveryLocationTest {
     @Test
     void testDeliveryLocationCreationAndGetters() {
         DeliveryLocation location = new DeliveryLocation(NAME, ADDRESS, CITY, ZIP);
-        
+
         assertEquals(NAME, location.getName(), "Name should be set correctly.");
         assertEquals(ADDRESS, location.getAddress(), "Address should be set correctly.");
         assertEquals(CITY, location.getCity(), "City should be set correctly.");
         assertEquals(ZIP, location.getZipCode(), "Zip code should be set correctly.");
     }
 
-    // Test 2: Setters
+    // Test 3: toString representation
+
     @Test
-    void testSetters() {
-        DeliveryLocation location = new DeliveryLocation("Temp", "Temp", "Temp", "Temp");
-        
-        location.setName("Home");
-        location.setAddress("456 Side Ave");
-        location.setCity("Cannes");
-        location.setZipCode("06400");
-        
-        assertEquals("Home", location.getName(), "Name setter should update correctly.");
-        assertEquals("456 Side Ave", location.getAddress(), "Address setter should update correctly.");
-        assertEquals("Cannes", location.getCity(), "City setter should update correctly.");
-        assertEquals("06400", location.getZipCode(), "Zip code setter should update correctly.");
+    void testEqualsAndHashCode() {
+        DeliveryLocation loc1 = new DeliveryLocation("Home", "Address", "City", "Zip");
+        DeliveryLocation loc2 = new DeliveryLocation("Work", "Address", "City", "Zip");
+        loc2.setId(loc1.getId()); // Same ID -> Equal
+
+        assertEquals(loc1, loc2);
+        assertEquals(loc1.hashCode(), loc2.hashCode());
+
+        DeliveryLocation loc3 = new DeliveryLocation();
+        assertNotEquals(loc1, loc3);
     }
 
-    // Test 3: toString representation
     @Test
     void testToString() {
-        DeliveryLocation location = new DeliveryLocation(NAME, ADDRESS, CITY, ZIP);
-        String expected = "Office: 123 Main St, 06000 Nice";
-        
-        assertEquals(expected, location.toString(), "toString should format the address correctly.");
+        DeliveryLocation location = new DeliveryLocation("Office", "123 Main St", "Nice", "06000");
+        // ID is random, so we check if it contains other fields
+        String str = location.toString();
+        assertTrue(str.contains("Office"));
+        assertTrue(str.contains("123 Main St"));
+        assertTrue(str.contains("ID:"));
     }
 }

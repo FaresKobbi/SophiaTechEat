@@ -1,5 +1,6 @@
 package fr.unice.polytech.services.handlers.student;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
@@ -50,15 +51,19 @@ public class DynamicAccountsHandler implements HttpHandler {
 
             if (personalInfoMatcher.matches()) {
                 String studentId = personalInfoMatcher.group(1);
-                if ("GET".equals(method)) {
-                    handleGetAccountNameById(exchange, studentId);
-                } else if ("PUT".equals(method)) {
+                if ("PUT".equals(method)) {
                     handleUpdatePersonalInfo(exchange, studentId);
+                } else if ("GET".equals(method)) {
+                    handleGetStudent(exchange,studentId);
                 } else {
                     sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
                 }
-            }
-            else if (locationsMatcher.matches()) {
+            } else if (nameMatcher.matches()) {
+                String studentId = nameMatcher.group(1);
+                if ("GET".equals(method)) {
+                    handleGetAccountNameById(exchange, studentId);
+                }
+            } else if (locationsMatcher.matches()) {
                 String studentId = locationsMatcher.group(1);
                 if ("GET".equals(method)) {
                     handleGetLocations(exchange, studentId);
@@ -94,6 +99,16 @@ public class DynamicAccountsHandler implements HttpHandler {
         } catch (Exception e) {
             e.printStackTrace();
             sendResponse(exchange, 500, "{\"error\":\"Internal Server Error: " + e.getMessage() + "\"}");
+        }
+    }
+
+    private void  handleGetStudent(HttpExchange exchange, String studentId) throws IOException {
+        Optional<StudentAccount> account = accountManager.findAccountById(studentId);
+        if (account.isPresent()){
+            String jsonResponse = objectMapper.writeValueAsString(account);
+            sendResponse(exchange, 200, jsonResponse);
+        }else {
+            sendResponse(exchange, 404,"{\"error\":\"Student Not Found\"}");
         }
     }
 

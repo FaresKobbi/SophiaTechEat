@@ -1,4 +1,3 @@
-/*
 package fr.unice.polytech.stepDefs.back;
 
 import io.cucumber.datatable.DataTable;
@@ -10,13 +9,13 @@ import fr.unice.polytech.orderManagement.*;
 import fr.unice.polytech.paymentProcessing.*;
 import fr.unice.polytech.restaurants.*;
 import fr.unice.polytech.users.*;
-import org.junit.jupiter.api.Disabled;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.http.HttpClient;
 import java.util.*;
 
-@Disabled
 public class CreateOrderSteps {
 
     private StudentAccount.Builder accountBuilder;
@@ -36,7 +35,20 @@ public class CreateOrderSteps {
     public void a_client_named(String name) {
         accountBuilder = new StudentAccount.Builder(name, "Doe");
         restaurant = new Restaurant("Test Restaurant");
-        orderManager = new OrderManager(new PaymentProcessorFactory());
+
+        // Mock payment service to always succeed for external payments
+        IPaymentService mockPaymentService = org.mockito.Mockito.mock(IPaymentService.class);
+        try {
+            org.mockito.Mockito.when(mockPaymentService.processExternalPayment(org.mockito.ArgumentMatchers.any()))
+                    .thenReturn(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PaymentProcessorFactory factory = new PaymentProcessorFactory(mockPaymentService,
+                java.net.http.HttpClient.newHttpClient());
+        orderManager = new OrderManager(factory);
+
         cartDishes = new ArrayList<>();
         paymentMethod = PaymentMethod.EXTERNAL; // default
         deliveryLocation = null;
@@ -67,7 +79,7 @@ public class CreateOrderSteps {
             Dish dish = new Dish(itemName, "desc", price);
             cartDishes.add(dish);
         }
-        currentOrder = new Order.Builder(studentAccount).build();
+        currentOrder = new Order.Builder(studentAccount.getStudentID()).build();
     }
 
     @Given("Alex has the following items in the cart:")
@@ -82,8 +94,8 @@ public class CreateOrderSteps {
             deliveryLocation = studentAccount.getDeliveryLocations().stream()
                     .filter(loc -> address.toLowerCase().contains(loc.getAddress().toLowerCase()))
                     .findFirst()
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("Selected address not found in prerecorded locations: " + address));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Selected address not found in prerecorded locations: " + address));
         } catch (Exception e) {
             lastException = e;
             deliveryLocation = null;
@@ -114,7 +126,7 @@ public class CreateOrderSteps {
     public void confirms_the_order(String name) {
         try {
             // Create the order
-            orderManager.createOrder(cartDishes, studentAccount, deliveryLocation, restaurant);
+            orderManager.createOrder(cartDishes, studentAccount.getStudentID(), deliveryLocation, restaurant.getName());
 
             // Retrieve last created order
             List<Order> pendingOrders = orderManager.getPendingOrders();
@@ -126,9 +138,12 @@ public class CreateOrderSteps {
             }
 
             // Register validated order
-            if (currentOrder != null && currentOrder.getOrderStatus() == OrderStatus.VALIDATED) {
-                orderManager.registerOrder(currentOrder,restaurant);
-            }
+            /*
+             * if (currentOrder != null && currentOrder.getOrderStatus() ==
+             * OrderStatus.VALIDATED) {
+             * orderManager.registerOrder(currentOrder,restaurant);
+             * }
+             */
 
         } catch (Exception e) {
 
@@ -181,8 +196,4 @@ public class CreateOrderSteps {
                         + (lastException != null ? lastException.getMessage() : "null") + "\"");
     }
 
-
-
 }
-
-*/

@@ -103,6 +103,7 @@ export class CheckoutPageComponent implements OnInit {
             next: (res) => {
                 alert('Order placed successfully!');
                 this.cartService.clearCart();
+                this.studentService.refreshStudent(student.studentID).subscribe();
                 this.router.navigate(['/student/orders']);
             },
             error: (err) => {

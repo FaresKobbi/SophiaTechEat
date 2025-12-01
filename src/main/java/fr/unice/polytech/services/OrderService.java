@@ -39,10 +39,11 @@ public class OrderService {
         orderManager.createOrder(List.of(pizza), "9af8b7c0-a7fd-4297-94d3-f7e96746ca93", loc, demoRestaurantId);
 
         List<Order> pending = orderManager.getPendingOrders();
-        if(!pending.isEmpty()) {
+        if (!pending.isEmpty()) {
             Order o = pending.get(0);
             o.setOrderStatus(OrderStatus.VALIDATED);
-            System.out.println("OrderService: Created mock VALIDATED order " + o.getOrderId() + " for restaurant " + demoRestaurantId);
+            System.out.println("OrderService: Created mock VALIDATED order " + o.getOrderId() + " for restaurant "
+                    + demoRestaurantId);
         }
 
         int port = 8083;
@@ -50,7 +51,7 @@ public class OrderService {
 
         ApiRegistry registry = new ApiRegistry();
 
-        registry.registerFallback(new OrderHandler(orderManager,objectMapper, httpClient));
+        registry.registerFallback(new OrderHandler(orderManager, objectMapper, httpClient));
         server.start(registry);
         System.out.println("OrderService started on port " + port);
 

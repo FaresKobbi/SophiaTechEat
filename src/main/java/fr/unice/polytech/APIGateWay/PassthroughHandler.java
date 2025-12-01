@@ -17,10 +17,18 @@ import java.time.Duration;
  */
 public class PassthroughHandler implements HttpHandler {
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
+    private final HttpClient httpClient;
+
+    public PassthroughHandler() {
+        this(HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(5))
+                .build());
+    }
+
+    public PassthroughHandler(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     private static final String RESTAURANT_SERVICE_URL = "http://localhost:8081";
     private static final String ACCOUNT_SERVICE_URL = "http://localhost:8082";
