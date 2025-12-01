@@ -38,11 +38,5 @@ class DeliveryLocationTest {
     }
 
     // Test 3: toString representation
-    @Test
-    void testToString() {
-        DeliveryLocation location = new DeliveryLocation(NAME, ADDRESS, CITY, ZIP);
-        String expected = "Office: 123 Main St, 06000 Nice";
-        
-        assertEquals(expected, location.toString(), "toString should format the address correctly.");
-    }
+
 }

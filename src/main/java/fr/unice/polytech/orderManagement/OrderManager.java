@@ -22,6 +22,11 @@ public class OrderManager {
         this.allOrders = new HashMap<>();
     }
 
+    public OrderManager(PaymentProcessorFactory paymentProcessorFactory) {
+        this.paymentProcessorFactory = paymentProcessorFactory;
+        this.allOrders = new HashMap<>();
+    }
+
     public Order createOrder(List<Dish> dishes, String studentId, DeliveryLocation deliveryLocation,
             String restaurantId) {
         if (dishes == null || dishes.isEmpty()) {

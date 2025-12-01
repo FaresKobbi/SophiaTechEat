@@ -41,10 +41,10 @@ export class StudentAccountService {
 
 
 
-  getSelectedStudent () : StudentAccount | null{
+  getSelectedStudent(): StudentAccount | null {
     return this.selectedStudent
   }
-  public setSelectedStudent (student : StudentAccount){
+  public setSelectedStudent(student: StudentAccount) {
     this.selectedStudent = student
   }
 
@@ -61,7 +61,7 @@ export class StudentAccountService {
     ).subscribe();
   }
 
-  createStudent(data: {name: string, surname: string, email: string}): Observable<StudentAccount> {
+  createStudent(data: { name: string, surname: string, email: string }): Observable<StudentAccount> {
     return this.http.post<StudentAccount>(this.apiUrl, data).pipe(
       tap(() => {
         this.refreshStudents();
@@ -69,12 +69,22 @@ export class StudentAccountService {
     );
   }
 
-  updateStudentPersonalInfo(studentId: string, info: { name: string, surname: string, email: string}): Observable<any> {
+  updateStudentPersonalInfo(studentId: string, info: { name: string, surname: string, email: string }): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${studentId}/personal-info`, info);
   }
 
   public refreshStudents(): void {
     this.loadStudents();
+  }
+
+  public refreshStudent(studentId: string): Observable<StudentAccount> {
+    return this.http.get<StudentAccount>(`${this.apiUrl}/${studentId}/personal-info`).pipe(
+      tap((student) => {
+        if (this.selectedStudent && this.selectedStudent.studentID === student.studentID) {
+          this.selectedStudent = student;
+        }
+      })
+    );
   }
 
   // --- GESTION DELIVERY LOCATIONS ---
