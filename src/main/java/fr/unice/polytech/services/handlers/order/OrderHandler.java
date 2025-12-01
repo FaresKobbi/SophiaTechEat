@@ -33,6 +33,7 @@ public class OrderHandler implements HttpHandler {
     private static final String API_GATEWAY_RESTAURANT_URL = "http://localhost:8080/api/restaurants/";
 
     private static final Pattern ORDERS_BY_RESTAURANT_PATTERN = Pattern.compile("/orders/restaurant/([^/]+)/?$");
+    private static final Pattern ORDERS_BY_STUDENT_PATTERN = Pattern.compile("/orders/student/([^/]+)/?$");
 
     public OrderHandler(OrderManager orderManager, ObjectMapper objectMapper, HttpClient httpClient) {
         this.orderManager = orderManager;
@@ -46,11 +47,16 @@ public class OrderHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
 
         try {
-            Matcher matcher = ORDERS_BY_RESTAURANT_PATTERN.matcher(path);
+            Matcher restMatcher = ORDERS_BY_RESTAURANT_PATTERN.matcher(path);
+            Matcher studentMatcher = ORDERS_BY_STUDENT_PATTERN.matcher(path);
 
-            if (matcher.matches() && "GET".equals(method)) {
-                String restaurantId = matcher.group(1);
+            if (restMatcher.matches() && "GET".equals(method)) {
+                String restaurantId = restMatcher.group(1);
                 handleGetOrdersForRestaurant(exchange, restaurantId);
+            }
+            else if (studentMatcher.matches() && "GET".equals(method)) {
+                String studentId = studentMatcher.group(1);
+                handleGetOrdersForStudent(exchange, studentId);
             } else if (path.equals("/orders") && "POST".equals(method)) {
                 handleCreateOrder(exchange);
             } else {
@@ -64,55 +70,69 @@ public class OrderHandler implements HttpHandler {
 
     private void handleGetOrdersForRestaurant(HttpExchange exchange, String restaurantId) throws IOException {
         List<Order> orders = orderManager.getValidatedOrdersForRestaurant(restaurantId);
-
         List<RestaurantOrderResponse> responseList = orders.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
-
         String jsonResponse = objectMapper.writeValueAsString(responseList);
         sendResponse(exchange, 200, jsonResponse);
     }
 
+    private void handleGetOrdersForStudent(HttpExchange exchange, String studentId) throws IOException {
+        List<Order> orders = orderManager.getOrdersForStudent(studentId);
+        
+        List<StudentOrderResponse> responseList = orders.stream()
+                .map(this::mapToStudentResponse) // NEW MAPPING
+                .collect(Collectors.toList());
+        
+        String jsonResponse = objectMapper.writeValueAsString(responseList);
+        sendResponse(exchange, 200, jsonResponse);
+    }
+    private StudentOrderResponse mapToStudentResponse(Order order) {
+        String studentName = fetchStudentName(order.getStudentId());
+        String restaurantName = fetchRestaurantName(order.getRestaurantId());
+        return new StudentOrderResponse(order, studentName, restaurantName);
+    }
+
     private RestaurantOrderResponse mapToResponse(Order order) {
         String studentName = fetchStudentName(order.getStudentId());
-        return new RestaurantOrderResponse(order, studentName);
+        String restaurantName = fetchRestaurantName(order.getRestaurantId());
+        return new RestaurantOrderResponse(order, studentName, restaurantName);
     }
+    
 
     private String fetchStudentName(String studentId) {
         String url = API_GATEWAY_ACCOUNT_URL + studentId + "/name";
-        System.out.println("DEBUG: OrderHandler fetching student name from: " + url);
-
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .GET()
                     .build();
-
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("DEBUG: Response Status: " + response.statusCode());
-            System.out.println("DEBUG: Response Body: " + response.body());
-
             if (response.statusCode() == 200) {
-                String studentName = objectMapper.readValue(response.body(), String.class);
-                return studentName;
-            } else {
-                System.err.println("DEBUG: Failed to get 200 OK. Status was: " + response.statusCode());
+                return objectMapper.readValue(response.body(), String.class);
             }
         } catch (Exception e) {
-            System.err.println("DEBUG: Exception while fetching student name:");
             e.printStackTrace();
         }
         return "Unknown Student (" + studentId + ")";
     }
 
-    private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
-        byte[] responseBytes = response.getBytes("UTF-8");
-        exchange.sendResponseHeaders(statusCode, responseBytes.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(responseBytes);
+    private String fetchRestaurantName(String restaurantId) {
+        String url = API_GATEWAY_RESTAURANT_URL + restaurantId;
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                RestaurantNameDto rest = objectMapper.readValue(response.body(), RestaurantNameDto.class);
+                return rest.restaurantName;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return "Unknown Restaurant (" + restaurantId + ")";
     }
 
     private void handleCreateOrder(HttpExchange exchange) throws IOException {
@@ -120,14 +140,12 @@ public class OrderHandler implements HttpHandler {
             InputStream requestBody = exchange.getRequestBody();
             OrderRequest orderRequest = objectMapper.readValue(requestBody, OrderRequest.class);
 
-            // Step 1: Reserve Slot
             boolean reserved = reserveSlot(orderRequest.restaurantId, orderRequest.timeSlot);
             if (!reserved) {
                 sendResponse(exchange, 409, "{\"error\":\"Time slot full\"}");
                 return;
             }
 
-            // Step 2: Create Order & Payment
             try {
                 Order order = orderManager.createOrder(orderRequest.dishes, orderRequest.studentId,
                         orderRequest.deliveryLocation, orderRequest.restaurantId);
@@ -142,7 +160,6 @@ public class OrderHandler implements HttpHandler {
                 sendResponse(exchange, 201, jsonResponse);
 
             } catch (Exception e) {
-                // Rollback
                 releaseSlot(orderRequest.restaurantId, orderRequest.timeSlot);
                 throw e;
             }
@@ -157,13 +174,11 @@ public class OrderHandler implements HttpHandler {
         try {
             String url = API_GATEWAY_RESTAURANT_URL + restaurantId + "/slots/reserve";
             String jsonBody = objectMapper.writeValueAsString(slot);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
-
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return response.statusCode() == 200;
         } catch (Exception e) {
@@ -176,20 +191,25 @@ public class OrderHandler implements HttpHandler {
         try {
             String url = API_GATEWAY_RESTAURANT_URL + restaurantId + "/slots/release";
             String jsonBody = objectMapper.writeValueAsString(slot);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
-
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // --- DTOs ---
+    private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+        byte[] responseBytes = response.getBytes("UTF-8");
+        exchange.sendResponseHeaders(statusCode, responseBytes.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(responseBytes);
+        }
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class OrderRequest {
@@ -207,29 +227,54 @@ public class OrderHandler implements HttpHandler {
         public LocalTime endTime;
     }
 
-    // Response DTO with Student Name
     private static class RestaurantOrderResponse {
         public String orderId;
-        public String studentName; // Changed from studentId
+        public String studentName;
+        public String restaurantName;
         public double amount;
         public String orderStatus;
         public List<Dish> dishes;
         public DeliveryLocation deliveryLocation;
+        public String restaurantId; // Added to help frontend logic if needed
 
-        public RestaurantOrderResponse(Order order, String studentName) {
+        public RestaurantOrderResponse(Order order, String studentName, String restaurantName) {
             this.orderId = order.getOrderId();
             this.studentName = studentName;
             this.amount = order.getAmount();
             this.orderStatus = order.getOrderStatus().toString();
             this.dishes = order.getDishes();
             this.deliveryLocation = order.getDeliveryLocation();
+            this.restaurantId = order.getRestaurantId();
+            this.restaurantName = restaurantName;
         }
     }
 
-    // Helper DTO to parse Student API response
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private static class StudentNameDto {
-        public String name;
-        public String surname;
+    private static class RestaurantNameDto {
+        public String restaurantName;
+    }
+
+    private static class StudentOrderResponse {
+        public String orderId;
+        public String studentName;
+        public String restaurantName;
+        public double amount;
+        public String orderStatus;
+        public String paymentMethod; // <--- ADDED
+        public List<Dish> dishes;
+        public DeliveryLocation deliveryLocation;
+        public String restaurantId;
+
+        public StudentOrderResponse(Order order, String studentName, String restaurantName) {
+            this.orderId = order.getOrderId();
+            this.studentName = studentName;
+            this.restaurantName = restaurantName;
+            this.amount = order.getAmount();
+            this.orderStatus = order.getOrderStatus().toString();
+            this.paymentMethod = (order.getPaymentMethod() != null) ? order.getPaymentMethod().toString() : "UNKNOWN"; // <--- Map it
+            this.dishes = order.getDishes();
+            this.deliveryLocation = order.getDeliveryLocation();
+            this.restaurantId = order.getRestaurantId();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package fr.unice.polytech.paymentProcessing;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.YearMonth;
 import java.util.Objects;
 
@@ -8,7 +10,11 @@ public class BankInfo {
     private int CVV;
     private YearMonth expirationDate;
 
-    public BankInfo(String cardNumber, int CVV, int month, int year) {
+    @JsonCreator
+    public BankInfo(@JsonProperty("cardNumber") String cardNumber,
+            @JsonProperty("cvv") int CVV,
+            @JsonProperty("month") int month,
+            @JsonProperty("year") int year) {
         this.cardNumber = cardNumber;
         this.CVV = CVV;
         this.expirationDate = YearMonth.of(year, month);

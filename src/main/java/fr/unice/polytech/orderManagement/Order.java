@@ -75,15 +75,9 @@ public class Order {
         this.deliveryLocation = deliveryLocation;
     }
 
-    //TODO dont forget this
-    /*
-    public PaymentMethod getPaymentMethod(UserAccount user) {
-        if ( (user instanceof Restaurant) || !user.equals(this.studentAccount)) {
-            throw new IllegalArgumentException("Access denied: User does not own this order.");
-        }
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
-    * */
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;

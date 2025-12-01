@@ -26,6 +26,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
     private final RestaurantManager restaurantManager;
     private final ObjectMapper objectMapper;
 
+    private static final Pattern RESTAURANT_ID_PATTERN = Pattern.compile("/restaurants/([^/]+)/?$");
     private static final Pattern DISHES_COLLECTION_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/?$");
     private static final Pattern DISH_ITEM_PATTERN = Pattern.compile("/restaurants/([^/]+)/dishes/([^/]+)/?$");
     private static final Pattern OPENING_HOURS_PATTERN = Pattern.compile("/restaurants/([^/]+)/opening-hours/?$");
@@ -50,6 +51,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
         try {
             Matcher collectionMatcher = DISHES_COLLECTION_PATTERN.matcher(path);
+            Matcher restaurantMatcher = RESTAURANT_ID_PATTERN.matcher(path);
             Matcher itemMatcher = DISH_ITEM_PATTERN.matcher(path);
             Matcher openingHoursMatcher = OPENING_HOURS_PATTERN.matcher(path);
             Matcher capacitiesMatcher = CAPACITIES_PATTERN.matcher(path);
@@ -101,12 +103,32 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 } else {
                     sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
                 }
-            } else {
+            }
+            else if (restaurantMatcher.matches()) {
+                String restaurantId = restaurantMatcher.group(1);
+                if ("GET".equals(method)) {
+                    handleGetRestaurantById(exchange, restaurantId);
+                } else {
+                    sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+                }
+            }
+            else {
+
                 sendResponse(exchange, 404, "{\"error\":\"Dynamic Route Not Found for: " + path + "\"}");
             }
         } catch (Exception e) {
             e.printStackTrace();
             sendResponse(exchange, 500, "{\"error\":\"Internal Server Error: " + e.getMessage() + "\"}");
+        }
+    }
+
+    private void handleGetRestaurantById(HttpExchange exchange, String restaurantId) throws IOException {
+        Optional<Restaurant> rOpt = getRestaurantById(restaurantId);
+        if (rOpt.isPresent()) {
+            String json = objectMapper.writeValueAsString(rOpt.get());
+            sendResponse(exchange, 200, json);
+        } else {
+            sendResponse(exchange, 404, "{\"error\":\"Restaurant Not Found\"}");
         }
     }
 
