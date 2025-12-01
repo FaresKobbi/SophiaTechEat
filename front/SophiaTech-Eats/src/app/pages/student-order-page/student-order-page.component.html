@@ -3,6 +3,50 @@
   <app-student-home-page-nav [studentName]="studentName" [studentSurname]="studentSurname"></app-student-home-page-nav>
 
   <main class="main-account-container">
+    <div class="content-wrapper">
+      
+      <div class="list-section">
+        <app-item-list 
+          [title]="'My Past Orders'" 
+          [items]="displayOrders" 
+          [displayKey]="'displayLabel'"
+          (itemClicked)="onOrderSelect($event)">
+        </app-item-list>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedOrder">
+        <h3>Order Details</h3>
+        <div class="detail-card">
+          <div class="status-badge" [class.validated]="selectedOrder.orderStatus === 'VALIDATED'">
+            {{ selectedOrder.orderStatus }}
+          </div>
+
+          <h3>{{ selectedOrder.restaurantName }}</h3>
+          <p><strong>Order ID:</strong> {{ selectedOrder.orderId }}</p>
+          <p><strong>Total:</strong> {{ selectedOrder.amount | currency:'EUR' }}</p>
+          <p><strong>Payment:</strong> {{ selectedOrder.paymentMethod }}</p> <hr>
+          
+          <h4>Items:</h4>
+          <ul>
+            <li *ngFor="let dish of selectedOrder.dishes">
+              {{ dish.name }} - {{ dish.price | currency:'EUR' }}
+              <ul *ngIf="dish.toppings && dish.toppings.length > 0" class="sub-list">
+                <li *ngFor="let t of dish.toppings">+ {{ t.name }}</li>
+              </ul>
+            </li>
+          </ul>
+
+          <hr>
+          <h4>Delivery To:</h4>
+          <p>{{ selectedOrder.deliveryLocation.name }}</p>
+          <p>{{ selectedOrder.deliveryLocation.address }}, {{ selectedOrder.deliveryLocation.city }}</p>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="!selectedOrder && orders.length > 0">
+        <p style="color: #666; margin-top: 20px;">Select an order to view details.</p>
+      </div>
+
+    </div>
   </main>
 </div>
-

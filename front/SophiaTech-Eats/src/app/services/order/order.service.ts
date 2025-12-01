@@ -11,7 +11,9 @@ import { DeliveryLocation } from '../student/student-account-service.service';
 export interface Order {
   orderId: string;
   studentName: string;
+  restaurantName?: string;
   amount: number;
+  paymentMethod?: string;
   orderStatus: string;
   dishes: Dish[];
   deliveryLocation: DeliveryLocation;
@@ -32,6 +34,11 @@ export class OrderService {
   getOrdersByRestaurant(restaurantId: string): Observable<Order[]> {
     const url = `${this.apiUrl}/restaurant/${restaurantId}`;
     console.log(`Fetching orders from: ${url}`);
+    return this.http.get<Order[]>(url);
+  }
+  getOrdersByStudent(studentId: string): Observable<Order[]> {
+    const url = `${this.apiUrl}/student/${studentId}`;
+    console.log(`Fetching student orders from: ${url}`);
     return this.http.get<Order[]>(url);
   }
 }

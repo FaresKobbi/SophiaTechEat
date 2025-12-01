@@ -1,17 +1,60 @@
 .main-account-container {
-  background-color: #e0e0e0;
-  padding: 50px;
-  min-height: 100vh;
+  background-color: #d9d9d9; /* Match standard grey */
+  padding: 30px;
+  min-height: calc(100vh - 120px);
 }
 
-.info-boxes-row {
+.content-wrapper {
   display: flex;
-  gap: 50px;
+  gap: 40px;
   justify-content: center;
   align-items: flex-start;
-  margin-top: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-app-item-list, app-student-info-box {
-  display: block;
+.list-section {
+  flex: 0 0 300px;
+}
+
+.detail-section {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  min-height: 300px;
+}
+
+.detail-card h3 {
+  margin-top: 0;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  background-color: #ccc;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.status-badge.validated {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.sub-list {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 2px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 15px 0;
 }
