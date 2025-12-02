@@ -16,7 +16,7 @@ public class SuggestionSteps {
 
     @Given("the suggestion system has a predefined keyword for {string}")
     public void the_suggestion_system_has_a_predefined_keyword_for(String keyword) {
-        // This is handled by the KeywordSuggestionProvider's constructor
+        
     }
 
     @Given("a dish named {string} with the description {string} has been added to the system")
@@ -41,7 +41,7 @@ public class SuggestionSteps {
     @Then("the system should suggest a dish named {string} with the description {string} based on historical data")
     public void the_system_should_suggest_a_dish_named_based_on_historical_data(String expectedName, String expectedDescription) {
         assertFalse(suggestions.isEmpty(), "Expected suggestions but found none.");
-        // History suggestions are prioritized, so it should be the first result
+        
         DishInfo topSuggestion = suggestions.get(0);
         assertEquals(expectedName, topSuggestion.name);
         assertEquals(expectedDescription, topSuggestion.description);

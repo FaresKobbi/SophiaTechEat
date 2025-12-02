@@ -59,7 +59,7 @@ class OrderHandlerTest {
         when(mockOrder.getOrderStatus()).thenReturn(OrderStatus.VALIDATED);
         when(orderManager.getValidatedOrdersForRestaurant("rest123")).thenReturn(List.of(mockOrder));
 
-        // Mock HttpClient for fetchStudentName
+        
         when(mockResponse.statusCode()).thenReturn(200);
         when(mockResponse.body()).thenReturn("\"John Doe\"");
         when(httpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()))
@@ -94,19 +94,19 @@ class OrderHandlerTest {
         when(exchange.getRequestBody())
                 .thenReturn(new ByteArrayInputStream(jsonRequest.getBytes(StandardCharsets.UTF_8)));
 
-        // Use real ObjectMapper
+        
         ObjectMapper realMapper = new ObjectMapper();
         realMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         handler = new OrderHandler(orderManager, realMapper, httpClient);
 
-        // Mock HttpClient for reserveSlot AND fetchStudentName
+        
         when(mockResponse.statusCode()).thenReturn(200);
-        // fetchStudentName expects a JSON string of the name
+        
         when(mockResponse.body()).thenReturn("\"John Doe\"");
         when(httpClient.send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()))
                 .thenReturn(mockResponse);
 
-        // Mock OrderManager
+        
         Order mockOrder = mock(Order.class);
         when(mockOrder.getOrderStatus()).thenReturn(OrderStatus.VALIDATED);
         when(mockOrder.getStudentId()).thenReturn("student123");

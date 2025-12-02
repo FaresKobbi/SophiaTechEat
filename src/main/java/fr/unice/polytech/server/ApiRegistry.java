@@ -33,9 +33,7 @@ public class ApiRegistry {
         }
     }
 
-    /**
-     * Default handler for routes that are not found and not handled by fallback.
-     */
+    
     private static class NotFoundHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {

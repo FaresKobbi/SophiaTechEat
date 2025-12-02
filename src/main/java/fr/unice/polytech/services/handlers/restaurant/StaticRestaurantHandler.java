@@ -69,7 +69,7 @@ public class StaticRestaurantHandler implements HttpHandler {
                 cuisine = CuisineType.valueOf(params.get("cuisine").get(0));
             }
 
-            // Labels
+            
             if (params.containsKey("label")) {
                 for (String labelStr : params.get("label")) {
                     labels.add(DietaryLabel.valueOf(labelStr));

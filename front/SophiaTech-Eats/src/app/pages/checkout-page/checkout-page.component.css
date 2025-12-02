@@ -28,7 +28,7 @@
   text-align: right;
 }
 
-/* Payment Options Styling */
+
 .payment-options {
   display: flex;
   flex-direction: column;
@@ -72,7 +72,7 @@
   cursor: not-allowed;
 }
 
-/* Dropdown Styling */
+
 select {
   width: 100%;
   padding: 10px;

@@ -45,7 +45,7 @@ export class RestaurantFilterComponent {
       }
     }
 
-    // On émet la nouvelle liste (qui peut être vide [])
+    
     this.selectionChange.emit(this.selectedOptions);
   }
 

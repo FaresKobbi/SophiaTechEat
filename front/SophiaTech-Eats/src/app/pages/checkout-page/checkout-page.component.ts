@@ -26,7 +26,7 @@ export class CheckoutPageComponent implements OnInit {
     deliveryLocations: DeliveryLocation[] = [];
     selectedLocation: DeliveryLocation | null = null;
 
-    // UPDATED: Default to 'EXTERNAL' to match backend Enum
+    
     paymentMethod: string = 'EXTERNAL';
 
     constructor(
@@ -108,7 +108,7 @@ export class CheckoutPageComponent implements OnInit {
             },
             error: (err) => {
                 console.error(err);
-                // Show specific error from backend if available
+                
                 alert('Failed to place order: ' + (err.error?.error || 'Unknown error'));
             }
         });

@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// RestaurantManager: Manages restaurants and their time slots.
+
 
 public class RestaurantManager {
 
-    // Storage for all restaurants (simple in-memory storage)
+    
     private Map<String, Restaurant> restaurants;
 
 
@@ -24,7 +24,7 @@ public class RestaurantManager {
     }
 
 
-    //Gets a restaurant by its name.
+    
     public Restaurant getRestaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -33,7 +33,7 @@ public class RestaurantManager {
     }
 
 
-    //Blocks a time slot for a specific restaurant so it prevents the time slot from being available for orders.
+    
     public void blockTimeSlot(TimeSlot slot, Restaurant restaurant) {
         if (restaurant == null) {
             throw new IllegalArgumentException("Restaurant cannot be null");
@@ -42,7 +42,7 @@ public class RestaurantManager {
 
     }
 
-    //Gets all available (non-blocked) time slots for a specific restaurant.
+    
     public List<TimeSlot> getAvailableTimeSlots(Restaurant restaurant) {
         if (restaurant == null) {
             throw new IllegalArgumentException("Restaurant cannot be null");
@@ -53,10 +53,10 @@ public class RestaurantManager {
 
 
 
-    // ========== UTILITY METHODS for managing the restaurant collection ==========
+    
 
 
-    //Adds a restaurant to the manager
+    
     public void addRestaurant(Restaurant restaurant) {
         if (restaurant == null) {
             throw new IllegalArgumentException("Restaurant cannot be null");
@@ -65,7 +65,7 @@ public class RestaurantManager {
     }
 
 
-    //Gets all the restaurants managed by this RestaurantManager
+    
     public List<Restaurant> getAllRestaurants() {
         return new ArrayList<>(restaurants.values());
     }
@@ -73,7 +73,7 @@ public class RestaurantManager {
 
 
 
-    //Unblock a time slot for a restaurant
+    
     public void unblockTimeSlot(TimeSlot slot, Restaurant restaurant) {
         if ( restaurant == null) {
             throw new IllegalArgumentException("Restaurant cannot be null");
@@ -82,7 +82,7 @@ public class RestaurantManager {
     }
 
 
-     //Checks if a restaurant exists.
+     
     public boolean hasRestaurant(String restaurantName) {
         return restaurants.containsKey(restaurantName);
 
@@ -110,16 +110,16 @@ public class RestaurantManager {
 
 
     public List<Restaurant> search(CuisineType cuisine, List<DietaryLabel> labels) {
-        // On part de tous les restaurants
+        
         List<Restaurant> result = new ArrayList<>(restaurants.values());
 
-        // 1. Filtrage par Cuisine (UNIQUE)
+        
         if (cuisine != null) {
             result.removeIf(r -> r.getCuisineType() != cuisine);
         }
 
-        // 2. Filtrage par Labels (MULTIPLE)
-        // Le restaurant doit posséder TOUS les labels demandés (dans ses availableDietaryLabels)
+        
+        
         if (labels != null && !labels.isEmpty()) {
             for (DietaryLabel label : labels) {
                 result.removeIf(r -> !r.getAvailableDietaryLabels().contains(label));

@@ -1,10 +1,10 @@
-package fr.unice.polytech.users; // Assuming this package
+package fr.unice.polytech.users; 
 
 import fr.unice.polytech.paymentProcessing.BankInfo;
 
 import java.util.*;
 
-// Note: Requires UserAccount class from above.
+
 public class StudentAccount extends UserAccount {
 
     private String studentID;
@@ -12,11 +12,9 @@ public class StudentAccount extends UserAccount {
     private BankInfo bankInfo;
     private List<DeliveryLocation> prerecordedLocations;
 
-    /**
-     * Constructor for StudentAccount.
-     */
+    
     private StudentAccount(Builder builder) {
-        super(builder.name, builder.surname, builder.email); // Initialize attributes from UserAccount
+        super(builder.name, builder.surname, builder.email); 
         this.studentID = builder.studentID != null ? builder.studentID : UUID.randomUUID().toString();
         this.bankInfo = builder.bankInfo;
         this.balance = 30;

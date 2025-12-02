@@ -9,7 +9,7 @@ import { StudentAccountService } from '../../services/student/student-account-se
 @Component({
   selector: 'app-restaurant-menu-page',
   standalone: true,
-  // REMOVED StudentHomePageNavComponent from imports
+  
   imports: [CommonModule, RouterLink, DishDetailModalComponent],
   templateUrl: './restaurant-menu-page.component.html',
   styleUrls: ['./restaurant-menu-page.component.css']
@@ -18,15 +18,15 @@ export class RestaurantMenuPageComponent implements OnInit {
   restaurantId: string = '';
   menuDishes: Dish[] = [];
 
-  // Student Info for Header
+  
   studentName: string = 'Student';
   studentSurname: string = '';
 
-  // Cart State
+  
   cartItems: CartItem[] = [];
   cartTotal: number = 0;
 
-  // Modal State
+  
   isModalOpen = false;
   selectedDishForModal: Dish | null = null;
 
@@ -44,14 +44,14 @@ export class RestaurantMenuPageComponent implements OnInit {
       this.loadMenu();
     }
 
-    // Load Student Info
+    
     const student = this.studentService.getSelectedStudent();
     if (student) {
       this.studentName = student.name;
       this.studentSurname = student.surname;
     }
 
-    // Subscribe to Cart Updates
+    
     this.cartService.cart$.subscribe(items => this.cartItems = items);
     this.cartService.total$.subscribe(total => this.cartTotal = total);
   }

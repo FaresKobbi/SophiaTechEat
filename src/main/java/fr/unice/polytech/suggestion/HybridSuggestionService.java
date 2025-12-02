@@ -15,7 +15,7 @@ public class HybridSuggestionService {
         this.historyProvider = new HistorySuggestionProvider();
     }
 
-    // Constructor for testing
+    
     public HybridSuggestionService(KeywordSuggestionProvider keywordProvider, HistorySuggestionProvider historyProvider) {
         this.keywordProvider = keywordProvider;
         this.historyProvider = historyProvider;
@@ -29,7 +29,7 @@ public class HybridSuggestionService {
         List<DishInfo> historySuggestions = historyProvider.getSuggestions(keyword);
         List<DishInfo> keywordSuggestions = keywordProvider.getSuggestions(keyword);
 
-        // Merge and remove duplicates, giving priority to history
+        
         return Stream.concat(historySuggestions.stream(), keywordSuggestions.stream())
                 .distinct()
                 .collect(Collectors.toList());

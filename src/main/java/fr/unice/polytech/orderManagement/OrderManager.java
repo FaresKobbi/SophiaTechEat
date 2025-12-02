@@ -17,7 +17,7 @@ public class OrderManager {
     private Map<String, Order> allOrders;
     private final PaymentProcessorFactory paymentProcessorFactory;
 
-    // CHANGED: Constructor now takes HttpClient
+    
     public OrderManager(HttpClient httpClient) {
         this.paymentProcessorFactory = new PaymentProcessorFactory(httpClient);
         this.allOrders = new HashMap<>();
@@ -52,9 +52,8 @@ public class OrderManager {
         if (paymentMethod == null) {
             throw new IllegalArgumentException("Payment method must be provided");
         }
-        /*
-         * */
-        // Creattion du processeur de paiement via la factory
+        
+        
         IPaymentProcessor processor = paymentProcessorFactory.createProcessor(order, paymentMethod);
 
         order.setPaymentMethod(paymentMethod);
@@ -63,27 +62,8 @@ public class OrderManager {
 
     }
 
-    // TODO : register and drop order to be moved to service layer
-    /*
-     * private void dropOrder(Order order) {
-     * pendingOrders.remove(order);
-     * }
-     * 
-     * 
-     * 
-     * public boolean registerOrder(Order order, Restaurant restaurant) {
-     * if (order.getOrderStatus() == OrderStatus.VALIDATED) {
-     * registeredOrders.add(order);
-     * pendingOrders.remove(order);
-     * restaurant.addOrder(order);
-     * return true;
-     * } else if (order.getOrderStatus() == OrderStatus.CANCELED) {
-     * dropOrder(order);
-     * }
-     * return false;
-     * }
-     * 
-     */
+    
+    
 
     private double calculateTotalAmount(List<Dish> dishes) {
         double sum = 0;

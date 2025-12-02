@@ -32,19 +32,19 @@ div:has(.nav-btn) {
   font-weight: 600;
   transition: all 0.2s ease-in-out;
 
-  /* Style au survol (seulement si le bouton n'est pas désactivé) */
+  
   &:hover:not(:disabled) {
     background-color: #007bff;
     color: white;
   }
 
-  /* Style quand le bouton est ACTIF (et donc désactivé) */
+  
   &.active-state, &:disabled {
-    background-color: #e9ecef; /* Fond gris */
-    color: #495057; /* Texte gris foncé */
+    background-color: #e9ecef; 
+    color: #495057; 
     border-color: #ced4da;
-    cursor: default; /* Pas de curseur main */
-    box-shadow: inset 0 3px 5px rgba(0,0,0,0.05); /* Effet "enfoncé" optionnel */
+    cursor: default; 
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.05); 
     opacity: 0.8;
   }
   .cart-btn {

@@ -1,4 +1,4 @@
-/* app/pages/restaurant-dashboard/restaurant-dashboard.component.css */
+
 
 .dashboard-body {
   background-color: #d9d9d9;
@@ -24,7 +24,7 @@
   font-size: 24px;
 }
 
-/* Base button style copied from other components */
+
 .btn {
   background-color: #b0b0b0;
   border: none;
@@ -63,8 +63,8 @@
 .large-btn {
   padding: 30px 60px;
   font-size: 18px;
-  margin: 0 15px; /* Add some margin for spacing */
-  width: 250px; /* Fixed width for better alignment */
+  margin: 0 15px; 
+  width: 250px; 
   text-align: center;
 }
 

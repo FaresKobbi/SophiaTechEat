@@ -11,7 +11,7 @@ public class Dish extends PriceableItem {
     private List<Topping> toppings;
     private List<DietaryLabel> dietaryLabels;
 
-    // NEW: Default constructor for Jackson
+    
     public Dish() {
         super();
         this.toppings = new ArrayList<>();
@@ -62,7 +62,7 @@ public class Dish extends PriceableItem {
         return toppings;
     }
     
-    // Setter to allow category modification
+    
     public void setCategory(DishCategory category) {
         this.category = category;
     }
@@ -71,7 +71,7 @@ public class Dish extends PriceableItem {
         this.description = description;
     }
 
-    // Single Update Method (for administrative bulk updates)
+    
     public void updateDetails(String newName, String newDescription, double newPrice) {
         this.setName(newName);
         this.setDescription(newDescription);

@@ -11,9 +11,9 @@
 .header {
   width: 100%;
   max-width: 800px;
-  position: relative;       /* Establish positioning context */
+  position: relative;       
   display: flex;
-  justify-content: center;  /* Center the H1 horizontally */
+  justify-content: center;  
   align-items: center;
   margin-bottom: 30px;
 }
@@ -25,8 +25,8 @@ h1 {
 }
 
 .btn-back {
-  position: absolute;       /* Remove from flow to position explicitly */
-  right: 0;                 /* Stick to the right edge */
+  position: absolute;       
+  right: 0;                 
 
   background-color: #b0b0b0;
   border: none;

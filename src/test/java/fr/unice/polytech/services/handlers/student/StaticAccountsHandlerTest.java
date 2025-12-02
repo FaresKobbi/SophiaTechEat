@@ -59,9 +59,9 @@ class StaticAccountsHandlerTest {
     @Test
     void testHandlePostAccount() throws IOException {
         when(exchange.getRequestMethod()).thenReturn("POST");
-        // Mocking request body reading is tricky with HttpExchange mock,
-        // usually requires mocking getRequestBody() to return an InputStream.
-        // For now, let's assume the handler reads it.
-        // Let's verify it calls accountManager.addAccount
+        
+        
+        
+        
     }
 }

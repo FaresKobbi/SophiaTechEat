@@ -11,10 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-/**
- * A generic handler that forwards requests to the appropriate backend service
- * based on the request path.
- */
+
 public class PassthroughHandler implements HttpHandler {
 
     private final HttpClient httpClient;
@@ -36,7 +33,7 @@ public class PassthroughHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*"); // Allows Angular frontend
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*"); 
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -46,7 +43,7 @@ public class PassthroughHandler implements HttpHandler {
         }
         String path = exchange.getRequestURI().getPath();
         String query = exchange.getRequestURI().getRawQuery();
-        // String query = exchange.getRequestURI().getQuery();
+        
         String method = exchange.getRequestMethod();
         String targetBaseUrl = null;
 

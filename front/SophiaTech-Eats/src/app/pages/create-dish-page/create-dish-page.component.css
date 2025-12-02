@@ -10,10 +10,10 @@
 
 .header {
   width: 100%;
-  max-width: 1000px; /* Increased to match content */
-  position: relative;       /* Establish positioning context */
+  max-width: 1000px; 
+  position: relative;       
   display: flex;
-  justify-content: center;  /* Center the H1 horizontally */
+  justify-content: center;  
   align-items: center;
   margin-bottom: 30px;
 }

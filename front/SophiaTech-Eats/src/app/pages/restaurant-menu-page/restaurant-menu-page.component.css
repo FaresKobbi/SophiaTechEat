@@ -1,12 +1,12 @@
-/* --- HEADER STYLES (Replicated from Nav Component) --- */
+
 .nav-container {
   display: flex;
   padding: 20px;
-  background-color: #f5f5f5; /* Same white/grey header background */
+  background-color: #f5f5f5; 
   border-bottom: 1px solid #ddd;
   justify-content: space-between;
-  align-items: center; /* Center items vertically */
-  height: 120px; /* Fixed height to match the other page if needed, or let padding handle it */
+  align-items: center; 
+  height: 120px; 
   box-sizing: border-box;
 }
 
@@ -16,26 +16,9 @@
   margin: 0;
 }
 
-/*
-.home-page-button {
-  padding: 10px 20px;
-  border: 1px solid #007bff;
-  background-color: #055eb6;
-  color: #ffffff;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 20px;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
-}
 
-.home-page-button:hover {
-  background-color: #007bff;
-}
-*/
 
-/* --- PAGE LAYOUT STYLES --- */
+
 .menu-page-body {
   margin: 0;
   padding: 0;
@@ -60,7 +43,7 @@
   align-items: flex-start;
 }
 
-/* --- LEFT PANEL: MENU --- */
+
 .menu-list {
   flex: 1;
 }
@@ -103,7 +86,7 @@
 
 .btn-add:hover { background-color: #999; }
 
-/* --- RIGHT PANEL: CART --- */
+
 .cart-panel {
   width: 380px;
   background: white;

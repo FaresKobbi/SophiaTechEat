@@ -18,7 +18,7 @@ public class HttpStudentAccountClient implements StudentAccountClient {
         this.httpClient = httpClient;
     }
 
-    //TODO NOT TESTED
+    
     @Override
     public boolean debit(String studentId, double amount) {
         try {

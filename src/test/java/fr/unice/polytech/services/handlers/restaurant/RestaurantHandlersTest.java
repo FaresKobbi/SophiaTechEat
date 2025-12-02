@@ -71,9 +71,9 @@ class RestaurantHandlersTest {
 
         Restaurant mockRestaurant = mock(Restaurant.class);
         when(mockRestaurant.getDishes()).thenReturn(Collections.emptyList());
-        // Fix: getAllRestaurants returns list, we need to find by ID
-        // DynamicRestaurantHandler uses getRestaurantById which filters
-        // getAllRestaurants
+        
+        
+        
         when(restaurantManager.getAllRestaurants()).thenReturn(List.of(mockRestaurant));
         when(mockRestaurant.getRestaurantId()).thenReturn("rest123");
 
@@ -97,7 +97,7 @@ class RestaurantHandlersTest {
         when(exchange.getRequestBody())
                 .thenReturn(new ByteArrayInputStream(jsonRequest.getBytes(StandardCharsets.UTF_8)));
 
-        // Use real ObjectMapper for this test to parse request
+        
         ObjectMapper realMapper = new ObjectMapper();
         realMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         dynamicHandler = new DynamicRestaurantHandler(restaurantManager, realMapper, suggestionService);

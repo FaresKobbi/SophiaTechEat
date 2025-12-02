@@ -7,7 +7,7 @@
   min-height: calc(100vh - 60px);
 }
 
-/* --- GAUCHE --- */
+
 .left-panel {
   flex: 0 0 300px;
   display: flex;
@@ -49,7 +49,7 @@
 }
 .btn-add:hover { background-color: #1976D2; }
 
-/* --- DROITE --- */
+
 .right-panel {
   flex: 1;
   background: white;
@@ -102,7 +102,7 @@
 .divider { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
 .subtitle { color: #666; font-style: italic; margin-bottom: 20px; }
 
-/* --- GRILLE SLOTS --- */
+
 .slots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

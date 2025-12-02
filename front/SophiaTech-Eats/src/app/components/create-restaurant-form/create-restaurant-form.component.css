@@ -1,27 +1,23 @@
-/* Center page */
 .create-page-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Card container */
 .restaurant-card {
   width: 380px;
-  background: #bfbfbf;     /* grey like mockup */
+  background: #bfbfbf;    
   padding: 25px;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Section Titles */
 .section-title {
   font-size: 18px;
   font-weight: 600;
   margin: 15px 0 5px;
 }
 
-/* Text input */
 .text-input {
   width: 100%;
   padding: 8px;
@@ -31,7 +27,6 @@
   margin-bottom: 10px;
 }
 
-/* Submit button */
 .submit-btn {
   width: 100%;
   padding: 12px;
@@ -48,7 +43,6 @@
   background: #7a7a7a;
 }
 
-/* Spacing between sections */
 .form-section {
   margin-bottom: 20px;
 }

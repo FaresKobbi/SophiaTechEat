@@ -39,19 +39,14 @@ public class StaticAccountsHandler implements HttpHandler {
         }
     }
 
-    /**
-     * Handles GET /accounts
-     */
+    
     private void handleGetAllAccounts(HttpExchange exchange) throws IOException {
         List<StudentAccount> accounts = accountManager.getAllAccounts();
         String jsonResponse = objectMapper.writeValueAsString(accounts);
         sendResponse(exchange, 200, jsonResponse);
     }
 
-    /**
-     * Handles POST /accounts
-     * Expects JSON body: {"name": "...", "surname": "...", "email": "..."}
-     */
+    
     private void handleCreateAccount(HttpExchange exchange) throws IOException {
         InputStream requestBody = exchange.getRequestBody();
         JsonNode body = objectMapper.readTree(requestBody);

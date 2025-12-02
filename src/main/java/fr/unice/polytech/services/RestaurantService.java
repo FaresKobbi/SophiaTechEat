@@ -33,7 +33,7 @@ public class RestaurantService {
 
                 objectMapper.registerModule(new JavaTimeModule());
 
-                // MOCK
+                
                 restaurantManager.addRestaurant(new Restaurant("Pizza Palace"));
                 restaurantManager.addRestaurant(new Restaurant("Sushi Shop"));
                 restaurantManager.getRestaurant("Sushi Shop").addDish("California Roll",
@@ -74,7 +74,7 @@ public class RestaurantService {
                 italian.setCuisineType(CuisineType.ITALIAN);
 
                 addDishToRestaurant(italian, "Carbonara Royale", "Traditional pasta with guanciale and egg yolk", 14.50,
-                                DishType.PASTA, DishCategory.MAIN_COURSE, List.of()); // Pas de label spécifique
+                                DishType.PASTA, DishCategory.MAIN_COURSE, List.of()); 
 
                 addDishToRestaurant(italian, "Pizza Margherita", "Tomato sauce, mozzarella di bufala, basil", 12.00,
                                 DishType.PIZZA, DishCategory.MAIN_COURSE, List.of(DietaryLabel.VEGETARIAN));
@@ -105,7 +105,7 @@ public class RestaurantService {
                 american.setCuisineType(CuisineType.AMERICAN);
 
                 addDishToRestaurant(american, "Double Bacon Burger", "Two beef patties, bacon, cheddar", 15.00,
-                                DishType.BURGER, DishCategory.MAIN_COURSE, List.of()); // Contient porc et viande
+                                DishType.BURGER, DishCategory.MAIN_COURSE, List.of()); 
 
                 addDishToRestaurant(american, "Caesar Salad", "Romaine lettuce, croutons, parmesan", 9.00,
                                 DishType.SALAD, DishCategory.STARTER, List.of(DietaryLabel.VEGETARIAN));

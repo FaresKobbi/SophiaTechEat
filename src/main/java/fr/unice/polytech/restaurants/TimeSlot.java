@@ -1,10 +1,7 @@
-package fr.unice.polytech.restaurants; // Assuming this package
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package fr.unice.polytech.restaurants; 
 
 import java.time.DayOfWeek;
-import java.time.LocalTime; // Best for time-only data
+import java.time.LocalTime; 
 import java.util.Objects;
 
 public class TimeSlot {
@@ -22,17 +19,13 @@ public class TimeSlot {
 
 
 
-    /**
-     * Constructor for a TimeSlot.
-     * @param startTime The start time of the slot.
-     * @param endTime The end time of the slot.
-     */
+    
     public TimeSlot(LocalTime startTime, LocalTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    // Getters
+    
     public LocalTime getStartTime() {
         return startTime;
     }

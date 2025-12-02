@@ -81,7 +81,7 @@ public class OrderHandler implements HttpHandler {
         List<Order> orders = orderManager.getOrdersForStudent(studentId);
         
         List<StudentOrderResponse> responseList = orders.stream()
-                .map(this::mapToStudentResponse) // NEW MAPPING
+                .map(this::mapToStudentResponse) 
                 .collect(Collectors.toList());
         
         String jsonResponse = objectMapper.writeValueAsString(responseList);
@@ -235,7 +235,7 @@ public class OrderHandler implements HttpHandler {
         public String orderStatus;
         public List<Dish> dishes;
         public DeliveryLocation deliveryLocation;
-        public String restaurantId; // Added to help frontend logic if needed
+        public String restaurantId; 
 
         public RestaurantOrderResponse(Order order, String studentName, String restaurantName) {
             this.orderId = order.getOrderId();
@@ -260,7 +260,7 @@ public class OrderHandler implements HttpHandler {
         public String restaurantName;
         public double amount;
         public String orderStatus;
-        public String paymentMethod; // <--- ADDED
+        public String paymentMethod; 
         public List<Dish> dishes;
         public DeliveryLocation deliveryLocation;
         public String restaurantId;
@@ -271,7 +271,7 @@ public class OrderHandler implements HttpHandler {
             this.restaurantName = restaurantName;
             this.amount = order.getAmount();
             this.orderStatus = order.getOrderStatus().toString();
-            this.paymentMethod = (order.getPaymentMethod() != null) ? order.getPaymentMethod().toString() : "UNKNOWN"; // <--- Map it
+            this.paymentMethod = (order.getPaymentMethod() != null) ? order.getPaymentMethod().toString() : "UNKNOWN"; 
             this.dishes = order.getDishes();
             this.deliveryLocation = order.getDeliveryLocation();
             this.restaurantId = order.getRestaurantId();

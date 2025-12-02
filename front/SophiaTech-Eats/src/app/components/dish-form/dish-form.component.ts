@@ -17,7 +17,7 @@ export class DishFormComponent implements OnInit, OnChanges {
 
   dishForm: FormGroup;
 
-  // Options for dropdowns/checkboxes
+  
   categories = ['STARTER', 'MAIN_COURSE', 'DESSERT', 'DRINK'];
   dishTypes = ['Pasta','Meat','Pizza','Burger','Sushi','Ice_Cream','Cake','Salad','Drink','General'];
   availableDietaryLabels = ['Vegan','Vegetarian', 'Gluten_Free', 'Frozen_Products', 'Halal'];
@@ -43,7 +43,7 @@ export class DishFormComponent implements OnInit, OnChanges {
     }
   }
 
-  // --- Toppings Management ---
+  
   get toppings(): FormArray {
     return this.dishForm.get('toppings') as FormArray;
   }

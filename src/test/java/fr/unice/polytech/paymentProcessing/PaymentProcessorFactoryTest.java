@@ -54,9 +54,9 @@ class PaymentProcessorFactoryTest {
 
                 assertTrue(processor instanceof InternalPaymentProcessor,
                                 "Internal payments must use the dedicated processor");
-                // Note: We cannot easily test the debit logic here without mocking the
-                // HttpClient or StudentAccountClient
-                // inside the factory/processor, but we verified the type.
+                
+                
+                
         }
 
         @Test

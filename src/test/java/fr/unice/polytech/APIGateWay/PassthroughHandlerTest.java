@@ -55,11 +55,11 @@ class PassthroughHandlerTest {
         when(exchange.getResponseHeaders()).thenReturn(responseHeaders);
         when(exchange.getResponseBody()).thenReturn(new ByteArrayOutputStream());
 
-        // Mock HttpClient response
+        
         when(mockResponse.statusCode()).thenReturn(200);
         when(mockResponse.body()).thenReturn("Success".getBytes(StandardCharsets.UTF_8));
 
-        // Mock HttpHeaders for response
+        
         HttpHeaders mockHttpHeaders = HttpHeaders.of(Collections.emptyMap(), (k, v) -> true);
         when(mockResponse.headers()).thenReturn(mockHttpHeaders);
 

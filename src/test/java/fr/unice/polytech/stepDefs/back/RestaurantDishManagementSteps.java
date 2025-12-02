@@ -16,17 +16,17 @@ public class RestaurantDishManagementSteps {
         this.ctx = ctx;
     }
 
-    // On mémorise juste le dernier plat manipulé
+    
     private String lastDishName;
     private final List<String> currentDishTags = new ArrayList<>();
     private String currentAllergenInfo;
     private final Map<String, Double> extraOptions = new HashMap<>();
 
-    // ============ BACKGROUND STEPS ============
+    
 
 
 
-    // ============ SCENARIO 1: Add a new dish ============
+    
 
     @When("the restaurant manager adds a new dish with the following details:")
     public void the_restaurant_manager_adds_a_new_dish_with_details(DataTable dataTable) {
@@ -62,7 +62,7 @@ public class RestaurantDishManagementSteps {
         assertEquals(expectedPrice, dish.getPrice(), 0.01);
     }
 
-    // ============ SCENARIO 2: Dietary tags ============
+    
 
     @When("the restaurant manager tags the dish as {string} and {string}")
     public void the_restaurant_manager_tags_the_dish_as(String tag1, String tag2) {
@@ -80,7 +80,7 @@ public class RestaurantDishManagementSteps {
                 "Tag '" + expectedTag + "' should be present");
     }
 
-    // ============ SCENARIO 3: Toppings ============
+    
 
     @Given("a dish {string} exists with price {double}")
     public void a_dish_exists_with_price(String dishName, double price) {
@@ -116,7 +116,7 @@ public class RestaurantDishManagementSteps {
         assertEquals(expectedPrice, topping.getPrice(), 0.01);
     }
 
-    // ============ SCENARIO 4: Update dish ============
+    
 
     @When("the restaurant manager updates the dish price to {double}")
     public void the_restaurant_manager_updates_the_dish_price_to(double newPrice) {
@@ -149,7 +149,7 @@ public class RestaurantDishManagementSteps {
         assertEquals(expectedDescription, dish.getDescription());
     }
 
-    // ============ SCENARIO 5: Remove dish ============
+    
 
     @Given("a dish {string} exists in the menu")
     public void a_dish_exists_in_the_menu(String dishName) {
@@ -176,7 +176,7 @@ public class RestaurantDishManagementSteps {
         assertFalse(found, "Dish should not be visible in menu");
     }
 
-    // ============ SCENARIO 6: Extra options ============
+    
 
     @When("the restaurant manager defines an extra option {string} with price {double}")
     public void the_restaurant_manager_defines_an_extra_option_with_price(String extraName, double price) {
@@ -195,7 +195,7 @@ public class RestaurantDishManagementSteps {
         assertEquals(expectedPrice, extraOptions.get(optionName), 0.01);
     }
 
-    // ============ SCENARIO 7: Allergen information ============
+    
 
     @When("the restaurant manager adds allergen information {string}")
     public void the_restaurant_manager_adds_allergen_information(String allergenInfo) {

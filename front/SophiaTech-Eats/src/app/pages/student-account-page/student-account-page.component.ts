@@ -24,7 +24,7 @@ export class StudentAccountPageComponent implements OnInit {
   studentName: string = "X"
   studentSurname: string = "Y"
   locations: DeliveryLocation[] = []
-  locationDisplayKey: string[] = ['name', 'address', 'city', 'zipCode']; // Or use a single key or getter in ListComponent logic
+  locationDisplayKey: string[] = ['name', 'address', 'city', 'zipCode']; 
 
   selectedLocation: DeliveryLocation | null = null
 
@@ -185,20 +185,20 @@ export class StudentAccountPageComponent implements OnInit {
   submitBankInfo() {
     if (!this.studentId) return;
 
-    // 1. Validation de présence
+    
     if (!this.bankFormData.cardNumber || !this.bankFormData.cvv || !this.bankFormData.month || !this.bankFormData.year) {
       alert("Please fill all bank fields");
       return;
     }
 
-    // 2. Validation Card (16 chiffres)
+    
     const cardRegex = /^\d{16}$/;
     if (!cardRegex.test(this.bankFormData.cardNumber)) {
       alert("Card number must contain exactly 16 digits.");
       return;
     }
 
-    // 3. Validation CVV (3 chiffres)
+    
     const cvvString = this.bankFormData.cvv.toString();
     const cvvRegex = /^\d{3}$/;
     if (!cvvRegex.test(cvvString)) {
@@ -206,19 +206,19 @@ export class StudentAccountPageComponent implements OnInit {
       return;
     }
 
-    // --- 4. Validation MONTH (1 ou 2 chiffres, valeur 1-12) ---
+    
     const monthVal = parseInt(this.bankFormData.month);
-    // Vérifie si c'est un nombre, entre 1 et 12
+    
     if (isNaN(monthVal) || monthVal < 1 || monthVal > 12) {
       alert("Month must be between 1 and 12.");
       return;
     }
 
-    // --- 5. Validation YEAR (4 chiffres, >= année actuelle) ---
+    
     const yearVal = parseInt(this.bankFormData.year);
     const yearString = this.bankFormData.year.toString();
 
-    // Regex pour s'assurer que c'est bien 4 chiffres (ex: évite "24" pour "2024")
+    
     const yearRegex = /^\d{4}$/;
 
     if (!yearRegex.test(yearString)) {

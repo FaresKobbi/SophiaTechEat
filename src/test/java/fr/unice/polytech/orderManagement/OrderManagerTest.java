@@ -88,7 +88,7 @@ class OrderManagerTest {
         verify(factory).createProcessor(order, PaymentMethod.EXTERNAL);
         verify(processor).processPayment(order);
         assertEquals(OrderStatus.VALIDATED, order.getOrderStatus());
-        // Order is no longer pending if validated, check registered
+        
         assertEquals(0, manager.getPendingOrders().size());
         assertEquals(1, manager.getRegisteredOrders().size());
     }
@@ -106,7 +106,7 @@ class OrderManagerTest {
         PaymentProcessorFactory factory = mock(PaymentProcessorFactory.class);
         OrderManager managerWithFactory = new OrderManager(factory);
 
-        // Manually create order via manager to ensure it's in the system
+        
         Order order = managerWithFactory.createOrder(mockDishes, "student123", mockDeliveryLocation, "rest123");
 
         IPaymentProcessor processor = mock(IPaymentProcessor.class);

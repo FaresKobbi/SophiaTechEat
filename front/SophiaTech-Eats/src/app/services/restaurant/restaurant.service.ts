@@ -81,7 +81,7 @@ export class RestaurantService {
       return of(this.cuisineTypeSubject.value);
     }
 
-    // 2. Sinon, on fait l'appel HTTP
+    
     return this.http.get<string[]>(`${this.apiUrl}/dishes/cuisinetypes`).pipe(
       map(data => data.map(label => this.formatLabel(label))),
 

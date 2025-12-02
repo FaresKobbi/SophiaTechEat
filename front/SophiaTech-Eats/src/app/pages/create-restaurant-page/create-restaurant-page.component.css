@@ -18,12 +18,10 @@
   text-transform: uppercase;
   cursor: pointer;
   position: absolute;
-  top: 20px;     /* distance from top */
+  top: 20px;     
   right: 20px;
-  /* transition: transform 0.6s ease;   durée + fluidité */
+  
 }
 
-/*.btn:hover {
-  transform: rotate(360deg);
-}*/
+
 

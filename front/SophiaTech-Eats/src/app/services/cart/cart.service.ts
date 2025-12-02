@@ -9,7 +9,7 @@ export interface CartItem {
   totalPrice: number;
 }
 
-// Internal interface to track state per user
+
 interface UserCartState {
   items: CartItem[];
   restaurantId: string | null;
@@ -49,7 +49,7 @@ export class CartService {
 
     const userCart = this.carts.get(this.currentUserId)!;
 
-    // Check restaurant conflict
+    
     if (userCart.restaurantId && userCart.restaurantId !== restaurantId) {
       return false;
     }

@@ -3,7 +3,6 @@ package fr.unice.polytech.restaurants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.unice.polytech.dishes.*;
 
-import fr.unice.polytech.orderManagement.Order;
 
 import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.users.UserAccount;
@@ -35,9 +34,9 @@ public class Restaurant extends UserAccount {
         this.cuisineType = CuisineType.GENERAL;
     }
 
-    // Private constructor for Builder pattern.
-    // Avoid public Restaurant(String restaurantName, List<Dish> dishes,
-    // List<TimeSlot> availableTimeSlots) {..}
+    
+    
+    
     private Restaurant(Builder builder) {
         this.restaurantId = UUID.randomUUID().toString();
         this.restaurantName = builder.restaurantName;
@@ -51,7 +50,7 @@ public class Restaurant extends UserAccount {
         return restaurantName;
     }
 
-    // return a copy of the dishes/TimeSlot list to prevent external modification.
+    
     public List<Dish> getDishes() {
         return new ArrayList<>(dishes);
     }
@@ -83,21 +82,21 @@ public class Restaurant extends UserAccount {
         this.restaurantName = restaurantName;
     }
 
-    // //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
-    // public void blockTimeSlot(TimeSlot slot){
-    // if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be
-    // null");
-    // decreaseCapacity(slot);
-    // }
-    //
-    // public void unblockTimeSlot(TimeSlot slot){
-    // if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be
-    // null");
-    // increaseCapacity(slot);
-    // }
-    //
-    //
-    // ======= Capacity by slot =====
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     public void setCapacity(TimeSlot slot, int capacity) {
         if (slot == null)
@@ -114,22 +113,22 @@ public class Restaurant extends UserAccount {
         }
 
         if (!found) {
-            // Check if we have OpeningHours for this day
+            
             Optional<OpeningHours> existingOh = openingHours.stream()
                     .filter(oh -> oh.getDay() == slot.getDayOfWeek()
                             || (slot.getDayOfWeek() == null && oh.getDay() == DayOfWeek.MONDAY))
                     .findFirst();
 
             if (existingOh.isPresent()) {
-                // Add slot to existing OpeningHours
-                // If slot has no day, assume it matches the existing OH day (MONDAY)
+                
+                
                 TimeSlot slotToAdd = slot;
                 if (slot.getDayOfWeek() == null) {
                     slotToAdd = new TimeSlot(existingOh.get().getDay(), slot.getStartTime(), slot.getEndTime());
                 }
                 existingOh.get().addSlot(slotToAdd, capacity);
             } else {
-                // Add to MONDAY by default if not found and no OH for MONDAY
+                
                 DayOfWeek day = slot.getDayOfWeek() != null ? slot.getDayOfWeek() : DayOfWeek.MONDAY;
                 OpeningHours oh = new OpeningHours(day, slot.getStartTime(), slot.getEndTime());
                 oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), capacity);
@@ -211,13 +210,13 @@ public class Restaurant extends UserAccount {
         availableDietaryLabels.add(label);
     }
 
-    // public Map<TimeSlot, Integer> getAllCapacities() {
-    // return new HashMap<>(capacityByTimeSlot);
-    // }
-    //
-    // =================================================================
-    // METHODES DELEGUEES (Compatibilité avec les tests existants)
-    // =================================================================
+    
+    
+    
+    
+    
+    
+    
 
     public int getCapacity(TimeSlot slot) {
         for (OpeningHours oh : openingHours) {
@@ -271,7 +270,7 @@ public class Restaurant extends UserAccount {
         }
     }
 
-    // ========== DISH MANAGEMENT METHODS ==========
+    
     public void addDish(String name, String description, double price) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Dish name cannot be null or empty");
@@ -342,10 +341,10 @@ public class Restaurant extends UserAccount {
         this.orders = orders;
     }
 
-    // public void setCapacityByTimeSlot(Map<TimeSlot, Integer> capacityByTimeSlot)
-    // {
-    // this.capacityByTimeSlot = capacityByTimeSlot;
-    // }
+    
+    
+    
+    
 
     public void setCuisineType(CuisineType cuisineType) {
         this.cuisineType = cuisineType;
@@ -376,7 +375,7 @@ public class Restaurant extends UserAccount {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
-                // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
+                
                 '}';
     }
 
@@ -399,12 +398,7 @@ public class Restaurant extends UserAccount {
         return openingHours;
     }
 
-    /**
-     * Retire un plat du menu par son nom
-     * 
-     * @param dishName Le nom du plat à retirer
-     * @throws IllegalArgumentException si le nom est null ou vide
-     */
+    
     public void removeDish(String dishName) {
         if (dishName == null || dishName.isEmpty()) {
             throw new IllegalArgumentException("Dish name cannot be null or empty");
@@ -412,13 +406,7 @@ public class Restaurant extends UserAccount {
         dishes.removeIf(dish -> dish.getName().equals(dishName));
     }
 
-    /**
-     * Recherche un plat dans le menu par son nom
-     * 
-     * @param dishName Le nom du plat recherché
-     * @return Le plat trouvé ou null si aucun plat ne correspond
-     * @throws IllegalArgumentException si le nom est null ou vide
-     */
+    
     public Dish findDishByName(String dishName) {
         if (dishName == null || dishName.isEmpty()) {
             throw new IllegalArgumentException("Dish name cannot be null or empty");
@@ -433,14 +421,9 @@ public class Restaurant extends UserAccount {
         return orders;
     }
 
-    // ========== BUILDER PATTERN ==========
+    
 
-    /**
-     * Builder class for constructing Restaurant objects with many optional
-     * parameters.
-     * We use this class when we need to create a Restaurant with initial dishes and
-     * time slots.
-     */
+    
     public static class Builder {
         private final String restaurantName;
         public CuisineType cuisineType;

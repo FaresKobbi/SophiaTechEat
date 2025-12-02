@@ -49,7 +49,7 @@ export class StudentOrderPageComponent implements OnInit {
         this.orders = data;
         this.displayOrders = data.map(o => ({
           ...o,
-          // UPDATED LABEL: "Pizza Palace - VALIDATED - €12.50"
+          
           displayLabel: `${o.restaurantName || 'Restaurant'} - ${o.orderStatus} - ${o.amount.toFixed(2)}€`
         }));
       },

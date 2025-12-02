@@ -14,7 +14,7 @@ class StudentAccountTest {
     private final String EMAIL = "alice.smith@etu.unice.fr";
     private final String ID = "22400632";
 
-    // Test 1: Verify that Builder Creational Pattern has been well implented
+    
     @Test
     void testStudentAccountCreation() {
         StudentAccount student = new StudentAccount.Builder(NAME, SURNAME)

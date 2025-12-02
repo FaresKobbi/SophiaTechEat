@@ -87,7 +87,7 @@ export class StudentAccountService {
     );
   }
 
-  // --- GESTION DELIVERY LOCATIONS ---
+  
 
   getDeliveryLocations(studentId: string): Observable<DeliveryLocation[]> {
     return this.http.get<DeliveryLocation[]>(`${this.apiUrl}/${studentId}/locations`);

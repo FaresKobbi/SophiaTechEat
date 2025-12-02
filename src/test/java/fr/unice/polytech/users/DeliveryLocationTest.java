@@ -10,7 +10,7 @@ class DeliveryLocationTest {
     private final String CITY = "Nice";
     private final String ZIP = "06000";
 
-    // Test 1: Constructor and getters
+    
     @Test
     void testDeliveryLocationCreationAndGetters() {
         DeliveryLocation location = new DeliveryLocation(NAME, ADDRESS, CITY, ZIP);
@@ -21,13 +21,13 @@ class DeliveryLocationTest {
         assertEquals(ZIP, location.getZipCode(), "Zip code should be set correctly.");
     }
 
-    // Test 3: toString representation
+    
 
     @Test
     void testEqualsAndHashCode() {
         DeliveryLocation loc1 = new DeliveryLocation("Home", "Address", "City", "Zip");
         DeliveryLocation loc2 = new DeliveryLocation("Work", "Address", "City", "Zip");
-        loc2.setId(loc1.getId()); // Same ID -> Equal
+        loc2.setId(loc1.getId()); 
 
         assertEquals(loc1, loc2);
         assertEquals(loc1.hashCode(), loc2.hashCode());
@@ -39,7 +39,7 @@ class DeliveryLocationTest {
     @Test
     void testToString() {
         DeliveryLocation location = new DeliveryLocation("Office", "123 Main St", "Nice", "06000");
-        // ID is random, so we check if it contains other fields
+        
         String str = location.toString();
         assertTrue(str.contains("Office"));
         assertTrue(str.contains("123 Main St"));

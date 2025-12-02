@@ -39,7 +39,7 @@ public class SuggestionHandler implements HttpHandler {
 
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
-        // Add CORS headers for frontend access
+        
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");

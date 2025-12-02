@@ -12,11 +12,9 @@ public class DeliveryLocation {
     private String zipCode;
 
 
-    /**
-     * Constructor for DeliveryLocation.
-     */
+    
     public DeliveryLocation(String name, String address, String city, String zipCode) {
-        this.id = UUID.randomUUID().toString(); // Génération automatique de l'ID
+        this.id = UUID.randomUUID().toString(); 
         this.name = name;
         this.address = address;
         this.city = city;
@@ -40,7 +38,7 @@ public class DeliveryLocation {
         return name;
     }
     
-    // Setters
+    
     public void setName(String name) {
         this.name = name;
     }

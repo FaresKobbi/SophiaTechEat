@@ -13,9 +13,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class PaymentService implements IPaymentService {
     private final MockedExternalPaymentSystem externalPaymentSystem;
-    private final HttpClient httpClient; // NEW
-    private final ObjectMapper objectMapper; // NEW
-    private static final String API_GATEWAY = "http://localhost:8080/api/accounts/"; // NEW
+    private final HttpClient httpClient; 
+    private final ObjectMapper objectMapper; 
+    private static final String API_GATEWAY = "http://localhost:8080/api/accounts/"; 
 
     public PaymentService(HttpClient httpClient) {
         this.externalPaymentSystem = new MockedExternalPaymentSystem();
@@ -38,7 +38,7 @@ public class PaymentService implements IPaymentService {
         }
     }
 
-    // TODO NOT TESTED
+    
     private BankInfo fetchBankInfo(String studentId) throws IOException, InterruptedException {
         String targetUrl = API_GATEWAY + studentId + "/bankinfo";
         System.out.println("PaymentService: Calling StudentAccountService at " + targetUrl);

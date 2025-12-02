@@ -19,7 +19,7 @@ public class StudentAccountService {
         private static final ObjectMapper objectMapper = new ObjectMapper();
 
         public static void main(String[] args) throws IOException {
-                // MOCK
+                
                 accountManager.addAccount(
                                 new StudentAccount.Builder("Alice", "Smith")
                                                 .email("alice.smith@etu.unice.fr")

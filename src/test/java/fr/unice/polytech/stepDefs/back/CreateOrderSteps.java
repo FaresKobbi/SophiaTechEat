@@ -29,14 +29,14 @@ public class CreateOrderSteps {
     private Order currentOrder;
     private Exception lastException;
 
-    // ============ Setup ============
+    
 
     @Given("a client named {string}")
     public void a_client_named(String name) {
         accountBuilder = new StudentAccount.Builder(name, "Doe");
         restaurant = new Restaurant("Test Restaurant");
 
-        // Mock payment service to always succeed for external payments
+        
         IPaymentService mockPaymentService = org.mockito.Mockito.mock(IPaymentService.class);
         try {
             org.mockito.Mockito.when(mockPaymentService.processExternalPayment(org.mockito.ArgumentMatchers.any()))
@@ -50,7 +50,7 @@ public class CreateOrderSteps {
         orderManager = new OrderManager(factory);
 
         cartDishes = new ArrayList<>();
-        paymentMethod = PaymentMethod.EXTERNAL; // default
+        paymentMethod = PaymentMethod.EXTERNAL; 
         deliveryLocation = null;
         currentOrder = null;
         lastException = null;
@@ -66,7 +66,7 @@ public class CreateOrderSteps {
         studentAccount = accountBuilder.build();
     }
 
-    // ============ Cart ============
+    
 
     @Given("{string} has the following items in the cart:")
     public void has_the_following_items_in_the_cart(String name, DataTable dataTable) {
@@ -87,7 +87,7 @@ public class CreateOrderSteps {
         has_the_following_items_in_the_cart("Alex", dataTable);
     }
 
-    // ============ Delivery & Payment ============
+    
     @When("{string} selects the delivery location {string}")
     public void selects_the_delivery_location(String name, String address) {
         try {
@@ -120,30 +120,25 @@ public class CreateOrderSteps {
         chooses_the_saved_payment_method("Alex", method);
     }
 
-    // ============ Confirm Order ============
+    
 
     @When("{string} confirms the order")
     public void confirms_the_order(String name) {
         try {
-            // Create the order
+            
             orderManager.createOrder(cartDishes, studentAccount.getStudentID(), deliveryLocation, restaurant.getName());
 
-            // Retrieve last created order
+            
             List<Order> pendingOrders = orderManager.getPendingOrders();
             currentOrder = pendingOrders.isEmpty() ? null : pendingOrders.get(pendingOrders.size() - 1);
 
-            // Initiate payment (handled by OrderManager)
+            
             if (currentOrder != null && paymentMethod != null) {
                 orderManager.initiatePayment(currentOrder, paymentMethod);
             }
 
-            // Register validated order
-            /*
-             * if (currentOrder != null && currentOrder.getOrderStatus() ==
-             * OrderStatus.VALIDATED) {
-             * orderManager.registerOrder(currentOrder,restaurant);
-             * }
-             */
+            
+            
 
         } catch (Exception e) {
 
@@ -152,13 +147,13 @@ public class CreateOrderSteps {
         }
     }
 
-    // Small alias so the step "When Alex confirms the order" works too
+    
     @When("Alex confirms the order")
     public void alex_confirms_the_order() {
         confirms_the_order("Alex");
     }
 
-    // ============ Assertions ============
+    
 
     @Then("the order should be created with status {string}")
     public void the_order_should_be_created_with_status(String expectedStatus) {

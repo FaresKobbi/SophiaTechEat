@@ -80,7 +80,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 handleOpeningHours(exchange, method, openingHoursMatcher.group(1));
             } else if (openingHoursItemMatcher.matches()) {
                 String restaurantId = openingHoursItemMatcher.group(1);
-                String day = openingHoursItemMatcher.group(2); // Capture "MONDAY"
+                String day = openingHoursItemMatcher.group(2); 
 
                 if ("DELETE".equals(method)) {
                     handleDeleteOpeningHour(exchange, restaurantId, day);
@@ -166,7 +166,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
             }
 
             updateDishCommonFields(dish, dishRequest);
-            // TODO handle dietary labels properly (add/remove instead of just adding)
+            
             dishRequest.dietaryLabels.forEach(label -> {
                 restaurant.addDietaryLabel(DietaryLabel.valueOf(label.toUpperCase()));
             });
@@ -286,7 +286,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
         boolean removed = restaurant.getOpeningHours().removeIf(oh -> oh.getId().equals(openingHourId));
 
         if (removed) {
-            sendResponse(exchange, 204, ""); // Succès
+            sendResponse(exchange, 204, ""); 
         } else {
             sendResponse(exchange, 404, "{\"error\":\"Opening hour not found with ID: " + openingHourId + "\"}");
         }
@@ -332,14 +332,14 @@ public class DynamicRestaurantHandler implements HttpHandler {
             try {
                 dish.setCategory(DishCategory.valueOf(request.category.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                /* Ignore invalid categories */ }
+                 }
         }
 
         if (request.dishType != null && !request.dishType.isBlank()) {
             try {
                 dish.setDishType(DishType.valueOf(request.dishType.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                /* Ignore invalid types */ }
+                 }
         }
 
         if (request.dietaryLabels != null) {
@@ -348,7 +348,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
                 try {
                     labels.add(DietaryLabel.valueOf(label.toUpperCase()));
                 } catch (IllegalArgumentException e) {
-                    /* Ignore invalid labels */ }
+                     }
             }
             dish.setDietaryLabels(labels);
         }
@@ -405,7 +405,7 @@ public class DynamicRestaurantHandler implements HttpHandler {
 
             TimeSlot slot = new TimeSlot(day, start, end);
 
-            // DEBUG LOGS
+            
             System.out.println("--- RESERVE SLOT DEBUG ---");
             System.out.println(
                     "Target Slot: " + slot.getDayOfWeek() + " " + slot.getStartTime() + " - " + slot.getEndTime());

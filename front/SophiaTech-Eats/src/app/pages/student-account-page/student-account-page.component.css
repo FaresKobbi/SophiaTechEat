@@ -50,11 +50,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fond noir semi-transparent */
+  background-color: rgba(0, 0, 0, 0.5); 
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* S'assure qu'il est au-dessus de tout */
+  z-index: 1000; 
 }
 
 .modal-content {
@@ -106,7 +106,7 @@
 }
 
 .submit-btn {
-  background-color: #007bff; /* Ou ta couleur principale */
+  background-color: #007bff; 
   color: white;
   border: none;
   padding: 10px 20px;

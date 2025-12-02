@@ -78,7 +78,7 @@ public class DynamicAccountsHandler implements HttpHandler {
                 String locationId = locationItemMatcher.group(2);
                 handleRemoveLocation(exchange, studentId, locationId);
             }
-            // --- GESTION DES BANK INFO ---
+            
             else if (bankInfoMatcher.matches()) {
                 String studentId = bankInfoMatcher.group(1);
                 if ("GET".equals(method)) {
@@ -133,7 +133,7 @@ public class DynamicAccountsHandler implements HttpHandler {
         InputStream requestBody = exchange.getRequestBody();
         JsonNode body = objectMapper.readTree(requestBody);
 
-        // Mise à jour des champs
+        
         StudentAccount s = account.get();
         if (body.has("name")) s.setName(body.get("name").asText());
         if (body.has("surname")) s.setSurname(body.get("surname").asText());
@@ -207,7 +207,7 @@ public class DynamicAccountsHandler implements HttpHandler {
             return;
         }
         account.get().removeDeliveryLocation(locationId);
-        sendResponse(exchange, 204, ""); // No Content
+        sendResponse(exchange, 204, ""); 
     }
 
     private void handleGetBankInfo(HttpExchange exchange, String studentId) throws IOException {
@@ -216,18 +216,18 @@ public class DynamicAccountsHandler implements HttpHandler {
         if (account.isPresent()) {
             BankInfo info = account.get().getBankInfo();
             if (info != null) {
-                // On crée une map pour faciliter la sérialisation JSON propre (séparation mois/année)
+                
                 Map<String, Object> responseMap = new HashMap<>();
                 responseMap.put("cardNumber", info.getCardNumber());
                 responseMap.put("cvv", info.getCVV());
-                // Extraction mois/année depuis YearMonth
+                
                 responseMap.put("month", info.getExpirationDate().getMonthValue());
                 responseMap.put("year", info.getExpirationDate().getYear());
 
                 String json = objectMapper.writeValueAsString(responseMap);
                 sendResponse(exchange, 200, json);
             } else {
-                // Pas d'info bancaire, on renvoie un objet vide ou null
+                
                 sendResponse(exchange, 200, "null");
             }
         } else {

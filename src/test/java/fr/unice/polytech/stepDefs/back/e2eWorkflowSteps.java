@@ -41,7 +41,7 @@ public class e2eWorkflowSteps {
 
     @Before
     public void setupScenario() throws Exception {
-        // Reset state before each scenario
+        
         currentStudent = null;
         currentRestaurant = null;
         currentDeliveryLocation = null;
@@ -92,7 +92,7 @@ public class e2eWorkflowSteps {
                 .email(currentStudent.getEmail())
                 .balance(currentStudent.getBalance())
                 .deliveryLocations(currentStudent.getDeliveryLocations())
-                .bankInfo(cardNumber, cvv, month, 2000 + year) // Assuming year is YY format
+                .bankInfo(cardNumber, cvv, month, 2000 + year) 
                 .build();
     }
 
@@ -198,10 +198,10 @@ public class e2eWorkflowSteps {
         PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr.toUpperCase());
 
         if (paymentMethod == PaymentMethod.INTERNAL) {
-            // Simulate server logic
+            
             if (currentStudent.getBalance() >= currentOrder.getAmount()) {
                 when(mockResponse.statusCode()).thenReturn(200);
-                // Simulate side effect
+                
                 currentStudent.debit(currentOrder.getAmount());
             } else {
                 when(mockResponse.statusCode()).thenReturn(400);
@@ -238,10 +238,10 @@ public class e2eWorkflowSteps {
     public void order_should_be_registered(String restaurantName) {
         assertNotNull(currentOrder, "Order context must be set");
         assertEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(), "Order must be VALIDATED to be registered");
-        // boolean registered = orderManager.registerOrder(currentOrder,
-        // currentRestaurant);
-        // assertTrue(registered, "Order registration should return true for a validated
-        // order");
+        
+        
+        
+        
 
         List<Order> pendingOrders = orderManager.getPendingOrders();
         assertFalse(pendingOrders.contains(currentOrder),
@@ -317,10 +317,10 @@ public class e2eWorkflowSteps {
         assertNotNull(currentOrder, "Order context must be set");
         assertNotEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(), "Order status should not be VALIDATED");
 
-        // boolean registered = orderManager.registerOrder(currentOrder,
-        // currentRestaurant);
-        // assertFalse(registered, "Order registration should return false for
-        // non-validated orders");
+        
+        
+        
+        
 
         List<Order> registeredOrders = orderManager.getRegisteredOrders();
         assertFalse(registeredOrders.contains(currentOrder), "Order should not be in the registered list");

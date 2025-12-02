@@ -31,9 +31,9 @@ public class RestaurantTimeSlotManagementSteps {
         return startTime + "-" + endTime;
     }
 
-    // ============ BACKGROUND STEPS ============
+    
 
-    // ============ SCENARIO 1: Define slots ============
+    
 
     @When("the restaurant manager creates a time slot from {string} to {string} with capacity {int}")
     public void the_restaurant_manager_creates_a_time_slot_with_capacity(String startTime, String endTime,
@@ -57,7 +57,7 @@ public class RestaurantTimeSlotManagementSteps {
         assertEquals(expectedCapacity, ctx.restaurant.getCapacity(slot));
     }
 
-    // ============ SCENARIO 2: Block ============
+    
 
     @Given("a time slot from {string} to {string} exists with capacity {int}")
     public void a_time_slot_exists_with_capacity(String start, String end, int capacity) {
@@ -80,7 +80,7 @@ public class RestaurantTimeSlotManagementSteps {
                 "Time slot " + timeRange + " should not be available");
     }
 
-    // ============ SCENARIO 3: Unblock ============
+    
 
     @When("the restaurant manager unblocks the time slot {string}")
     public void the_restaurant_manager_unblocks_time_slot(String timeRange) {
@@ -103,7 +103,7 @@ public class RestaurantTimeSlotManagementSteps {
                 "Time slot " + timeRange + " should be available");
     }
 
-    // ============ SCENARIO 4: Prevent negative ============
+    
 
     @Then("the system should not allow negative capacity")
     public void the_system_should_not_allow_negative_capacity() {
@@ -113,7 +113,7 @@ public class RestaurantTimeSlotManagementSteps {
         }
     }
 
-    // ============ SCENARIO 5: View available ============
+    
 
     @When("the restaurant manager requests all available time slots")
     public void the_restaurant_manager_requests_all_available_time_slots() {
@@ -143,7 +143,7 @@ public class RestaurantTimeSlotManagementSteps {
         }
     }
 
-    // ============ SCENARIO 6: Update capacity ============
+    
 
     @When("the restaurant manager updates the time slot {string} capacity to {int}")
     public void the_restaurant_manager_updates_time_slot_capacity(String timeRange, int newCapacity) {
@@ -152,7 +152,7 @@ public class RestaurantTimeSlotManagementSteps {
         ctx.restaurant.setCapacity(slot, newCapacity);
     }
 
-    // ============ SCENARIO 7: No time slots configured ============
+    
 
     @Given("the restaurant has no time slots configured")
     public void the_restaurant_has_no_time_slots_configured() {
