@@ -13,6 +13,12 @@
   box-shadow: var(--shadow-sm);
 }
 
+.nav-container div{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 .nav-container p {
   font-weight: 800;
   font-size: 1.5rem;
@@ -37,6 +43,7 @@
   padding: 8px 16px;
   font-size: 0.95rem;
   font-weight: 600;
+  font-size: 30px;
   border-radius: var(--radius-full);
   border: 1px solid transparent;
   background-color: transparent;

@@ -31,7 +31,7 @@ echo "Starting Order Service (Port 8083)..."
 java -cp "$CP" fr.unice.polytech.services.OrderService &
 
 echo "Starting Frontend (Angular)..."
-(cd front/SophiaTech-Eats && ng serve) &
+(cd front/SophiaTech-Eats && npm start) &
 
 echo "All servers started. Press Ctrl+C to stop."
 wait

@@ -29,7 +29,7 @@ app-info-box {
   flex-direction: column;
   gap: var(--spacing-lg);
   justify-content: center;
-  width: 100%;
+  
 }
 
 .grey-action-btn {

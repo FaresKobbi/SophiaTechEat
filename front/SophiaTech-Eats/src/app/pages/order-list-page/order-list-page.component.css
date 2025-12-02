@@ -1,7 +1,7 @@
 .page-container {
   background-color: var(--bg-body);
   min-height: 100vh;
-  padding: var(--spacing-xl);
+  padding: 64px;
   font-family: var(--font-sans);
   display: flex;
   flex-direction: column;
@@ -10,17 +10,17 @@
 
 .header {
   width: 100%;
-  max-width: 900px;
+  max-width: 1800px;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 64px;
 }
 
 h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 4rem;
   text-transform: uppercase;
   color: var(--text-primary);
   font-weight: 800;
@@ -32,7 +32,7 @@ h1 {
   right: 0;
   background-color: var(--bg-surface);
   border: 1px solid #cbd5e1;
-  padding: 8px 20px;
+  padding: 16px 40px;
   font-family: var(--font-sans);
   font-weight: 600;
   text-transform: uppercase;
@@ -41,6 +41,7 @@ h1 {
   color: var(--text-secondary);
   transition: all 0.2s ease;
   border-radius: var(--radius-md);
+  font-size: 2rem;
 }
 
 .btn-back:hover {
@@ -52,13 +53,13 @@ h1 {
 .content-container {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-xl);
+  gap: 64px;
   width: 100%;
-  max-width: 900px;
+  max-width: 1800px;
 }
 
 .left-panel {
-  width: 300px;
+  width: 600px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,21 +67,22 @@ h1 {
 
 .right-panel {
   flex-grow: 1;
-  max-width: 500px;
+  max-width: 1000px;
 }
 
 .details-card {
   background-color: var(--bg-surface);
-  padding: var(--spacing-lg);
+  padding: 48px;
   box-shadow: var(--shadow-md);
   border-radius: var(--radius-md);
-  min-height: 300px;
+  min-height: 600px;
   border: 1px solid #f1f5f9;
+  font-size: 2rem;
 }
 
 .section-title {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 2.5rem;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: var(--spacing-sm);
   margin-top: 0;

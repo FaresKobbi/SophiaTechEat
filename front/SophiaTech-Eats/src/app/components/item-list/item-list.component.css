@@ -1,5 +1,9 @@
 /* app/components/item-list/item-list.component.css */
 
+p strong{
+  font-size: 25px;
+}
+
 .list-box {
   background-color: transparent;
   width: 100%;
@@ -29,6 +33,7 @@
   transition: all 0.2s ease;
   border: 1px solid transparent;
   display: flex;
+  font-size: 25px;
   flex-direction: column;
   gap: var(--spacing-sm);
 }

@@ -139,7 +139,7 @@ p {
   border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 35px;
   color: var(--text-secondary);
   transition: all 0.2s ease;
   text-transform: uppercase;
