@@ -26,6 +26,7 @@ app-info-box {
 
 .action-buttons-row {
   display: flex;
+  flex-direction: column;
   gap: var(--spacing-lg);
   justify-content: center;
   width: 100%;
@@ -162,4 +163,13 @@ app-info-box {
   opacity: 0.95;
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
+}
+
+
+.locations-container{
+  display: flex;
+  flex-direction: row;
+  gap: 35px;
+  justify-content: center;
+  align-items: center;
 }

@@ -1,5 +1,8 @@
 <div class="create-student-page-body">
+
+  <button class="btn-home" style="position: absolute;top: 20px;right: 20px;" routerLink="/">HOME PAGE</button>
   <div class="form-container">
+    <h1 class="home-title">SophiaTech Eats</h1>
     <div class="form-card">
       <label>First name:</label>
       <input type="text" [(ngModel)]="name" />
@@ -19,6 +22,5 @@
       {{ errorMessage }}
     </div>
 
-    <button class="home-page-button" routerLink="/">HOME PAGE</button>
   </div>
 </div>

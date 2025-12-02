@@ -1,8 +1,8 @@
 .page-container {
-  background-color: #d9d9d9;
+  background-color: var(--bg-body);
   min-height: 100vh;
-  padding: 30px;
-  font-family: Arial, sans-serif;
+  padding: var(--spacing-xl);
+  font-family: var(--font-sans);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,43 +10,48 @@
 
 .header {
   width: 100%;
-  max-width: 1000px; 
-  position: relative;       
+  max-width: 1000px;
+  position: relative;
   display: flex;
-  justify-content: center;  
+  justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-xl);
 }
 
 h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 2rem;
   text-transform: uppercase;
+  color: var(--text-primary);
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .btn-back {
   position: absolute;
   right: 0;
-
-  background-color: #b0b0b0;
-  border: none;
-  padding: 10px 20px;
-  font-family: 'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 900;
+  background-color: var(--bg-surface);
+  border: 1px solid #cbd5e1;
+  padding: 8px 20px;
+  font-family: var(--font-sans);
+  font-weight: 600;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   text-decoration: none;
-  color: black;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
 }
 
 .btn-back:hover {
-  background-color: #999999;
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--text-primary);
 }
 
 .content-container {
   display: flex;
-  gap: 30px;
+  gap: var(--spacing-xl);
   width: 100%;
   max-width: 1000px;
   align-items: flex-start;
@@ -54,6 +59,11 @@ h1 {
 
 .form-section {
   flex: 1;
+  background: var(--bg-surface);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid #f1f5f9;
 }
 
 .suggestion-section {

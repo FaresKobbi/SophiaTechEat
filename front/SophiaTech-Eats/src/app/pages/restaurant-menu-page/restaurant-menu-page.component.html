@@ -3,7 +3,7 @@
   <nav class="nav-container">
     <p>Hello {{studentName}} {{studentSurname}}</p>
 
-    <button class="home-page-button" style="font-size: 25px;height: 79px" routerLink="/student/homepage">HOME PAGE</button>
+    <button class="btn-home" routerLink="/student/homepage">HOME PAGE</button>
   </nav>
 
   <div class="menu-page-container">
@@ -51,9 +51,7 @@
             <span>TOTAL</span>
             <span>{{ cartTotal | currency:'EUR' }}</span>
           </div>
-          <button class="btn-checkout"
-                  [disabled]="cartItems.length === 0"
-                  (click)="proceedToCheckout()">
+          <button class="btn-checkout" [disabled]="cartItems.length === 0" (click)="proceedToCheckout()">
             PROCEED TO CHECKOUT
           </button>
         </div>
@@ -62,11 +60,8 @@
     </div>
   </div>
 
-  <app-dish-detail-modal
-    *ngIf="isModalOpen && selectedDishForModal"
-    [dish]="selectedDishForModal"
-    (close)="closeModal()"
-    (addToOrder)="onAddToCartFromModal($event)">
+  <app-dish-detail-modal *ngIf="isModalOpen && selectedDishForModal" [dish]="selectedDishForModal"
+    (close)="closeModal()" (addToOrder)="onAddToCartFromModal($event)">
   </app-dish-detail-modal>
 
 </div>

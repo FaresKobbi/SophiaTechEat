@@ -4,7 +4,7 @@
   background-color: transparent;
   width: 100%;
   height: auto;
-  max-height: calc(100vh - 500px);
+  max-height: calc(100vh - 600px);
   min-height: calc(100vh - 500px);
   /* Constrain height to viewport minus header/filters */
   padding: var(--spacing-sm);
@@ -37,6 +37,12 @@
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
   border-color: rgba(99, 102, 241, 0.2);
+}
+
+.list-item.selected {
+  border-color: var(--primary-color);
+  background-color: var(--bg-surface-hover);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 /* Typography for list items (assuming standard HTML structure inside) */

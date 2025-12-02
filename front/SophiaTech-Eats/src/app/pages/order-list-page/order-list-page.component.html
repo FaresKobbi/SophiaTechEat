@@ -10,12 +10,8 @@
       <div *ngIf="isLoading">Loading orders...</div>
       <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
-      <app-item-list
-        *ngIf="!isLoading && !errorMessage"
-        [title]="'CUSTOMERS'"
-        [items]="listItems"
-        [displayKey]="'displayLabel'"
-        (itemClicked)="onOrderSelect($event)">
+      <app-item-list *ngIf="!isLoading && !errorMessage" [title]="'CUSTOMERS'" [items]="listItems"
+        [displayKey]="'displayLabel'" [selectedItem]="selectedOrder" (itemClicked)="onOrderSelect($event)">
       </app-item-list>
     </div>
 

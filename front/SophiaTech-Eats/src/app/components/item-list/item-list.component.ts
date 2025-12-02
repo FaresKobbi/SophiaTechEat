@@ -1,4 +1,4 @@
-import {Component, Input, Output,EventEmitter} from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,11 +11,12 @@ import { CommonModule } from '@angular/common';
 export class ListComponent {
   @Input() title: string = '';
   @Input() items: any[] = [];
-  @Input() displayKey: string | string[] = 'name'; 
+  @Input() displayKey: string | string[] = 'name';
+  @Input() selectedItem: any;
   @Output() itemClicked = new EventEmitter<any>();
 
   onItemClick(item: any): void {
-      this.itemClicked.emit(item);
+    this.itemClicked.emit(item);
   }
 
   getDisplayValue(item: any): string {
@@ -23,7 +24,7 @@ export class ListComponent {
       const values = this.displayKey.map(key => item[key]);
       return values.filter(v => v !== null && v !== undefined).join(' ') || 'N/A';
     }
-    
+
     return item[this.displayKey] || 'N/A';
   }
 

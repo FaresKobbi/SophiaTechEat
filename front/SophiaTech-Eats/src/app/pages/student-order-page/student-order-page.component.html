@@ -4,13 +4,10 @@
 
   <main class="main-account-container">
     <div class="content-wrapper">
-      
+
       <div class="list-section">
-        <app-item-list 
-          [title]="'My Past Orders'" 
-          [items]="displayOrders" 
-          [displayKey]="'displayLabel'"
-          (itemClicked)="onOrderSelect($event)">
+        <app-item-list [title]="'My Past Orders'" [items]="displayOrders" [displayKey]="'displayLabel'"
+          [selectedItem]="selectedOrder" (itemClicked)="onOrderSelect($event)">
         </app-item-list>
       </div>
 
@@ -24,8 +21,9 @@
           <h3>{{ selectedOrder.restaurantName }}</h3>
           <p><strong>Order ID:</strong> {{ selectedOrder.orderId }}</p>
           <p><strong>Total:</strong> {{ selectedOrder.amount | currency:'EUR' }}</p>
-          <p><strong>Payment:</strong> {{ selectedOrder.paymentMethod }}</p> <hr>
-          
+          <p><strong>Payment:</strong> {{ selectedOrder.paymentMethod }}</p>
+          <hr>
+
           <h4>Items:</h4>
           <ul>
             <li *ngFor="let dish of selectedOrder.dishes">

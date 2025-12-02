@@ -1,11 +1,7 @@
 <div class="list-box">
   <p><strong>{{ title.toUpperCase() }}:</strong></p>
   <p *ngIf="items.length === 0" style="color: gray; font-style: italic;">No data available</p>
-  <p
-    *ngFor="let item of items"
-    (click)="onItemClick(item)"
-    class="list-item"
-  >
+  <p *ngFor="let item of items" (click)="onItemClick(item)" class="list-item" [class.selected]="item === selectedItem">
     {{ getDisplayValue(item) }}
   </p>
 </div>

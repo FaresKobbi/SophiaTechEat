@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RestaurantService } from '../../services/restaurant/restaurant.service';
 
 @Component({
@@ -13,7 +14,7 @@ import { RestaurantService } from '../../services/restaurant/restaurant.service'
 export class CreateRestaurantFormComponent {
   cuisineTypes: string[] = [];
 
-  constructor(private restaurantService: RestaurantService) { }
+  constructor(private restaurantService: RestaurantService, private router: Router) { }
 
   form = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -41,6 +42,7 @@ export class CreateRestaurantFormComponent {
       next: (newRestaurant) => {
         console.log('Restaurant créé avec succès:', newRestaurant);
         this.form.reset();
+        this.router.navigate(["/"]);
       },
       error: (err) => console.error('Erreur de création:', err)
     });

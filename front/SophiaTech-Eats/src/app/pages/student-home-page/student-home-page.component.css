@@ -1,9 +1,17 @@
+.student-home-page-body {
+  background-color: var(--bg-body);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .student-home-page-main {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-xl);
   width: 100%;
+  padding: var(--spacing-xl);
 }
 
 .restaurant-filters-container {

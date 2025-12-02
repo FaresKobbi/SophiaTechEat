@@ -68,7 +68,7 @@
 
       <div class="locations-container">
         <app-item-list [title]="'Delivery Locations'" [items]="locations" [displayKey]="locationDisplayKey"
-          (itemClicked)="onLocationSelect($event)">
+          [selectedItem]="selectedLocation" (itemClicked)="onLocationSelect($event)">
         </app-item-list>
         <div class="action-buttons-row">
           <button class="grey-action-btn" (click)="deleteSelectedLocation()">

@@ -11,12 +11,8 @@
       <div *ngIf="isLoading" class="loading-state">Loading dishes...</div>
       <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
 
-      <app-item-list
-        *ngIf="!isLoading && !errorMessage"
-        [title]="'DISHES'"
-        [items]="dishes"
-        [displayKey]="'name'"
-        (itemClicked)="onDishSelect($event)">
+      <app-item-list *ngIf="!isLoading && !errorMessage" [title]="'DISHES'" [items]="dishes" [displayKey]="'name'"
+        [selectedItem]="selectedDish" (itemClicked)="onDishSelect($event)">
       </app-item-list>
     </div>
 
@@ -34,10 +30,7 @@
           </div>
         </div>
 
-        <button
-          class="btn update-btn"
-          [disabled]="!selectedDish"
-          (click)="navigateToUpdateDish()">
+        <button class="btn update-btn" [disabled]="!selectedDish" (click)="navigateToUpdateDish()">
           UPDATE
         </button>
       </div>

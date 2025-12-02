@@ -1,23 +1,20 @@
 <div class="home-body">
   <div class="container">
-    <div class="card">
-      <button class="btn" routerLink="/create-student-page">CREATE STUDENT</button>
-      <app-item-list 
-          [title]="'Students'" 
-          [items]="students"
-          [displayKey]="['name', 'surname']" 
+    <h1 class="home-title">SophiaTech Eats</h1>
+    <div class="cards-wrapper">
+      <div class="card">
+        <button class="btn" routerLink="/create-student-page">CREATE STUDENT</button>
+        <app-item-list [title]="'Students'" [items]="students" [displayKey]="['name', 'surname']"
           (itemClicked)="onStudentSelect($event)">
-      </app-item-list>
-    </div>
+        </app-item-list>
+      </div>
 
-    <div class="card">
-      <button class="btn" routerLink="/create-restaurant-page">CREATE RESTAURANT</button>
-      <app-item-list
-          [title]="'Restaurants'"
-          [items]="restaurantsForList"
-          [displayKey]="'restaurantName'"
+      <div class="card">
+        <button class="btn" routerLink="/create-restaurant-page">CREATE RESTAURANT</button>
+        <app-item-list [title]="'Restaurants'" [items]="restaurantsForList" [displayKey]="'restaurantName'"
           (itemClicked)="onRestaurantSelect($event)">
-      </app-item-list>
+        </app-item-list>
+      </div>
     </div>
   </div>
 </div>
