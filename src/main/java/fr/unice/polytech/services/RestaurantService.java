@@ -23,6 +23,10 @@ import fr.unice.polytech.suggestion.HybridSuggestionService;
 import java.io.IOException;
 import java.util.List;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import fr.unice.polytech.restaurants.OpeningHours;
+
 public class RestaurantService {
         private static final RestaurantManager restaurantManager = new RestaurantManager();
         private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -40,6 +44,9 @@ public class RestaurantService {
                                 "Fresh sushi roll with crab, avocado, and cucumber", 8.99);
                 restaurantManager.getRestaurant("Pizza Palace").addDish("Margherita Pizza",
                                 "Classic pizza with tomato sauce, mozzarella, and basil", 12.50);
+                
+                addOpeningHoursToRestaurant(restaurantManager.getRestaurant("Pizza Palace"));
+                addOpeningHoursToRestaurant(restaurantManager.getRestaurant("Sushi Shop"));
 
                 int port = 8081;
                 SimpleServer server = new SimpleServer(port);
@@ -82,6 +89,7 @@ public class RestaurantService {
                 addDishToRestaurant(italian, "Tiramisu", "Coffee-flavoured Italian dessert", 7.00,
                                 DishType.CAKE, DishCategory.DESSERT, List.of(DietaryLabel.VEGETARIAN));
 
+                addOpeningHoursToRestaurant(italian);
                 restaurantManager.addRestaurant(italian);
 
                 Restaurant japanese = new Restaurant("Tokyo Zen");
@@ -99,6 +107,7 @@ public class RestaurantService {
                                 DishType.ICE_CREAM, DishCategory.DESSERT,
                                 List.of(DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
 
+                addOpeningHoursToRestaurant(japanese);
                 restaurantManager.addRestaurant(japanese);
 
                 Restaurant american = new Restaurant("Uncle Sam's BBQ");
@@ -114,6 +123,7 @@ public class RestaurantService {
                                 DishType.DRINK, DishCategory.DRINK,
                                 List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
 
+                addOpeningHoursToRestaurant(american);
                 restaurantManager.addRestaurant(american);
 
                 Restaurant french = new Restaurant("Le Petit Gourmet");
@@ -126,6 +136,7 @@ public class RestaurantService {
                                 DishType.GENERAL, DishCategory.MAIN_COURSE,
                                 List.of(DietaryLabel.VEGAN, DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
 
+                addOpeningHoursToRestaurant(french);
                 restaurantManager.addRestaurant(french);
 
                 Restaurant indian = new Restaurant("Bollywood Spice");
@@ -139,6 +150,7 @@ public class RestaurantService {
                                 DishType.GENERAL, DishCategory.MAIN_COURSE,
                                 List.of(DietaryLabel.VEGETARIAN, DietaryLabel.GLUTEN_FREE));
 
+                addOpeningHoursToRestaurant(indian);
                 restaurantManager.addRestaurant(indian);
         }
 
@@ -156,6 +168,20 @@ public class RestaurantService {
                                 restaurant.addDietaryLabel(label);
                         }
                 }
+        }
+
+        private static void addOpeningHoursToRestaurant(Restaurant restaurant) {
+            for (DayOfWeek day : List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)) {
+                // Lunch: 11:30 - 14:30
+                OpeningHours lunch = new OpeningHours(day, LocalTime.of(11, 30), LocalTime.of(14, 30));
+                lunch.getSlots().forEach((slot, cap) -> lunch.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), 10));
+                restaurant.addOpeningHours(lunch);
+    
+                // Dinner: 18:30 - 22:30
+                OpeningHours dinner = new OpeningHours(day, LocalTime.of(18, 30), LocalTime.of(22, 30));
+                dinner.getSlots().forEach((slot, cap) -> dinner.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), 10));
+                restaurant.addOpeningHours(dinner);
+            }
         }
 
 }

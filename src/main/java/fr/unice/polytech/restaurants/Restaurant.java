@@ -148,11 +148,6 @@ public class Restaurant extends UserAccount {
         if (openingHours == null) {
             throw new IllegalArgumentException("OpeningHours cannot be null");
         }
-        for (OpeningHours existing : this.openingHours) {
-            if (existing.getDay() == openingHours.getDay()) {
-                throw new IllegalArgumentException("Opening hours for " + openingHours.getDay() + " already exist");
-            }
-        }
         this.openingHours.add(openingHours);
     }
 
