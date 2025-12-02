@@ -4,14 +4,20 @@
   background-color: transparent;
   width: 100%;
   height: auto;
-  padding: 0;
+  max-height: calc(100vh - 500px);
+  min-height: calc(100vh - 500px);
+  /* Constrain height to viewport minus header/filters */
+  padding: var(--spacing-sm);
+  /* Add padding for scrollbar space */
   box-shadow: none;
   border-radius: 0;
-  max-height: none;
-  overflow: visible;
+  overflow-y: auto;
+  /* Enable vertical scrolling */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-lg);
+  align-content: start;
+  /* Prevent grid items from stretching to fill height */
 }
 
 .list-item {
