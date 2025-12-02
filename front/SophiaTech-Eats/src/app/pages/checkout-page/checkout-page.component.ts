@@ -103,13 +103,16 @@ export class CheckoutPageComponent implements OnInit {
             next: (res) => {
                 alert('Order placed successfully!');
                 this.cartService.clearCart();
-                this.studentService.refreshStudent(student.studentID).subscribe();
-                this.router.navigate(['/student/orders']);
+                
+                // Refresh student data (balance) and then navigate
+                this.studentService.refreshStudent(student.studentID).subscribe(() => {
+                    this.router.navigate(['/student/orders']);
+                });
             },
             error: (err) => {
                 console.error(err);
-                
                 alert('Failed to place order: ' + (err.error?.error || 'Unknown error'));
+                this.router.navigate(['/student/orders']);
             }
         });
     }

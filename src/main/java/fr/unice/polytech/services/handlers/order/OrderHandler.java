@@ -153,7 +153,7 @@ public class OrderHandler implements HttpHandler {
                 orderManager.initiatePayment(order, orderRequest.paymentMethod);
 
                 if (order.getOrderStatus() == fr.unice.polytech.orderManagement.OrderStatus.CANCELED) {
-                    throw new RuntimeException("Payment failed");
+                    sendResponse(exchange, 409, "{\"error\":\"Payment failed\"}");
                 }
 
                 String jsonResponse = objectMapper.writeValueAsString(mapToResponse(order));

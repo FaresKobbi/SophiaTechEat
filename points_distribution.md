@@ -1,9 +1,8 @@
-# Répartition des points
+# Points Distribution
 
-*Expliquez ici la répartition des points au sein de l'équipe.*
 
-| Membre | Rôle | Points |
+| Member | Role | Points |
 |---|---|---|
-| Fares Kobbi | SA/QA | |
-| Youssef Ben Mzoughia | SA/PO | |
-| Younes Hammoud | OPS | |
+| Youssef Ben Mzoughia | SA/PO | 100|
+| Fares Kobbi | SA/QA | 100|
+| Younes Hammoud | OPS |100 |

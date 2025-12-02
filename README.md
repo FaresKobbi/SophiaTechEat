@@ -1,18 +1,25 @@
-# SopiaTech Eats – Team I-1
+# SophiaTech Eats – Team I-1
 
-## Équipe projet
-- Fares Kobbi – Software Architect and Quality Assurance(SA/QA)
+## Project Team
+- Fares Kobbi – Software Architect and Quality Assurance (SA/QA)
 - Youssef Ben Mzoughia – Software Architect and Product Owner (SA/PO)
 - Younes Hammoud – Operations (OPS)
 
-## Installer et lancer le projet
+## Prerequisites
+- **Java**: JDK 17
+- **Maven**: 3.9+
+- **Node.js**: LTS recommended
+- **Angular CLI**: `npm install -g @angular/cli`
+- **Frontend Dependencies**: Run `npm install` in `front/SophiaTech-Eats`
 
-### Lancement rapide (Tout-en-un)
-Pour lancer tous les services (Backend + Frontend) en une seule commande :
+## Install and Run the Project
+
+### Quick Start (All-in-One)
+To launch all services (Backend + Frontend) with a single command:
 ```bash
 ./launch_all.sh
 ```
-Cela démarrera :
+This will start:
 - API Gateway (Port 8080)
 - Restaurant Service (Port 8081)
 - Student Account Service (Port 8082)
@@ -20,50 +27,44 @@ Cela démarrera :
 - Frontend Angular (Port 4200)
 
 ### Backend
-1. **Prérequis**
-    - JDK 17
-    - Maven 3.9+
-2. **Cloner le dépôt**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/PNS-Conception/ste-25-26-team-i-1.git
    cd ste-25-26-team-i-1
    ```
-3. **Construire et exécuter les tests**
+2. **Build and run tests**
    ```bash
    mvn clean package
    mvn test
    ```
 
 ### Frontend
-1. **Prérequis**
-    - Node.js (LTS recommandé)
-    - Angular CLI (`npm install -g @angular/cli`)
-2. **Installation des dépendances**
+1. **Install dependencies**
    ```bash
    cd front/SophiaTech-Eats
    npm install
    ```
-3. **Lancer l'application**
+2. **Run the application**
    ```bash
    ng serve
    ```
-   L'application sera accessible sur `http://localhost:4200/`.
+   The application will be accessible at `http://localhost:4200/`.
 
-## Structure du projet
+## Project Structure
 ```
-├── front/         # Code source du Frontend (Angular)
+├── front/         # Frontend source code (Angular)
 ├── src/
-│   ├── main/      # Code applicatif Backend (Java)
-│   └── test/      # Jeux de tests JUnit & Cucumber
-├── pom.xml        # Configuration Maven (JDK 17, Cucumber 7, JUnit 5)
-└── README.md      # Présentation du projet
+│   ├── main/      # Backend application code (Java)
+│   └── test/      # JUnit & Cucumber test suites
+├── pom.xml        # Maven configuration (JDK 17, Cucumber 7, JUnit 5)
+└── README.md      # Project presentation
 ```
 
-Cette structure standard permet de séparer clairement le code de production et les tests. Les dépendances (Cucumber, JUnit, etc.) sont centralisées dans le `pom.xml`.
+This standard structure allows for clear separation of production code and tests. Dependencies (Cucumber, JUnit, etc.) are centralized in `pom.xml`.
 
-## Documentation supplémentaire
-- [Visualisation du travail (Captures d'écran)](screenshots.md)
-- [Répartition des points](points_distribution.md)
+## Additional Documentation
+- [Work Visualization (Screenshots)](screenshots.md)
+- [Points Distribution](points_distribution.md)
 
-## Tableau Kanban de l'équipe
-[Github – Kanban SopiaTech Eats Team I-1](https://github.com/orgs/PNS-Conception/projects/91)
+## Team Kanban Board
+[Github – Kanban SophiaTech Eats Team I-1](https://github.com/orgs/PNS-Conception/projects/91)
