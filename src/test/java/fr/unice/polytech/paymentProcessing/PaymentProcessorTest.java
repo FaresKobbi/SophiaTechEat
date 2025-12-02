@@ -1,13 +1,14 @@
+
 package fr.unice.polytech.paymentProcessing;
 
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.orderManagement.OrderStatus;
 import fr.unice.polytech.users.StudentAccount;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-
 
 class PaymentProcessorTest {
 
@@ -25,15 +26,14 @@ class PaymentProcessorTest {
         StudentAccount student = new StudentAccount.Builder(NAME, SURNAME)
                 .email(EMAIL)
                 .studentId(ID)
-                .bankInfo("3151 2136 8946 4151", 401, 5,28)
+                .bankInfo("3151 2136 8946 4151", 401, 5, 28)
                 .build();
 
-        order = new Order.Builder(student).build();
+        order = new Order.Builder(student.getStudentID()).build();
 
         paymentService = mock(IPaymentService.class);
         processor = new PaymentProcessor(order, paymentService);
     }
-
 
     @Test
     void processPayment_ShouldValidate_OnFirstAttempt() {
@@ -86,7 +86,7 @@ class PaymentProcessorTest {
                 .email("other." + EMAIL)
                 .studentId(ID + "1")
                 .build();
-        Order otherOrder = new Order.Builder(otherStudent).build();
+        Order otherOrder = new Order.Builder(otherStudent.getStudentID()).build();
 
         when(paymentService.processExternalPayment(otherOrder)).thenReturn(true);
 
@@ -97,4 +97,3 @@ class PaymentProcessorTest {
         verify(paymentService, never()).processExternalPayment(order);
     }
 }
-

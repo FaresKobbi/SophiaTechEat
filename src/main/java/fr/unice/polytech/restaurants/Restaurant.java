@@ -1,84 +1,80 @@
 package fr.unice.polytech.restaurants;
 
-import fr.unice.polytech.dishes.Dish;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.unice.polytech.dishes.*;
 
-import fr.unice.polytech.dishes.DishType;
-import fr.unice.polytech.dishes.DishCategory;
-import fr.unice.polytech.orderManagement.Order;
 
 import fr.unice.polytech.dishes.DishType;
 import fr.unice.polytech.users.UserAccount;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.*;
 
 public class Restaurant extends UserAccount {
+    private String restaurantId;
     private String restaurantName;
     private List<Dish> dishes;
-    private List<Order> orders;
-   //Simple initialisation 
+    private List<String> orders;
     private List<OpeningHours> openingHours;
-    private Map<TimeSlot, Integer> capacityByTimeSlot;
-    private EstablishmentType establishmentType;
-    private DishType cuisineType;
+    private CuisineType cuisineType;
+    private Set<DietaryLabel> availableDietaryLabels = new HashSet<>();
+    @JsonIgnore
     private final DishManager dishManager = new DishManager();
 
-
-
-
-   //Simple initialisation
     public Restaurant(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
         }
+        this.restaurantId = UUID.randomUUID().toString();
         this.restaurantName = restaurantName;
         this.dishes = new ArrayList<>();
         orders = new ArrayList<>();
-        this.capacityByTimeSlot = new HashMap<>();
         this.openingHours = new ArrayList<>();
+        this.cuisineType = CuisineType.GENERAL;
     }
+
     
     
-    //Private constructor for Builder pattern.
-    //Avoid public Restaurant(String restaurantName, List<Dish> dishes, List<TimeSlot> availableTimeSlots) {..}
+    
     private Restaurant(Builder builder) {
+        this.restaurantId = UUID.randomUUID().toString();
         this.restaurantName = builder.restaurantName;
         this.dishes = new ArrayList<>(builder.dishes);
         orders = new ArrayList<>();
-        this.capacityByTimeSlot = new HashMap<>();
-        this.cuisineType = builder.cuisineType;
         this.openingHours = new ArrayList<>(builder.openingHours);
+        this.cuisineType = builder.cuisineType != null ? builder.cuisineType : CuisineType.GENERAL;
     }
-    
 
-
-    
     public String getRestaurantName() {
         return restaurantName;
     }
+
     
-    
-    //return a copy of the dishes/TimeSlot list to prevent external modification.
     public List<Dish> getDishes() {
         return new ArrayList<>(dishes);
     }
-    
-   
+
+    public void setAvailableDietaryLabels(Set<DietaryLabel> availableDietaryLabels) {
+        this.availableDietaryLabels = availableDietaryLabels;
+    }
+
+    public Set<DietaryLabel> getAvailableDietaryLabels() {
+        return availableDietaryLabels;
+    }
+
     public List<TimeSlot> getAvailableTimeSlots() {
         List<TimeSlot> availableSlots = new ArrayList<>();
-        for (Map.Entry<TimeSlot, Integer> entry : capacityByTimeSlot.entrySet()) {
-            if (entry.getValue() > 0) {
-                availableSlots.add(entry.getKey());
-            }
+        for (OpeningHours oh : openingHours) {
+            oh.getSlots().forEach((slot, capacity) -> {
+                if (capacity > 0) {
+                    availableSlots.add(slot);
+                }
+            });
         }
         return availableSlots;
     }
-    
-   
-    
+
     public void setRestaurantName(String restaurantName) {
         if (restaurantName == null || restaurantName.isEmpty()) {
             throw new IllegalArgumentException("Restaurant name cannot be null or empty");
@@ -86,25 +82,59 @@ public class Restaurant extends UserAccount {
         this.restaurantName = restaurantName;
     }
 
-
-     //======BLOCK A TIME SLOTS MANAGEMENT METHODS===========
-    public void blockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        decreaseCapacity(slot);
-    }
-
-    public void unblockTimeSlot(TimeSlot slot){
-        if(slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        increaseCapacity(slot);
-    }
-
-
-    //======= Capacity by slot =====
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     public void setCapacity(TimeSlot slot, int capacity) {
-        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
-        capacityByTimeSlot.put(slot, capacity);
+        if (slot == null)
+            throw new IllegalArgumentException("TimeSlot cannot be null");
+        if (capacity < 0)
+            throw new IllegalArgumentException("Capacity cannot be negative");
+
+        boolean found = false;
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), capacity);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            
+            Optional<OpeningHours> existingOh = openingHours.stream()
+                    .filter(oh -> oh.getDay() == slot.getDayOfWeek()
+                            || (slot.getDayOfWeek() == null && oh.getDay() == DayOfWeek.MONDAY))
+                    .findFirst();
+
+            if (existingOh.isPresent()) {
+                
+                
+                TimeSlot slotToAdd = slot;
+                if (slot.getDayOfWeek() == null) {
+                    slotToAdd = new TimeSlot(existingOh.get().getDay(), slot.getStartTime(), slot.getEndTime());
+                }
+                existingOh.get().addSlot(slotToAdd, capacity);
+            } else {
+                
+                DayOfWeek day = slot.getDayOfWeek() != null ? slot.getDayOfWeek() : DayOfWeek.MONDAY;
+                OpeningHours oh = new OpeningHours(day, slot.getStartTime(), slot.getEndTime());
+                oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), capacity);
+                this.addOpeningHours(oh);
+            }
+        }
     }
 
     public void setOpeningHours(List<OpeningHours> openingHours) {
@@ -114,18 +144,11 @@ public class Restaurant extends UserAccount {
         this.openingHours = new ArrayList<>(openingHours);
     }
 
-    public void addOpeningHours(OpeningHours newOpeningHours) {
-        if (newOpeningHours == null) {
-            throw new IllegalArgumentException("Opening hours cannot be null.");
+    public void addOpeningHours(OpeningHours openingHours) {
+        if (openingHours == null) {
+            throw new IllegalArgumentException("OpeningHours cannot be null");
         }
-        for (OpeningHours existingHours : this.openingHours) {
-            if (existingHours.getDay() == newOpeningHours.getDay()) {
-                throw new IllegalArgumentException(
-                        "Opening hours for " + newOpeningHours.getDay() + " already exist."
-                );
-            }
-        }
-        this.openingHours.add(newOpeningHours);
+        this.openingHours.add(openingHours);
     }
 
     public void updateOpeningHours(OpeningHours updatedOpeningHours) {
@@ -141,43 +164,108 @@ public class Restaurant extends UserAccount {
         }
 
         if (!dayFound) {
-            throw new IllegalArgumentException("Cannot update opening hours: No entry found for " + updatedOpeningHours.getDay());
+            throw new IllegalArgumentException(
+                    "Cannot update opening hours: No entry found for " + updatedOpeningHours.getDay());
         }
 
         this.openingHours.removeIf(oh -> oh.getDay() == updatedOpeningHours.getDay());
         this.openingHours.add(updatedOpeningHours);
     }
 
+    public void updateSlotCapacity(DayOfWeek day, LocalTime start, LocalTime end, int capacity) {
+        TimeSlot target = new TimeSlot(day, start, end);
+        boolean found = false;
 
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(target)) {
+                oh.setSlotCapacity(start, end, capacity);
+                found = true;
+                break;
+            }
+        }
 
-    public int getCapacity(TimeSlot slot) {
-        return capacityByTimeSlot.getOrDefault(slot, 0);
+        if (!found) {
+            throw new IllegalArgumentException(
+                    "Slot " + day + " " + start + "-" + end + " does not exist in any opening hours");
+        }
     }
 
     public Map<TimeSlot, Integer> getAllCapacities() {
-        return new HashMap<>(capacityByTimeSlot);
+        Map<TimeSlot, Integer> globalRequest = new HashMap<>();
+        for (OpeningHours oh : openingHours) {
+            globalRequest.putAll(oh.getSlots());
+        }
+        return globalRequest;
+    }
+
+    public void addDietaryLabel(DietaryLabel label) {
+        if (label == null) {
+            throw new IllegalArgumentException("Dietary label cannot be null");
+        }
+        availableDietaryLabels.add(label);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+
+    public int getCapacity(TimeSlot slot) {
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                return oh.getSlots().get(slot);
+            }
+        }
+        return 0;
+    }
+
+    public void blockTimeSlot(TimeSlot slot) {
+        if (slot == null)
+            throw new IllegalArgumentException("TimeSlot cannot be null");
+        decreaseCapacity(slot);
+    }
+
+    public void unblockTimeSlot(TimeSlot slot) {
+        if (slot == null)
+            throw new IllegalArgumentException("TimeSlot cannot be null");
+        increaseCapacity(slot);
     }
 
     public void decreaseCapacity(TimeSlot slot) {
-        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        if (!capacityByTimeSlot.containsKey(slot)) return;
-        int capacity= capacityByTimeSlot.get(slot);
-        if (capacity > 0) { // Prevent negative capacity
-            capacityByTimeSlot.put(slot, capacity - 1);
-        } else {
-            System.out.println(" No capacity left for slot " + slot);
+        if (slot == null)
+            throw new IllegalArgumentException("TimeSlot cannot be null");
+
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                int currentCapacity = oh.getSlots().get(slot);
+
+                if (currentCapacity > 0) {
+                    oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), currentCapacity - 1);
+                } else {
+                    System.out.println("No capacity left for slot " + slot);
+                }
+                return;
+            }
         }
     }
 
     public void increaseCapacity(TimeSlot slot) {
-        if (slot == null) throw new IllegalArgumentException("TimeSlot cannot be null");
-        capacityByTimeSlot.put(slot, capacityByTimeSlot.getOrDefault(slot, 0) + 1);
+        if (slot == null)
+            throw new IllegalArgumentException("TimeSlot cannot be null");
+
+        for (OpeningHours oh : openingHours) {
+            if (oh.contains(slot)) {
+                int currentCapacity = oh.getSlots().get(slot);
+                oh.setSlotCapacity(slot.getStartTime(), slot.getEndTime(), currentCapacity + 1);
+                return;
+            }
+        }
     }
 
-
-
-
-    // ========== DISH MANAGEMENT METHODS ==========
+    
     public void addDish(String name, String description, double price) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Dish name cannot be null or empty");
@@ -193,98 +281,119 @@ public class Restaurant extends UserAccount {
     }
 
     public void updateDish(Dish oldDish, String description) {
-        if (!dishes.contains(oldDish)){
+        if (!dishes.contains(oldDish)) {
             throw new IllegalArgumentException("Dish not found in the menu");
         }
         if (description == null) {
             throw new IllegalArgumentException("Dish description cannot be null");
         }
 
-        dishManager.updateDescription(oldDish,description);
+        dishManager.updateDescription(oldDish, description);
     }
 
-
     public void updateDish(Dish oldDish, int price) {
-        if (!dishes.contains(oldDish)){
+        if (!dishes.contains(oldDish)) {
             throw new IllegalArgumentException("Dish not found in the menu");
         }
-        if (price<0) {
+        if (price < 0) {
             throw new IllegalArgumentException("Dish description cannot be null");
         }
 
-        dishManager.updatePrice(oldDish,price);
+        dishManager.updatePrice(oldDish, price);
     }
 
-
     public void updateDish(Dish oldDish, DishCategory dishCategory) {
-        if (!dishes.contains(oldDish)){
+        if (!dishes.contains(oldDish)) {
             throw new IllegalArgumentException("Dish not found in the menu");
         }
         if (dishCategory == null) {
             throw new IllegalArgumentException("Dish category cannot be null");
         }
 
-        dishManager.updateDishCategory(oldDish,dishCategory);
+        dishManager.updateDishCategory(oldDish, dishCategory);
     }
 
     public void updateDish(Dish oldDish, DishType dishType) {
-        if (!dishes.contains(oldDish)){
+        if (!dishes.contains(oldDish)) {
             throw new IllegalArgumentException("Dish not found in the menu");
         }
         if (dishType == null) {
             throw new IllegalArgumentException("Dish category cannot be null");
         }
 
-        dishManager.updateDishType(oldDish,dishType);
+        dishManager.updateDishType(oldDish, dishType);
     }
 
-
-
-
-    public void addOrder(Order order) {
-        orders.add(order);
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
     }
+
+    public void setDishes(List<Dish> dishes) {
+        this.dishes = dishes;
+    }
+
+    public void setOrders(List<String> orders) {
+        this.orders = orders;
+    }
+
+    
+    
     
     
 
+    public void setCuisineType(CuisineType cuisineType) {
+        this.cuisineType = cuisineType;
+    }
 
+    public List<String> getOrders() {
+        return orders;
+    }
+
+    public CuisineType getCuisineType() {
+        return cuisineType;
+    }
+
+    public DishManager getDishManager() {
+        return dishManager;
+    }
+
+    public void addOrder(String orderId) {
+        orders.add(orderId);
+    }
+
+    public String getRestaurantId() {
+        return restaurantId;
+    }
 
     @Override
     public String toString() {
         return "Restaurant{" +
                 "restaurantName='" + restaurantName + '\'' +
                 ", dishCount=" + dishes.size() +
-                // ", availableTimeSlotsCount=" + getAvailableTimeSlotCount() +
+                
                 '}';
     }
-    
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Restaurant that = (Restaurant) o;
         return restaurantName.equals(that.restaurantName);
     }
-    
+
     @Override
     public int hashCode() {
         return restaurantName.hashCode();
-    }
-
-
-    public DishType getCuisineType() {
-        return cuisineType;
     }
 
     public List<OpeningHours> getOpeningHours() {
         return openingHours;
     }
 
-    /**
-     * Retire un plat du menu par son nom
-     * @param dishName Le nom du plat à retirer
-     * @throws IllegalArgumentException si le nom est null ou vide
-     */
+    
     public void removeDish(String dishName) {
         if (dishName == null || dishName.isEmpty()) {
             throw new IllegalArgumentException("Dish name cannot be null or empty");
@@ -292,12 +401,7 @@ public class Restaurant extends UserAccount {
         dishes.removeIf(dish -> dish.getName().equals(dishName));
     }
 
-    /**
-     * Recherche un plat dans le menu par son nom
-     * @param dishName Le nom du plat recherché
-     * @return Le plat trouvé ou null si aucun plat ne correspond
-     * @throws IllegalArgumentException si le nom est null ou vide
-     */
+    
     public Dish findDishByName(String dishName) {
         if (dishName == null || dishName.isEmpty()) {
             throw new IllegalArgumentException("Dish name cannot be null or empty");
@@ -308,32 +412,30 @@ public class Restaurant extends UserAccount {
                 .orElse(null);
     }
 
-    public List<Order> getOrders() {
+    public List<String> getOrderIds() {
         return orders;
     }
 
-    // ========== BUILDER PATTERN ==========
+    
 
-    /**
-     * Builder class for constructing Restaurant objects with many optional parameters.
-     * We use this class when we  need to create a Restaurant with initial dishes and time slots.
-     */
+    
     public static class Builder {
         private final String restaurantName;
+        public CuisineType cuisineType;
         private List<Dish> dishes = new ArrayList<>();
         private List<TimeSlot> availableTimeSlots = new ArrayList<>();
-        private DishType cuisineType;
         private List<OpeningHours> openingHours = new ArrayList<>();
 
-        public Builder withCuisineType(DishType cuisineType) {
-            this.cuisineType = cuisineType;
-            return this;
-        }
         public Builder(String restaurantName) {
             if (restaurantName == null || restaurantName.isEmpty()) {
                 throw new IllegalArgumentException("Restaurant name is required");
             }
             this.restaurantName = restaurantName;
+        }
+
+        public Builder withCuisineType(CuisineType cuisineType) {
+            this.cuisineType = cuisineType;
+            return this;
         }
 
         public Builder withDish(Dish dish) {
@@ -370,10 +472,10 @@ public class Restaurant extends UserAccount {
             }
             return this;
         }
+
         public Restaurant build() {
             return new Restaurant(this);
         }
     }
 
 }
-

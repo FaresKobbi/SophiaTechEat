@@ -1,0 +1,68 @@
+<div class="page-container">
+  <div class="header">
+    <h1>VALIDATED ORDERS</h1>
+    <button class="btn-back" [routerLink]="['/manager/dashboard', restaurantId]">BACK</button>
+  </div>
+
+  <div class="content-container">
+
+    <div class="left-panel">
+      <div *ngIf="isLoading">Loading orders...</div>
+      <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+      <app-item-list *ngIf="!isLoading && !errorMessage" [title]="'CUSTOMERS'" [items]="listItems"
+        [displayKey]="'displayLabel'" [selectedItem]="selectedOrder" (itemClicked)="onOrderSelect($event)">
+      </app-item-list>
+    </div>
+
+    <div class="right-panel">
+      <div class="details-card">
+        <p class="section-title">ORDER DETAILS</p>
+
+        <div *ngIf="!selectedOrder" class="empty-state">
+          <p>Select an order to view details.</p>
+        </div>
+
+        <div *ngIf="selectedOrder" class="order-info">
+          <div class="info-row">
+            <strong>Order ID:</strong> <span>{{ selectedOrder.orderId }}</span>
+          </div>
+          <div class="info-row">
+            <strong>Customer:</strong> <span>{{ selectedOrder.studentName }}</span>
+          </div>
+          <div class="info-row">
+            <strong>Total Amount:</strong> <span>{{ selectedOrder.amount | currency:'EUR' }}</span>
+          </div>
+
+          <hr>
+
+          <div class="info-group">
+            <strong>Delivery Location:</strong>
+            <p>
+              {{ selectedOrder.deliveryLocation.name }}<br>
+              {{ selectedOrder.deliveryLocation.address }}<br>
+              {{ selectedOrder.deliveryLocation.zipCode }} {{ selectedOrder.deliveryLocation.city }}
+            </p>
+          </div>
+
+          <hr>
+
+          <div class="info-group">
+            <strong>Items:</strong>
+            <ul class="dish-list">
+              <li *ngFor="let dish of selectedOrder.dishes">
+                <span class="dish-name">{{ dish.name }}</span> - {{ dish.price | currency:'EUR' }}
+                <ul *ngIf="dish.toppings && dish.toppings.length > 0" class="topping-list">
+                  <li *ngFor="let topping of dish.toppings">
+                    + {{ topping.name }} ({{ topping.price | currency:'EUR' }})
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

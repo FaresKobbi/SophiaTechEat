@@ -1,0 +1,30 @@
+<div class="student-home-page-body">
+
+  <app-student-home-page-nav [studentName]="studentName" [studentSurname]="studentSurname"></app-student-home-page-nav>
+
+  <main class="student-home-page-main">
+    <div class="restaurant-filters-container">
+      <app-restaurant-filter
+        label="Cuisine Type"
+        [options]="cuisineTypes"
+        [multiple]="false"
+        (selectionChange)="onCuisineChange($event)"> </app-restaurant-filter>
+
+      <app-restaurant-filter
+        label="Dietary Label"
+        [options]="dietaryLabels"
+        (selectionChange)="onDietaryChange($event)">
+      </app-restaurant-filter>
+    </div>
+
+    <div class="restaurant-list-container">
+      <app-item-list
+        [title]="'Restaurants'"
+        [items]="restaurantList"
+        [displayKey]="'restaurantName'"
+        (itemClicked)="onRestaurantClick($event)">
+      ></app-item-list>
+    </div>
+  </main>
+
+</div>

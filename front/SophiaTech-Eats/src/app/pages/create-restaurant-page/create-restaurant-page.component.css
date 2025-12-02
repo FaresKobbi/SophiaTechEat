@@ -1,0 +1,26 @@
+.create-restaurant-page-body {
+  min-height: 100vh;
+  background-color: var(--bg-body);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-xl);
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+  letter-spacing: -1px;
+}
+
+/* Ensure the form component (which we can't see here but is likely a child) 
+   has some spacing if needed, though the form component likely has its own styles. 
+   We'll trust the form component's internal styles or the global styles we set earlier. */

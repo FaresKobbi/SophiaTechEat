@@ -2,7 +2,7 @@ package fr.unice.polytech.restaurants;
 
 import io.cucumber.java.en.Given;
 
-import static org.junit.jupiter.api.Assertions.*; // <-- remplace l'import JUnit4
+import static org.junit.jupiter.api.Assertions.*; 
 
 public class CommonSteps {
     private final ScenarioContext ctx;

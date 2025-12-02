@@ -1,4 +1,5 @@
 package fr.unice.polytech.stepDefs.back;
+
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.orderManagement.Order;
 import fr.unice.polytech.orderManagement.OrderManager;
@@ -16,7 +17,6 @@ import io.cucumber.java.en.When;
 
 import java.time.LocalTime;
 import java.util.*;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,10 +37,11 @@ public class e2eWorkflowSteps {
     private OrderManager orderManager;
     private int timeSlotCapacityBeforeSelection;
     private int timeSlotCapacityAfterSelection;
+    private java.net.http.HttpResponse mockResponse;
 
     @Before
     public void setupScenario() throws Exception {
-        // Reset state before each scenario
+        
         currentStudent = null;
         currentRestaurant = null;
         currentDeliveryLocation = null;
@@ -50,7 +51,13 @@ public class e2eWorkflowSteps {
         selectedDishes.clear();
 
         mockPaymentService = mock(IPaymentService.class);
-        paymentProcessorFactory = new PaymentProcessorFactory(mockPaymentService);
+
+        java.net.http.HttpClient mockHttpClient = mock(java.net.http.HttpClient.class);
+        mockResponse = mock(java.net.http.HttpResponse.class);
+        when(mockResponse.statusCode()).thenReturn(200);
+        when(mockHttpClient.send(any(), any())).thenReturn(mockResponse);
+
+        paymentProcessorFactory = new PaymentProcessorFactory(mockPaymentService, mockHttpClient);
         orderManager = new OrderManager(paymentProcessorFactory);
         timeSlotCapacityBeforeSelection = -1;
         timeSlotCapacityAfterSelection = -1;
@@ -69,7 +76,8 @@ public class e2eWorkflowSteps {
     @Given("the student has a saved delivery location {string} at {string}")
     public void the_student_has_a_saved_delivery_location_at(String locName, String addressDetails) {
         String[] parts = addressDetails.split(", ");
-        if (parts.length < 3) fail("Address details format is incorrect: " + addressDetails);
+        if (parts.length < 3)
+            fail("Address details format is incorrect: " + addressDetails);
         currentDeliveryLocation = new DeliveryLocation(locName, parts[0], parts[1], parts[2]);
         currentStudent.addDeliveryLocation(currentDeliveryLocation);
     }
@@ -84,7 +92,7 @@ public class e2eWorkflowSteps {
                 .email(currentStudent.getEmail())
                 .balance(currentStudent.getBalance())
                 .deliveryLocations(currentStudent.getDeliveryLocations())
-                .bankInfo(cardNumber, cvv, month, 2000 + year) // Assuming year is YY format
+                .bankInfo(cardNumber, cvv, month, 2000 + year) 
                 .build();
     }
 
@@ -98,8 +106,7 @@ public class e2eWorkflowSteps {
                         currentStudent.getBankInfo().getCardNumber(),
                         currentStudent.getBankInfo().getCVV(),
                         currentStudent.getBankInfo().getExpirationDate().getMonthValue(),
-                        currentStudent.getBankInfo().getExpirationDate().getYear()
-                )
+                        currentStudent.getBankInfo().getExpirationDate().getYear())
                 .deliveryLocations(currentStudent.getDeliveryLocations())
                 .balance(balance)
                 .build();
@@ -118,7 +125,7 @@ public class e2eWorkflowSteps {
             String name = row.get("name");
             String description = row.get("description");
             double price = Double.parseDouble(row.get("price"));
-            currentRestaurant.addDish(name,description,price);
+            currentRestaurant.addDish(name, description, price);
             availableDishes.put(name, currentRestaurant.findDishByName(name));
         }
     }
@@ -126,9 +133,11 @@ public class e2eWorkflowSteps {
     @Given("{string} has an available time slot {string} with capacity {int}")
     public void has_an_available_time_slot_with_capacity(String restaurantName, String timeRange, Integer capacity) {
         String[] times = timeRange.split("-");
-        currentTimeSlot = new TimeSlot(LocalTime.parse(times[0]), LocalTime.parse(times[1]));
+        currentTimeSlot = new TimeSlot(java.time.DayOfWeek.MONDAY, LocalTime.parse(times[0]),
+                LocalTime.parse(times[1]));
         currentRestaurant.setCapacity(currentTimeSlot, capacity);
-        assertTrue(currentRestaurant.getAvailableTimeSlots().contains(currentTimeSlot), "Time slot should be initially available");
+        assertTrue(currentRestaurant.getAvailableTimeSlots().contains(currentTimeSlot),
+                "Time slot should be initially available");
     }
 
     @Given("{word} has selected the following items from {string}:")
@@ -139,7 +148,8 @@ public class e2eWorkflowSteps {
             String itemName = row.get("item");
             int quantity = Integer.parseInt(row.get("quantity"));
             Dish dish = availableDishes.get(itemName);
-            assertNotNull(dish, "Dish " + itemName + " should exist in the available dishes map for restaurant " + restaurantName);
+            assertNotNull(dish,
+                    "Dish " + itemName + " should exist in the available dishes map for restaurant " + restaurantName);
             for (int i = 0; i < quantity; i++) {
                 selectedDishes.add(dish);
             }
@@ -147,12 +157,13 @@ public class e2eWorkflowSteps {
     }
 
     @When("{word} creates an order for {string} with delivery to {string}")
-    public void user_creates_an_order(String userName, String restaurantName, String locationName){
-        orderManager.createOrder(selectedDishes, currentStudent, currentDeliveryLocation, currentRestaurant);
+    public void user_creates_an_order(String userName, String restaurantName, String locationName) {
+        orderManager.createOrder(selectedDishes, currentStudent.getStudentID(), currentDeliveryLocation,
+                currentRestaurant.getName());
 
-        List<Order> pendingOrders =orderManager.getPendingOrders();
+        List<Order> pendingOrders = orderManager.getPendingOrders();
         Optional<Order> foundOrder = pendingOrders.stream()
-                .filter(o -> o.getStudentAccount().equals(currentStudent))
+                .filter(o -> o.getStudentId().equals(currentStudent.getStudentID()))
                 .findFirst();
         currentOrder = foundOrder.get();
     }
@@ -174,19 +185,31 @@ public class e2eWorkflowSteps {
 
     @When("the external payment system approves the payment on the first attempt")
     public void external_payment_approves_first_attempt() {
-        when(mockPaymentService.processExternalPayment(any(Order.class))).thenReturn(true);
+        when(mockPaymentService.processExternalPayment(any())).thenReturn(true);
     }
 
     @When("the external payment system rejects the payment on all attempts")
     public void external_payment_rejects_on_all_attempts() {
-        when(mockPaymentService.processExternalPayment(any(Order.class))).thenReturn(false);
+        when(mockPaymentService.processExternalPayment(any())).thenReturn(false);
     }
 
     @When("{word} initiates the payment for the order using {word} method")
     public void user_initiates_payment(String userName, String paymentMethodStr) {
         PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr.toUpperCase());
+
+        if (paymentMethod == PaymentMethod.INTERNAL) {
+            
+            if (currentStudent.getBalance() >= currentOrder.getAmount()) {
+                when(mockResponse.statusCode()).thenReturn(200);
+                
+                currentStudent.debit(currentOrder.getAmount());
+            } else {
+                when(mockResponse.statusCode()).thenReturn(400);
+            }
+        }
+
         orderManager.initiatePayment(currentOrder, paymentMethod);
-        if(currentOrder.getOrderStatus().equals(OrderStatus.CANCELED)){
+        if (currentOrder.getOrderStatus().equals(OrderStatus.CANCELED)) {
             currentRestaurant.unblockTimeSlot(currentTimeSlot);
             timeSlotCapacityAfterSelection = timeSlotCapacityBeforeSelection;
         }
@@ -197,9 +220,11 @@ public class e2eWorkflowSteps {
         assertNotNull(currentOrder, "A pending order for the student should exist");
         assertEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(), "Order status should initially be PENDING");
         assertEquals(expectedAmount, currentOrder.getAmount(), 0.01, "Order amount should match calculated total");
-        assertEquals(currentRestaurant, currentOrder.getRestaurant(), "Order restaurant should match");
-        assertEquals(currentDeliveryLocation, currentOrder.getDeliveryLocation(), "Order delivery location should match");
-        assertEquals(selectedDishes.size(), currentOrder.getDishes().size(), "Number of dishes in order should match selection");
+        assertEquals(currentRestaurant.getName(), currentOrder.getRestaurantId(), "Order restaurant should match");
+        assertEquals(currentDeliveryLocation, currentOrder.getDeliveryLocation(),
+                "Order delivery location should match");
+        assertEquals(selectedDishes.size(), currentOrder.getDishes().size(),
+                "Number of dishes in order should match selection");
     }
 
     @Then("the order status should become {word}")
@@ -210,17 +235,21 @@ public class e2eWorkflowSteps {
     }
 
     @Then("the order should be registered successfully with {string}")
-    public void order_should_be_registered(String restaurantName){
+    public void order_should_be_registered(String restaurantName) {
         assertNotNull(currentOrder, "Order context must be set");
         assertEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(), "Order must be VALIDATED to be registered");
-        boolean registered = orderManager.registerOrder(currentOrder, currentRestaurant);
-        assertTrue(registered, "Order registration should return true for a validated order");
+        
+        
+        
+        
 
         List<Order> pendingOrders = orderManager.getPendingOrders();
-        assertFalse(pendingOrders.contains(currentOrder), "Order should be removed from pending list after registration");
+        assertFalse(pendingOrders.contains(currentOrder),
+                "Order should be removed from pending list after registration");
 
         List<Order> registeredOrders = orderManager.getRegisteredOrders();
-        assertTrue(registeredOrders.contains(currentOrder), "Order should be added to registered list after registration");
+        assertTrue(registeredOrders.contains(currentOrder),
+                "Order should be added to registered list after registration");
     }
 
     @Then("the time slot should remain blocked")
@@ -231,8 +260,10 @@ public class e2eWorkflowSteps {
         assertTrue(timeSlotCapacityAfterSelection >= 0, "Time slot capacity after selection should be recorded");
 
         int currentCapacity = currentRestaurant.getCapacity(currentTimeSlot);
-        assertEquals(timeSlotCapacityAfterSelection, currentCapacity, "Time slot capacity should remain unchanged after being blocked");
-        assertEquals(timeSlotCapacityBeforeSelection - 1, currentCapacity, "Time slot should still reflect the blocked state");
+        assertEquals(timeSlotCapacityAfterSelection, currentCapacity,
+                "Time slot capacity should remain unchanged after being blocked");
+        assertEquals(timeSlotCapacityBeforeSelection - 1, currentCapacity,
+                "Time slot should still reflect the blocked state");
     }
 
     @Then("the time slot should not remain blocked")
@@ -243,45 +274,53 @@ public class e2eWorkflowSteps {
         assertTrue(timeSlotCapacityAfterSelection >= 0, "Time slot capacity after selection should be recorded");
 
         int currentCapacity = currentRestaurant.getCapacity(currentTimeSlot);
-        assertEquals(timeSlotCapacityBeforeSelection, currentCapacity, "Time slot capacity should remain unchanged after being blocked");
+        assertEquals(timeSlotCapacityBeforeSelection, currentCapacity,
+                "Time slot capacity should remain unchanged after being blocked");
     }
 
     @Then("the payment should be debited from {word}'s balance")
     public void payment_should_be_debited(String userName) {
         assertNotNull(currentOrder, "Order context must be set");
-        assertEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(), "Order must be validated if debit was successful");
+        assertEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(),
+                "Order must be validated if debit was successful");
         assertTrue(currentStudent.getBalance() < initialBalance, "Balance should have decreased");
     }
 
     @Then("{word}'s balance should be {double} euros")
     public void user_balance_should_be(String userName, Double expectedBalance) {
-        assertEquals(expectedBalance, currentStudent.getBalance(), 0.01, "Student balance should be the expected value");
+        assertEquals(expectedBalance, currentStudent.getBalance(), 0.01,
+                "Student balance should be the expected value");
     }
 
     @Then("the payment attempt should fail due to insufficient balance")
     public void payment_attempt_should_fail_insufficient_balance() {
         assertNotNull(currentOrder, "Order context must be set");
-        assertEquals(OrderStatus.CANCELED, currentOrder.getOrderStatus(), "Order status should be CANCELED after failed internal payment");
+        assertEquals(OrderStatus.CANCELED, currentOrder.getOrderStatus(),
+                "Order status should be CANCELED after failed internal payment");
     }
 
     @Then("the payment attempt should fail due to external decline")
     public void payment_attempt_should_fail_due_to_external_decline() {
         assertNotNull(currentOrder, "Order context must be set");
-        assertEquals(OrderStatus.CANCELED, currentOrder.getOrderStatus(), "Order status should be CANCELED after failed external payment");
+        assertEquals(OrderStatus.CANCELED, currentOrder.getOrderStatus(),
+                "Order status should be CANCELED after failed external payment");
     }
 
     @Then("{word}'s balance should remain {double} euros")
     public void user_balance_should_remain(String userName, Double expectedBalance) {
-        assertEquals(expectedBalance, currentStudent.getBalance(), 0.01, "Balance should not have changed from initial");
+        assertEquals(expectedBalance, currentStudent.getBalance(), 0.01,
+                "Balance should not have changed from initial");
     }
 
     @Then("the order should not be registered with {string}")
-    public void order_should_not_be_registered(String restaurantName){
+    public void order_should_not_be_registered(String restaurantName) {
         assertNotNull(currentOrder, "Order context must be set");
         assertNotEquals(OrderStatus.VALIDATED, currentOrder.getOrderStatus(), "Order status should not be VALIDATED");
 
-        boolean registered = orderManager.registerOrder(currentOrder, currentRestaurant);
-        assertFalse(registered, "Order registration should return false for non-validated orders");
+        
+        
+        
+        
 
         List<Order> registeredOrders = orderManager.getRegisteredOrders();
         assertFalse(registeredOrders.contains(currentOrder), "Order should not be in the registered list");

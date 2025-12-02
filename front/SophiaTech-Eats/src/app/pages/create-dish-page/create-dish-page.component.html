@@ -1,0 +1,19 @@
+<div class="page-container">
+  <div class="header">
+    <h1>CREATE NEW DISH</h1>
+    <button class="btn-back" [routerLink]="['/manager/dish', restaurantId]">BACK</button>
+  </div>
+
+  <div class="content-container">
+    <div class="form-section">
+      <app-dish-form
+        [dishData]="dishData"
+        submitLabel="CREATE DISH"
+        (formSubmit)="handleCreate($event)">
+      </app-dish-form>
+    </div>
+    <div class="suggestion-section">
+      <app-suggestion-box (dishSelected)="handleSuggestionSelect($event)"></app-suggestion-box>
+    </div>
+  </div>
+</div>

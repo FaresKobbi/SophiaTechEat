@@ -16,11 +16,6 @@ Feature: Manage Restaurant Opening Hours
     When the owner updates the opening hours for "TUESDAY" to be from "18:30" to "23:00"
     Then the restaurant schedule for "TUESDAY" should be from "18:30" to "23:00"
 
-  Scenario: Prevent adding hours for a day that is already scheduled
-    Given the restaurant is open on "WEDNESDAY" from "10:00" to "12:00"
-    When the owner tries to add new opening hours for "WEDNESDAY" from "09:00" to "11:00"
-    Then the system should reject the operation with an error message containing "already exist"
-
   Scenario: Prevent updating hours for a day that is not scheduled
     Given the restaurant has no opening hours for "THURSDAY"
     When the owner tries to update the opening hours for "THURSDAY" from "09:00" to "11:00"

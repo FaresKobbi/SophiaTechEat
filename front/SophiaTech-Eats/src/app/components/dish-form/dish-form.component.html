@@ -1,0 +1,73 @@
+<div class="form-container">
+  <form [formGroup]="dishForm" (ngSubmit)="onSubmit()">
+
+    
+    <div class="section">
+      <h3>Basic Info</h3>
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" formControlName="name" class="form-control">
+        <small *ngIf="dishForm.get('name')?.invalid && dishForm.get('name')?.touched" class="error">Name is required</small>
+      </div>
+
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea formControlName="description" class="form-control"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="form-group half">
+          <label>Price (€) *</label>
+          <input type="number" formControlName="price" class="form-control">
+        </div>
+        <div class="form-group half">
+          <label>Category *</label>
+          <select formControlName="category" class="form-control">
+            <option value="">Select...</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section">
+      <h3>Details (Optional)</h3>
+      <div class="form-group">
+        <label>Dish Type (One only)</label>
+        <div class="radio-group">
+          <label *ngFor="let type of dishTypes">
+            <input type="radio" formControlName="dishType" [value]="type"> {{ type }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Dietary Labels</label>
+        <div class="checkbox-group" formArrayName="dietaryLabels">
+          <label *ngFor="let label of availableDietaryLabels; let i = index">
+            <input type="checkbox" [formControlName]="i"> {{ label }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section">
+      <div class="flex-header">
+        <h3>Toppings</h3>
+        <button type="button" class="btn-small" (click)="addTopping()">+ Add Topping</button>
+      </div>
+
+      <div formArrayName="toppings">
+        <div *ngFor="let topping of toppings.controls; let i = index" [formGroupName]="i" class="topping-row">
+          <input type="text" formControlName="name" placeholder="Topping Name" class="form-control">
+          <input type="number" formControlName="price" placeholder="Price" class="form-control price-input">
+          <button type="button" class="btn-remove" (click)="removeTopping(i)">X</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit" [disabled]="dishForm.invalid">{{ submitLabel }}</button>
+  </form>
+</div>

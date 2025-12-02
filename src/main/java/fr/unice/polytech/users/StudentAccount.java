@@ -1,28 +1,23 @@
-package fr.unice.polytech.users; // Assuming this package
+package fr.unice.polytech.users; 
 
 import fr.unice.polytech.paymentProcessing.BankInfo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-// Note: Requires UserAccount class from above.
+
 public class StudentAccount extends UserAccount {
 
     private String studentID;
-    private double balance = 30 ;
+    private double balance;
     private BankInfo bankInfo;
-    private List<DeliveryLocation> prerecordedLocations = new ArrayList<>();
+    private List<DeliveryLocation> prerecordedLocations;
 
-    /**
-     * Constructor for StudentAccount.
-     */
+    
     private StudentAccount(Builder builder) {
-        super(builder.name, builder.surname, builder.email); // Initialize attributes from UserAccount
-        this.studentID = builder.studentID;
+        super(builder.name, builder.surname, builder.email); 
+        this.studentID = builder.studentID != null ? builder.studentID : UUID.randomUUID().toString();
         this.bankInfo = builder.bankInfo;
-        this.balance = builder.balance;
+        this.balance = 30;
         this.prerecordedLocations = new ArrayList<>(builder.prerecordedLocations);
     }
 
@@ -34,12 +29,22 @@ public class StudentAccount extends UserAccount {
         return deliveryLocation != null && prerecordedLocations.contains(deliveryLocation);
     }
 
+    public void removeDeliveryLocation(String locationName) {
+        if (locationName == null)
+            return;
+        this.prerecordedLocations.removeIf(loc -> loc.getId().equals(locationName));
+    }
+
     public void addDeliveryLocation(DeliveryLocation deliveryLocation) {
         if (deliveryLocation != null && !prerecordedLocations.contains(deliveryLocation)) {
             prerecordedLocations.add(deliveryLocation);
         }
     }
-    
+
+    public void setBankInfo(BankInfo bankInfo) {
+        this.bankInfo = bankInfo;
+    }
+
     public String getStudentID() {
         return studentID;
     }
@@ -60,38 +65,37 @@ public class StudentAccount extends UserAccount {
         return false;
     }
 
-
-
     public static class Builder {
         private String name;
         private String surname;
         private String email;
-        private String studentID;
         private BankInfo bankInfo;
         private double balance = 30;
         private List<DeliveryLocation> prerecordedLocations = new ArrayList<>();
 
-        public Builder(String name, String surname){
+        private String studentID;
+
+        public Builder(String name, String surname) {
             this.name = name;
             this.surname = surname;
         }
 
-        public Builder email(String email){
-            this.email = email;
-            return this;
-        }
-
-        public Builder studentId(String studentID){
+        public Builder studentId(String studentID) {
             this.studentID = studentID;
             return this;
         }
 
-        public Builder bankInfo(String cardNumber, int CVV, int month, int year){
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder bankInfo(String cardNumber, int CVV, int month, int year) {
             this.bankInfo = new BankInfo(cardNumber, CVV, month, year);
             return this;
         }
 
-        public Builder balance(double balance){
+        public Builder balance(double balance) {
             this.balance = balance;
             return this;
         }
@@ -112,7 +116,7 @@ public class StudentAccount extends UserAccount {
             return this;
         }
 
-        public StudentAccount build(){
+        public StudentAccount build() {
             return new StudentAccount(this);
         }
 
@@ -120,9 +124,12 @@ public class StudentAccount extends UserAccount {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
         StudentAccount that = (StudentAccount) o;
-        return Double.compare(balance, that.balance) == 0 && Objects.equals(studentID, that.studentID) && Objects.equals(bankInfo, that.bankInfo) && Objects.equals(prerecordedLocations, that.prerecordedLocations);
+        return Double.compare(balance, that.balance) == 0 && Objects.equals(studentID, that.studentID)
+                && Objects.equals(bankInfo, that.bankInfo)
+                && Objects.equals(prerecordedLocations, that.prerecordedLocations);
     }
 
     @Override

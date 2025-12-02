@@ -9,15 +9,13 @@ import fr.unice.polytech.orderManagement.*;
 import fr.unice.polytech.paymentProcessing.*;
 import fr.unice.polytech.restaurants.*;
 import fr.unice.polytech.users.*;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.http.HttpClient;
 import java.util.*;
 
-/**
- * Step definitions for create_order.feature (no quantity management)
- * Uses the real OrderManager and payment flow.
- */
 public class CreateOrderSteps {
 
     private StudentAccount.Builder accountBuilder;
@@ -31,15 +29,28 @@ public class CreateOrderSteps {
     private Order currentOrder;
     private Exception lastException;
 
-    // ============ Setup ============
+    
 
     @Given("a client named {string}")
     public void a_client_named(String name) {
         accountBuilder = new StudentAccount.Builder(name, "Doe");
         restaurant = new Restaurant("Test Restaurant");
-        orderManager = new OrderManager(new PaymentProcessorFactory());
+
+        
+        IPaymentService mockPaymentService = org.mockito.Mockito.mock(IPaymentService.class);
+        try {
+            org.mockito.Mockito.when(mockPaymentService.processExternalPayment(org.mockito.ArgumentMatchers.any()))
+                    .thenReturn(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PaymentProcessorFactory factory = new PaymentProcessorFactory(mockPaymentService,
+                java.net.http.HttpClient.newHttpClient());
+        orderManager = new OrderManager(factory);
+
         cartDishes = new ArrayList<>();
-        paymentMethod = PaymentMethod.EXTERNAL; // default
+        paymentMethod = PaymentMethod.EXTERNAL; 
         deliveryLocation = null;
         currentOrder = null;
         lastException = null;
@@ -55,7 +66,7 @@ public class CreateOrderSteps {
         studentAccount = accountBuilder.build();
     }
 
-    // ============ Cart ============
+    
 
     @Given("{string} has the following items in the cart:")
     public void has_the_following_items_in_the_cart(String name, DataTable dataTable) {
@@ -68,7 +79,7 @@ public class CreateOrderSteps {
             Dish dish = new Dish(itemName, "desc", price);
             cartDishes.add(dish);
         }
-        currentOrder = new Order.Builder(studentAccount).build();
+        currentOrder = new Order.Builder(studentAccount.getStudentID()).build();
     }
 
     @Given("Alex has the following items in the cart:")
@@ -76,15 +87,15 @@ public class CreateOrderSteps {
         has_the_following_items_in_the_cart("Alex", dataTable);
     }
 
-    // ============ Delivery & Payment ============
+    
     @When("{string} selects the delivery location {string}")
     public void selects_the_delivery_location(String name, String address) {
         try {
             deliveryLocation = studentAccount.getDeliveryLocations().stream()
                     .filter(loc -> address.toLowerCase().contains(loc.getAddress().toLowerCase()))
                     .findFirst()
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("Selected address not found in prerecorded locations: " + address));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Selected address not found in prerecorded locations: " + address));
         } catch (Exception e) {
             lastException = e;
             deliveryLocation = null;
@@ -109,27 +120,25 @@ public class CreateOrderSteps {
         chooses_the_saved_payment_method("Alex", method);
     }
 
-    // ============ Confirm Order ============
+    
 
     @When("{string} confirms the order")
     public void confirms_the_order(String name) {
         try {
-            // Create the order
-            orderManager.createOrder(cartDishes, studentAccount, deliveryLocation, restaurant);
+            
+            orderManager.createOrder(cartDishes, studentAccount.getStudentID(), deliveryLocation, restaurant.getName());
 
-            // Retrieve last created order
+            
             List<Order> pendingOrders = orderManager.getPendingOrders();
             currentOrder = pendingOrders.isEmpty() ? null : pendingOrders.get(pendingOrders.size() - 1);
 
-            // Initiate payment (handled by OrderManager)
+            
             if (currentOrder != null && paymentMethod != null) {
                 orderManager.initiatePayment(currentOrder, paymentMethod);
             }
 
-            // Register validated order
-            if (currentOrder != null && currentOrder.getOrderStatus() == OrderStatus.VALIDATED) {
-                orderManager.registerOrder(currentOrder,restaurant);
-            }
+            
+            
 
         } catch (Exception e) {
 
@@ -138,13 +147,13 @@ public class CreateOrderSteps {
         }
     }
 
-    // Small alias so the step "When Alex confirms the order" works too
+    
     @When("Alex confirms the order")
     public void alex_confirms_the_order() {
         confirms_the_order("Alex");
     }
 
-    // ============ Assertions ============
+    
 
     @Then("the order should be created with status {string}")
     public void the_order_should_be_created_with_status(String expectedStatus) {
@@ -181,7 +190,5 @@ public class CreateOrderSteps {
                 "Expected message to contain: \"" + expectedMessage + "\" but got: \""
                         + (lastException != null ? lastException.getMessage() : "null") + "\"");
     }
-
-
 
 }

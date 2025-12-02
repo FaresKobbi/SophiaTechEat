@@ -2,6 +2,11 @@ package fr.unice.polytech.dishes;
 
 public class Topping extends PriceableItem {
 
+    
+    public Topping() {
+        super();
+    }
+
     public Topping(String name) {
         super(name);
     }

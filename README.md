@@ -1,39 +1,70 @@
-# SopiaTech Eats – Team I-1
+# SophiaTech Eats – Team I-1
 
-## Équipe projet
-- Fares Kobbi – Software Architect and Quality Assurance(SA/QA)
+## Project Team
+- Fares Kobbi – Software Architect and Quality Assurance (SA/QA)
 - Youssef Ben Mzoughia – Software Architect and Product Owner (SA/PO)
 - Younes Hammoud – Operations (OPS)
 
-## Installer et lancer le projet
-1. **Prérequis**
-    - JDK 17
-    - Maven 3.9+
-2. **Cloner le dépôt**
+## Prerequisites
+- **Java**: JDK 17
+- **Maven**: 3.9+
+- **Node.js**: LTS recommended
+- **Angular CLI**: `npm install -g @angular/cli`
+- **Frontend Dependencies**: Run `npm install` in `front/SophiaTech-Eats`
+
+## Install and Run the Project
+
+### Quick Start (All-in-One)
+To launch all services (Backend + Frontend) with a single command:
+```bash
+./launch_all.sh
+```
+This will start:
+- API Gateway (Port 8080)
+- Restaurant Service (Port 8081)
+- Student Account Service (Port 8082)
+- Order Service (Port 8083)
+- Frontend Angular (Port 4200)
+
+### Backend
+1. **Clone the repository**
    ```bash
    git clone https://github.com/PNS-Conception/ste-25-26-team-i-1.git
    cd ste-25-26-team-i-1
    ```
-3. **Construire et exécuter les tests**
+2. **Build and run tests**
    ```bash
    mvn clean package
    mvn test
    ```
-4. **Lancer l'application**
-    - Ce dépôt propose pour l'instant l'ossature du projet backend. Les prochaines itérations introduiront les modules applicatifs.
 
-## Structure du projet
+### Frontend
+1. **Install dependencies**
+   ```bash
+   cd front/SophiaTech-Eats
+   npm install
+   ```
+2. **Run the application**
+   ```bash
+   ng serve
+   ```
+   The application will be accessible at `http://localhost:4200/`.
+
+## Project Structure
 ```
-.
-├── doc/           # Documentation fonctionnelle et technique
+├── front/         # Frontend source code (Angular)
 ├── src/
-│   ├── main/      # Code applicatif (à compléter au fil des sprints)
-│   └── test/      # Jeux de tests JUnit & Cucumber
-├── pom.xml        # Configuration Maven (JDK 17, Cucumber 7, JUnit 5)
-└── README.md      # Présentation du projet
+│   ├── main/      # Backend application code (Java)
+│   └── test/      # JUnit & Cucumber test suites
+├── pom.xml        # Maven configuration (JDK 17, Cucumber 7, JUnit 5)
+└── README.md      # Project presentation
 ```
 
-Cette structure standard permet de séparer clairement le code de production et les tests. Les dépendances (Cucumber, JUnit, etc.) sont centralisées dans le `pom.xml`.
+This standard structure allows for clear separation of production code and tests. Dependencies (Cucumber, JUnit, etc.) are centralized in `pom.xml`.
 
-## Tableau Kanban de l'équipe
-[Github – Kanban SopiaTech Eats Team I-1](https://github.com/orgs/PNS-Conception/projects/91)
+## Additional Documentation
+- [Work Visualization (Screenshots)](screenshots.md)
+- [Points Distribution](points_distribution.md)
+
+## Team Kanban Board
+[Github – Kanban SophiaTech Eats Team I-1](https://github.com/orgs/PNS-Conception/projects/91)

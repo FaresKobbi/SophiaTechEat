@@ -3,17 +3,16 @@ package fr.unice.polytech.orderManagement;
 
 import fr.unice.polytech.dishes.Dish;
 import fr.unice.polytech.paymentProcessing.PaymentMethod;
-import fr.unice.polytech.restaurants.Restaurant;
 import fr.unice.polytech.users.DeliveryLocation;
-import fr.unice.polytech.users.StudentAccount;
-import fr.unice.polytech.users.UserAccount;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Order {
-    private StudentAccount studentAccount;
-    private Restaurant restaurant;
+    private String orderId;
+    private String studentId;
+    private String restaurantId;
     private double amount;
     private OrderStatus orderStatus;
     private List<Dish> dishes;
@@ -22,25 +21,35 @@ public class Order {
 
 
     private Order(Builder builder) {
-        this.studentAccount = builder.studentAccount;
+        this.orderId = UUID.randomUUID().toString();
         this.amount = builder.amount;
         this.dishes = builder.dishes;
+        this.studentId = builder.studentID;
         this.deliveryLocation = builder.deliveryLocation;
         this.orderStatus = builder.orderStatus != null ? builder.orderStatus : OrderStatus.PENDING;
-        this.restaurant = builder.restaurant;
+        this.restaurantId = builder.restaurantId;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
+    public String getRestaurantId() {
+        return restaurantId;
     }
 
-    public StudentAccount getStudentAccount() {
-        return studentAccount;
+    public String getStudentAccountId() {
+        return studentId;
     }
 
     public double getAmount() {
         return amount;
     }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
 
     public OrderStatus getOrderStatus() {
         return orderStatus;
@@ -66,10 +75,7 @@ public class Order {
         this.deliveryLocation = deliveryLocation;
     }
 
-    public PaymentMethod getPaymentMethod(UserAccount user) {
-        if ( (user instanceof Restaurant) || !user.equals(this.studentAccount)) {
-            throw new IllegalArgumentException("Access denied: User does not own this order.");
-        }
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
@@ -78,15 +84,15 @@ public class Order {
     }
 
     public static class Builder {
-        private StudentAccount studentAccount;
+        private String studentID;
         private double amount;
-        private Restaurant restaurant;
         private List<Dish> dishes;
+        private String restaurantId;
         private DeliveryLocation deliveryLocation;
         private OrderStatus orderStatus;
 
-        public Builder(StudentAccount studentAccount) {
-            this.studentAccount = studentAccount;
+        public Builder(String studentID) {
+            this.studentID = studentID;
         }
 
         public Builder deliveryLocation(DeliveryLocation deliveryLocation) {
@@ -107,8 +113,8 @@ public class Order {
             this.dishes = dishes;
             return this;
         }
-        public Builder restaurant(Restaurant restaurant) {
-            this.restaurant = restaurant;
+        public Builder restaurant(String restaurantId) {
+            this.restaurantId = restaurantId;
             return this;
         }
 
@@ -122,12 +128,12 @@ public class Order {
         public boolean equals(Object o) {
             if (o == null || getClass() != o.getClass()) return false;
             Builder builder = (Builder) o;
-            return Double.compare(amount, builder.amount) == 0 && Objects.equals(studentAccount, builder.studentAccount) && Objects.equals(restaurant, builder.restaurant) && Objects.equals(dishes, builder.dishes) && Objects.equals(deliveryLocation, builder.deliveryLocation) && orderStatus == builder.orderStatus;
+            return Double.compare(amount, builder.amount) == 0 && Objects.equals(studentID, builder.studentID) && Objects.equals(restaurantId, builder.restaurantId) && Objects.equals(dishes, builder.dishes) && Objects.equals(deliveryLocation, builder.deliveryLocation) && orderStatus == builder.orderStatus;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(studentAccount, amount, restaurant, dishes, deliveryLocation, orderStatus);
+            return Objects.hash(studentID, amount, restaurantId, dishes, deliveryLocation, orderStatus);
         }
     }
 }

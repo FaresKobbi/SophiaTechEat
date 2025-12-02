@@ -14,7 +14,7 @@ class DishTest {
         assertEquals("Simple cheese pizza", pizza.getDescription(), "The description should be set correctly.");
         assertEquals(12.50, pizza.getPrice(), "The price should be set correctly.");
         assertTrue(pizza.getToppings().isEmpty(), "The toppings list should be initialized empty.");
-        assertNull(pizza.getCategory(), "The category should be null initially."); // Added check for category
+        assertNull(pizza.getCategory(), "The category should be null initially."); 
     }
 
 
@@ -37,7 +37,7 @@ class DishTest {
         Dish dish = new Dish("Name", "Desc", 5.0);
         dish.setPrice(9.99);
         assertEquals(9.99, dish.getPrice(), 0.001, "setPrice should update the dish's base price.");
-        // Use delta (0.001) for double comparisons
+        
     }
 
 

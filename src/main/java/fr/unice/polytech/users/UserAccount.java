@@ -1,4 +1,4 @@
-package fr.unice.polytech.users; // Assuming this package
+package fr.unice.polytech.users; 
 
 public abstract class  UserAccount {
     
@@ -21,13 +21,13 @@ public abstract class  UserAccount {
         return email;
     }
 
-    // Note: It's generally unsafe to expose the surname directly via a getter
-    // but included here based on the attribute existence in the diagram.
+    
+    
     public String getSurname() {
         return surname;
     }
     
-    // Setters (Essential for registration/profile updates)
+    
     public void setName(String name) {
         this.name = name;
     }

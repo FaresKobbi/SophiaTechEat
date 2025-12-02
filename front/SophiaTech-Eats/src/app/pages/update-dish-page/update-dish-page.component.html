@@ -1,0 +1,16 @@
+<button class="btn-home" style="position: absolute; top: 20px; right: 20px;" [routerLink]="['/manager/dish', restaurantId]">BACK</button>
+
+<div class="page-container">
+  <div class="header">
+    <h1>UPDATE DISH</h1>
+  </div>
+
+  <div *ngIf="isLoading">Loading dish data...</div>
+
+  <app-dish-form
+    *ngIf="!isLoading && dishData"
+    [dishData]="dishData"
+    submitLabel="UPDATE DISH"
+    (formSubmit)="handleUpdate($event)">
+  </app-dish-form>
+</div>
