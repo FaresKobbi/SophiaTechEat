@@ -1,41 +1,47 @@
+/* app/components/item-list/item-list.component.css */
+
 .list-box {
-  background-color: white;
-  width: 500px;
-  height: 450px;
-  padding: 20px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-
-  max-height: 450px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #b0b0b0 #f5f5f5;
-  font-size: 30px;
-}
-
-.list-box::-webkit-scrollbar {
-  width: 8px;
-}
-
-.list-box::-webkit-scrollbar-track {
-  background: #f5f5f5;
-  border-radius: 4px;
-}
-
-.list-box::-webkit-scrollbar-thumb {
-  background-color: #b0b0b0;
-  border-radius: 4px;
+  background-color: transparent;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+  max-height: none;
+  overflow: visible;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .list-item {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
   cursor: pointer;
-  padding: 4px 0;
-  margin: 0;
-  border-bottom: 1px solid #f5f5f5;
-  transition: background-color 0.1s;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
 }
 
 .list-item:hover {
-  background-color: #f0f0f0;
-  font-weight: bold;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Typography for list items (assuming standard HTML structure inside) */
+.list-item h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.list-item p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
 }

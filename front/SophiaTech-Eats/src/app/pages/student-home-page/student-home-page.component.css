@@ -1,20 +1,24 @@
-
-.student-home-page-main{
+.student-home-page-main {
   display: flex;
-  height: 100vh;
-  background-color: #d9d9d9;
-  align-items: center;
   flex-direction: column;
-  gap: 25px;
+  align-items: center;
+  gap: var(--spacing-xl);
+  width: 100%;
 }
 
-.restaurant-filters-container{
-  margin: 35px;
+.restaurant-filters-container {
   display: flex;
-  flex-direction: row;
-  gap: 30px;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+  width: 100%;
+  max-width: 1200px;
 }
 
-.restaurant-list-container{
-  margin: 35px;
+.restaurant-list-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
 }
