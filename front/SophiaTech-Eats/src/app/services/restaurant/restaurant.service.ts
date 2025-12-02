@@ -81,7 +81,7 @@ export class RestaurantService {
       return of(this.cuisineTypeSubject.value);
     }
 
-    
+
     return this.http.get<string[]>(`${this.apiUrl}/dishes/cuisinetypes`).pipe(
       map(data => data.map(label => this.formatLabel(label))),
 
@@ -144,7 +144,7 @@ export class RestaurantService {
   }
 
 
-  createRestaurant(data: { restaurantName: string }) {
+  createRestaurant(data: { restaurantName: string, cuisineType?: string }) {
     return this.http.post<Restaurant>(this.apiUrl, data).pipe(
       tap(() => {
         this.getRestaurants();

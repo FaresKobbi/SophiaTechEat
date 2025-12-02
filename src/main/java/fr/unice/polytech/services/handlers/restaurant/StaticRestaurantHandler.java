@@ -18,7 +18,7 @@ import java.util.*;
 
 public class StaticRestaurantHandler implements HttpHandler {
     private final RestaurantManager restaurantManager;
-    private final ObjectMapper objectMapper ;
+    private final ObjectMapper objectMapper;
 
     public StaticRestaurantHandler(RestaurantManager restaurantManager, ObjectMapper objectMapper) {
         this.restaurantManager = restaurantManager;
@@ -69,7 +69,6 @@ public class StaticRestaurantHandler implements HttpHandler {
                 cuisine = CuisineType.valueOf(params.get("cuisine").get(0));
             }
 
-            
             if (params.containsKey("label")) {
                 for (String labelStr : params.get("label")) {
                     labels.add(DietaryLabel.valueOf(labelStr));
@@ -105,13 +104,28 @@ public class StaticRestaurantHandler implements HttpHandler {
 
         String restaurantName = body.get("restaurantName").asText();
 
-        if (restaurantName == null || restaurantName.trim().isEmpty()){
-            sendResponse(exchange,400,"{\"error\":\"Missing required fields: name\"}");
+        if (restaurantName == null || restaurantName.trim().isEmpty()) {
+            sendResponse(exchange, 400, "{\"error\":\"Missing required fields: name\"}");
             return;
         }
+
         Restaurant newRestaurant = new Restaurant(restaurantName.trim());
+
+        if (body.has("cuisineType")) {
+            String cuisineTypeStr = body.get("cuisineType").asText();
+            if (cuisineTypeStr != null && !cuisineTypeStr.isBlank()) {
+                try {
+                    CuisineType cuisineType = CuisineType.valueOf(cuisineTypeStr.toUpperCase());
+                    newRestaurant.setCuisineType(cuisineType);
+                } catch (IllegalArgumentException e) {
+                    sendResponse(exchange, 400, "{\"error\":\"Invalid cuisine type: " + cuisineTypeStr + "\"}");
+                    return;
+                }
+            }
+        }
+
         restaurantManager.addRestaurant(newRestaurant);
-        System.out.println("StudentAccountService: Created new student " + newRestaurant.getRestaurantId());
+        System.out.println("RestaurantService: Created new restaurant " + newRestaurant.getRestaurantId());
 
         String jsonResponse = objectMapper.writeValueAsString(newRestaurant);
 
@@ -127,4 +141,3 @@ public class StaticRestaurantHandler implements HttpHandler {
         }
     }
 }
-

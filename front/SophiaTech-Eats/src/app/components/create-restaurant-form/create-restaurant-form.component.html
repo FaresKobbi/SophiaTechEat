@@ -5,7 +5,16 @@
       <div class="form-section">
         <label class="section-title">Name</label>
         <input type="text" formControlName="name" placeholder="Nom" class="text-input">
+      </div>
 
+      <div class="form-section">
+        <label class="section-title">Cuisine Type</label>
+        <select formControlName="cuisine" class="text-input">
+          <option value="" disabled selected>Select a cuisine</option>
+          @for (type of cuisineTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+          }
+        </select>
       </div>
 
       <button class="submit-btn" type="submit">
