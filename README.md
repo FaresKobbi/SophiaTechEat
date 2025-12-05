@@ -67,4 +67,4 @@ This standard structure allows for clear separation of production code and tests
 - [Points Distribution](points_distribution.md)
 
 ## Team Kanban Board
-[Github – Kanban SophiaTech Eats Team I-1](https://github.com/orgs/PNS-Conception/projects/91)
+The original GitHub repository was created by my professors; it's private, so I can't show the Team Kanban Board.
